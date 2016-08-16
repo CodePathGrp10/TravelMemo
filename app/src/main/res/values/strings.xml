@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TravelMemo</string>
+    <string name="HOME">HOME</string>
+    <string name="SETTINGS">SETTINGS</string>
 </resources>
