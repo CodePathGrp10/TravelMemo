@@ -31,4 +31,5 @@ dependencies {
     }
     compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
     compile 'com.mikepenz:fontawesome-typeface:4.6.0.3@aar'
+    compile 'com.github.crosswall:Android-Coverflow:release-v1.0.3'
 }
