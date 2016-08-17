@@ -29,6 +29,7 @@
         </activity>
         <activity android:name=".activities.TripActivity"></activity>
         <activity android:name=".activities.ViewTripActivity"></activity>
+        <activity android:name=".activities.SignInActivity" />
 
         <uses-library android:required="true" android:name="com.google.android.maps" />
 

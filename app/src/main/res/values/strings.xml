@@ -2,6 +2,7 @@
     <string name="app_name">TravelMemo</string>
     <string name="HOME">HOME</string>
     <string name="SETTINGS">SETTINGS</string>
+    <string name="sign_in">Sign In</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
