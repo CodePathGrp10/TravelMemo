@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "728216313611",
+    "firebase_url": "https://travelmemo-1de8a.firebaseio.com",
+    "project_id": "travelmemo-1de8a",
+    "storage_bucket": "travelmemo-1de8a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728216313611:android:c12cf821dc3bc4ef",
+        "android_client_info": {
+          "package_name": "com.grp10.codepath.travelmemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728216313611-cpd98m2g3jjg3tq8ovvc8u8vb6piv6dr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grp10.codepath.travelmemo",
+            "certificate_hash": "9D69BE818A9F64C2C43A044CF2D723180DA0D7D3"
+          }
+        },
+        {
+          "client_id": "728216313611-adlq7ovbascpp4m81d791rshi36m0cj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8PMllDNDJ3r3pmRDDY-Y2ToZgtGBbxnc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "728216313611-adlq7ovbascpp4m81d791rshi36m0cj7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
