@@ -1,9 +1,14 @@
 package com.grp10.codepath.travelmemo.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.grp10.codepath.travelmemo.R;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -21,53 +26,29 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SplashScreenActivity extends AppCompatActivity {
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    private Drawer result;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.activity_splash_screen);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
 
-        getMaterialDrawerMenu();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-    }
+        Looper looper = Looper.getMainLooper();
+        Handler handler = new Handler(looper);
 
-    public void getMaterialDrawerMenu(){
-        // Create the AccountHeader
-        AccountHeader headerResult = new AccountHeaderBuilder()
-                .withActivity(this)
-                .withHeaderBackground(R.drawable.header)
-                .addProfiles(
-                )
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                        return false;
-                    }
-                })
-                .build();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent mainAct = new Intent(SplashScreenActivity.this,TripActivity.class);
+                mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(mainAct);
+                finish();
+            }
+        },2000);
 
-        //create the drawer and remember the `Drawer` result object
-        result = new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withAccountHeader(headerResult)
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.HOME).withIcon(GoogleMaterial.Icon.gmd_home),
-                        new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.SETTINGS).withIcon(GoogleMaterial.Icon.gmd_settings)
-                )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
-                        return true;
-                    }
-                })
-                .build();
 
     }
+
+
 }
