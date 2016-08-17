@@ -47,6 +47,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.firebase.CodelabPreferences;
 import com.grp10.codepath.travelmemo.firebase.FriendlyMessage;
 
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity
                     viewHolder.messengerImageView
                             .setImageDrawable(ContextCompat
                                     .getDrawable(MainActivity.this,
-                                            R.drawable.ic_account_circle_black_36dp));
+                                            R.drawable.ic_take_photo));
                 } else {
                     Glide.with(MainActivity.this)
                             .load(friendlyMessage.getPhotoUrl())

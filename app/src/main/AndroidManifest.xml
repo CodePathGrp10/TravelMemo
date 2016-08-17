@@ -27,6 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.MainActivity"></activity>
         <activity android:name=".activities.TripActivity"></activity>
         <activity android:name=".activities.ViewTripActivity"></activity>
         <activity android:name=".activities.SignInActivity" />
