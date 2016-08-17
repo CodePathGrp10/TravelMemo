@@ -1,7 +1,11 @@
 language: android
 android:
   components:
-     - build-tools-22.0.1
-     - android-22
-     - extra
-
+  - tools
+  - platform-tools
+  - build-tools-23.0.3
+  - android-23
+  - extra-android-m2repository
+  - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
+script:
+  - ./gradlew build assembleDebug 
