@@ -1,6 +1,7 @@
 package com.grp10.codepath.travelmemo.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.activities.ViewTripActivity;
 import com.grp10.codepath.travelmemo.asynctasks.ComputeDominantColorTask;
 import com.grp10.codepath.travelmemo.interfaces.DominantColor;
 import com.grp10.codepath.travelmemo.utils.Constants;
@@ -65,6 +67,13 @@ public class OverlapFragment extends Fragment implements DominantColor{
         ComputeDominantColorTask computeDominantColorTask = new ComputeDominantColorTask(getActivity(),this);
         computeDominantColorTask.execute(resourceId);
 
+        coverImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getContext(), ViewTripActivity.class);
+                getContext().startActivity(i);
+            }
+        });
         return rootView;
     }
 

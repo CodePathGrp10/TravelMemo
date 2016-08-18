@@ -44,7 +44,8 @@ dependencies {
 
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
-    compile 'com.android.support:design:24.1.1'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.android.support:recyclerview-v7:24.1.1'
+    compile 'io.github.yavski:fab-speed-dial:1.0.4'
 }
