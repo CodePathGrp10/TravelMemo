@@ -16,6 +16,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.fragments.ViewTripInfoFragment;
 import com.grp10.codepath.travelmemo.fragments.ViewTripPhotoFragment;
+import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.util.HashMap;
 
@@ -23,7 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ViewTripActivity extends AppCompatActivity {
-    private String tabTitle[] = {"INFO", "PHOTO"};
+    private String tabTitle[] = {"Info", "Photos"};
     ViewTripPagerAdapter viewTripPagerAdapter;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fabAddPhoto) FloatingActionButton fabAddPhoto;
@@ -38,6 +39,10 @@ public class ViewTripActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        if(getIntent() != null){
+            String tripName = getIntent().getStringExtra(Constants.TRIP_NAME);
+            getSupportActionBar().setTitle(tripName);
+        }
         viewTripPagerAdapter = new ViewTripPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(viewTripPagerAdapter);
         tabStrip.setViewPager(vpPager);
@@ -64,7 +69,6 @@ public class ViewTripActivity extends AppCompatActivity {
         vpPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                getSupportActionBar().setTitle(tabTitle[position]);
                 if(position == 0){
                     fabAddPhoto.show();
                 }else{

@@ -23,7 +23,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
     compile('com.mikepenz:materialdrawer:5.4.0@aar') {
         transitive = true
@@ -36,15 +35,13 @@ dependencies {
     compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
     compile 'com.mikepenz:fontawesome-typeface:4.6.0.3@aar'
     compile 'com.github.crosswall:Android-Coverflow:release-v1.0.3'
-
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'jp.wasabeef:glide-transformations:2.0.1'
     // Color analysis
     compile 'com.android.support:palette-v7:24.1.1'
-
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.android.support:design:24.1.1'
-    compile 'com.google.android.gms:play-services-maps:8.4.0'
-    compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.google.android.gms:play-services-maps:9.4.0'
+    compile 'com.google.android.gms:play-services-location:9.4.0'
 }
