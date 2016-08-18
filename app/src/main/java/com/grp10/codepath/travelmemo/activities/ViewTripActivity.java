@@ -15,6 +15,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.fragments.ViewTripInfoFragment;
 import com.grp10.codepath.travelmemo.fragments.ViewTripPhotoFragment;
+import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.util.HashMap;
 
@@ -24,7 +25,7 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 public class ViewTripActivity extends AppCompatActivity {
-    private String tabTitle[] = {"INFO", "PHOTO"};
+    private String tabTitle[] = {"Info", "Photos"};
     ViewTripPagerAdapter viewTripPagerAdapter;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fabAddPhoto) FabSpeedDial fabSpeedDial;
@@ -39,6 +40,10 @@ public class ViewTripActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        if(getIntent() != null){
+            String tripName = getIntent().getStringExtra(Constants.TRIP_NAME);
+            getSupportActionBar().setTitle(tripName);
+        }
         viewTripPagerAdapter = new ViewTripPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(viewTripPagerAdapter);
         vpPager.setCurrentItem(1);
