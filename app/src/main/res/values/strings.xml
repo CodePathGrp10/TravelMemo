@@ -8,4 +8,7 @@
     <string name="attach_photo">Add photo</string>
     <string name="take_photo">Take a photo</string>
 
+    <string name="need_location_permission">Need Location permission</string>
+    <string name="Album">Album</string>
+    <string name="Camera">Camera</string>
 </resources>

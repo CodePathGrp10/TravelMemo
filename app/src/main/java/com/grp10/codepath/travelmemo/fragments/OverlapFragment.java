@@ -3,6 +3,7 @@ package com.grp10.codepath.travelmemo.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,7 @@ import android.widget.RelativeLayout;
 import com.bumptech.glide.Glide;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.activities.TripActivity;
+import com.grp10.codepath.travelmemo.activities.ViewTripActivity;
 import com.grp10.codepath.travelmemo.asynctasks.ComputeDominantColorTask;
 import com.grp10.codepath.travelmemo.interfaces.DominantColor;
 import com.grp10.codepath.travelmemo.interfaces.FragmentLifecycle;
@@ -79,19 +81,21 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
             color = prefs.getInt(resourceId + "",-1);
             cardView.setBackgroundColor(color);
         }
+        coverImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getContext(), ViewTripActivity.class);
+                getContext().startActivity(i);
+            }
+        });
         return rootView;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDominantColorComputed(Integer color) {
 
         Log.d(Constants.TAG,"afterExec : Dominant color ==" + color);
-//        layout.setBackgroundColor(color);
+        layout.setBackgroundColor(color);
         cardView.setBackgroundColor(color);
         SharedPreferences prefs = getActivity().getSharedPreferences("Colors", Context.MODE_PRIVATE);
         prefs.edit().putInt(resourceId + "",color).apply();
