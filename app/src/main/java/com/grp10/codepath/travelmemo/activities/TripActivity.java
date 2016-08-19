@@ -12,7 +12,6 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +20,9 @@ import android.widget.TextView;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.data.DemoImages;
 import com.grp10.codepath.travelmemo.fragments.OverlapFragment;
+import com.grp10.codepath.travelmemo.interfaces.FragmentLifecycle;
 import com.grp10.codepath.travelmemo.utils.Constants;
+import com.grp10.codepath.travelmemo.view.CustomToolbar;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -47,12 +48,14 @@ public class TripActivity extends AppCompatActivity {
     ViewPager viewPager;
 
     @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    CustomToolbar toolbar;
 
     @BindView(R.id.fab)
     FloatingActionButton fab;
 
     private Drawer result;
+    private MyFragmentPagerAdapter pagerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +74,8 @@ public class TripActivity extends AppCompatActivity {
                 createTripDialog();
             }
         });
+
+//        Constants.colorizeToolbar(toolbar,R.color.colorPrimary,this);
     }
 
     public void getMaterialDrawerMenu(){
@@ -120,9 +125,10 @@ public class TripActivity extends AppCompatActivity {
 
         pagerContainer.setOverlapEnabled(true);
 
-        MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(pageChangeListener);
 
         //Manually setting the first View to be elevated
         viewPager.post(new Runnable() {
@@ -179,35 +185,13 @@ public class TripActivity extends AppCompatActivity {
                 });
             }
         });
-//        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//                String tripName = ((TextInputLayout) alertDialog.findViewById(R.id.tripName)).getEditText().
-//                        getText().toString();
-//                String description = ((TextInputLayout) alertDialog.findViewById(R.id.description)).getEditText().
-//                        getText().toString();
-//                if("".equals(tripName)){
-//                    TextView txtErr = (TextView) alertDialog.findViewById(R.id.errorMsg);
-//                    txtErr.setText("Enter a trip name...");
-//                }else {
-//                    Intent viewTripIntent = new Intent(TripActivity.this, ViewTripActivity.class);
-//                    viewTripIntent.putExtra(Constants.TRIP_NAME, tripName);
-//                    viewTripIntent.putExtra(Constants.DESCRIPTION, description);
-//                    startActivity(viewTripIntent);
-//                }
-//            }
-//        });
-
-//        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                alertDialog.dismiss();
-//            }
-//        });
 
         alertDialog.show();
 
+    }
+
+    public void setToolbar(Integer color) {
+        toolbar.setItemColor(color);
     }
 
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -226,4 +210,29 @@ public class TripActivity extends AppCompatActivity {
             return DemoImages.covers.length;
         }
     }
+
+    private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+        int currentPosition = 0;
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            FragmentLifecycle fragmentToShow = (FragmentLifecycle)pagerAdapter.getItem(position);
+            fragmentToShow.onResumeFragment(TripActivity.this);
+
+            FragmentLifecycle fragmentToHide = (FragmentLifecycle)pagerAdapter.getItem(currentPosition);
+            fragmentToHide.onPauseFragment();
+
+            currentPosition = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
 }
