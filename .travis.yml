@@ -13,4 +13,5 @@ android:
 licenses:
     - '.+'
 script:
+  - echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><resources><string name=\"google_map_key\">AIzaSyCLTYgwKb_e8pTGnx21ZrH0I67LQdojMZk</string></resources> " > app/src/main/res/values/secrets.xml
   - ./gradlew assembleDebug 
