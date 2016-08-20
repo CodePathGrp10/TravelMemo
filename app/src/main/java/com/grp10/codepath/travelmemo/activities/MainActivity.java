@@ -45,11 +45,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.firebase.CodelabPreferences;
 import com.grp10.codepath.travelmemo.firebase.FriendlyMessage;
+import com.grp10.codepath.travelmemo.firebase.Trip;
+import com.grp10.codepath.travelmemo.firebase.User;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -206,8 +209,46 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 // Send messages on click.
+//                sendMessage();
+//                pushTrip();
+//                pushUser();
+                setUser();
+//                mMessageEditText.setText("");
             }
         });
+    }
+
+    private void setUser() {
+        User user = new User(mUsername, mPhotoUrl, mFirebaseUser.getUid());
+        mFirebaseDatabaseReference.child("users")
+                .child(mFirebaseUser.getUid()).setValue(user);
+    }
+
+    private void pushUser() {
+        User user = new User(mUsername, mPhotoUrl, mFirebaseUser.getUid());
+        mFirebaseDatabaseReference.child("users")
+                .push().setValue(user, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                mMessageEditText.setText(databaseReference.getKey());
+            }
+        });
+    }
+
+    private void pushTrip() {
+        Trip trip = new Trip(mUsername, mMessageEditText.getText().toString(), mPhotoUrl);
+        mFirebaseDatabaseReference.child("trips")
+                .push().setValue(trip);
+    }
+
+    private void sendMessage() {
+        FriendlyMessage friendlyMessage = new
+                FriendlyMessage(mMessageEditText.getText().toString(),
+                mUsername,
+                mPhotoUrl);
+        mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+                .push().setValue(friendlyMessage);
+//        mMessageEditText.setText("");
     }
 
     @Override
