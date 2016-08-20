@@ -49,8 +49,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.firebase.Author;
 import com.grp10.codepath.travelmemo.firebase.CodelabPreferences;
 import com.grp10.codepath.travelmemo.firebase.FriendlyMessage;
+import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.firebase.Trip;
 import com.grp10.codepath.travelmemo.firebase.User;
 
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
-    public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
+    public static final int DEFAULT_MSG_LENGTH_LIMIT = 20;
     public static final String ANONYMOUS = "anonymous";
     private static final String MESSAGE_SENT_EVENT = "message_sent";
     private String mUsername;
@@ -212,10 +214,26 @@ public class MainActivity extends AppCompatActivity
 //                sendMessage();
 //                pushTrip();
 //                pushUser();
-                setUser();
-//                mMessageEditText.setText("");
+//                setUser();
+//                pushTrip();
+                addMemos("-KPaf3VPedre2XxbB9Uj");
+                addMemos("-KPagAJQojzLpMOidYAh");
+                mMessageEditText.setText("");
             }
         });
+    }
+
+    private void addMemos(String tripKey) {
+        Author author = new Author("Mike Qi", mPhotoUrl, mFirebaseUser.getUid());
+//        DatabaseReference postRef = mFirebaseDatabaseReference.child("trips").child(tripKey);
+        String photoUrl = String.format("https://www.nps.gov/yose/planyourvisit/images/dr-tunnel-view-pp-bigweb_1.jpg");
+        String thumbUrl = String.format("http://static.travel.usnews.com/images/destinations/94/edited_yosemite_mirror_lake_getty_michael_h_spiva_445x280.jpg");
+        Memo memo = new Memo(author, System.currentTimeMillis(), photoUrl, "Beautiful photo", Memo.TYPE_PHOTO, thumbUrl);
+        DatabaseReference postRef = mFirebaseDatabaseReference.child("memos");
+        DatabaseReference newPostRef = postRef.push();
+        newPostRef.setValue(memo);
+        String memoKey = newPostRef.getKey();
+        mFirebaseDatabaseReference.child("trips").child(tripKey).child("memos").child(memoKey).setValue(true);
     }
 
     private void setUser() {
@@ -236,9 +254,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void pushTrip() {
-        Trip trip = new Trip(mUsername, mMessageEditText.getText().toString(), mPhotoUrl);
-        mFirebaseDatabaseReference.child("trips")
-                .push().setValue(trip);
+//        Trip trip = new Trip(mUsername, mMessageEditText.getText().toString(), mPhotoUrl);
+        Author author = new Author("Mike Qi", mPhotoUrl, mFirebaseUser.getUid());
+        DatabaseReference postRef = mFirebaseDatabaseReference.child("trips");
+        DatabaseReference newPostRef = postRef.push();
+        Trip trip = new Trip(author, mMessageEditText.getText().toString(), "This is a wonderful trip");
+//        mFirebaseDatabaseReference.child("trips")
+//                .push().setValue(trip);
+        newPostRef.setValue(trip);
+        String tripKey = newPostRef.getKey();
+        mFirebaseDatabaseReference.child("users").child(mFirebaseUser.getUid()).child("trips").child(tripKey).setValue(true);
     }
 
     private void sendMessage() {
