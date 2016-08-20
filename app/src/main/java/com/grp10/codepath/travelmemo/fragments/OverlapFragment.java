@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.grp10.codepath.travelmemo.R;
@@ -42,6 +43,9 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
 
     @BindView(R.id.cardview)
     CardView cardView;
+
+    @BindView(R.id.txtTripName)
+    TextView txtTripName;
 
     Integer color;
 
@@ -84,8 +88,11 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         coverImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getContext(), ViewTripActivity.class);
-                getContext().startActivity(i);
+
+                Intent viewTripIntent = new Intent(getContext(), ViewTripActivity.class);
+                viewTripIntent.putExtra(Constants.TRIP_NAME, txtTripName.getText().toString());
+                viewTripIntent.putExtra(Constants.NEW_TRIP, false);
+                getContext().startActivity(viewTripIntent);
             }
         });
         return rootView;

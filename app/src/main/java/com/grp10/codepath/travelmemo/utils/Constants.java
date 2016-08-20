@@ -23,7 +23,10 @@ public class Constants {
 
     public static final String TRIP_NAME = "TripName";
     public static final String DESCRIPTION = "Description";
+    public static final String NEW_TRIP = "NewTrip";
     public static String TAG = "TravelMemo";
+
+    public static final String FIREBASE_STORAGE_URL = "gs://travelmemo-1de8a.appspot.com";
 
     /**
      * Use this method to colorize toolbar icons to the desired target color

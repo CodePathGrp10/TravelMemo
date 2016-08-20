@@ -172,6 +172,7 @@ public class TripActivity extends AppCompatActivity {
                             Intent viewTripIntent = new Intent(TripActivity.this, ViewTripActivity.class);
                             viewTripIntent.putExtra(Constants.TRIP_NAME, tripName);
                             viewTripIntent.putExtra(Constants.DESCRIPTION, description);
+                            viewTripIntent.putExtra(Constants.NEW_TRIP, true);
                             startActivity(viewTripIntent);
                             dialogInterface.dismiss();
                         }
