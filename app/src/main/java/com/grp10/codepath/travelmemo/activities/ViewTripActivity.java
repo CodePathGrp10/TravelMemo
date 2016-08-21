@@ -28,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.app.MemoApplication;
+import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.firebase.Trip;
 import com.grp10.codepath.travelmemo.fragments.ViewTripInfoFragment;
@@ -79,9 +80,9 @@ public class ViewTripActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(tripName);
             tripId = getIntent().getStringExtra(Constants.TRIP_ID);
         }
-        Log.d(Constants.TAG,"user == " + MemoApplication.getAuthResult().getUser() + ", " + MemoApplication.getAuthResult().getUser().getDisplayName());
+        Log.d(Constants.TAG,"user == " + FirebaseUtil.getCurrentUserId() + ", " + FirebaseUtil.getCurrentUserName());
 
-        userId = MemoApplication.getAuthResult().getUser().toString();       /// TODO : update this to real user name
+        userId = FirebaseUtil.getCurrentUserId();       /// TODO : update this to real user name
         if(getIntent() != null){
             isNewTrip = getIntent().getBooleanExtra(Constants.NEW_TRIP,false);
         }
