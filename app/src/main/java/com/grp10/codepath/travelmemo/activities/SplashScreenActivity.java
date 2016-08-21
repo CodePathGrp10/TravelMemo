@@ -2,34 +2,17 @@ package com.grp10.codepath.travelmemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Window;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
-import com.grp10.codepath.travelmemo.app.MemoApplication;
-import com.grp10.codepath.travelmemo.firebase.User;
-import com.grp10.codepath.travelmemo.utils.Constants;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private Handler handler;
-    private DatabaseReference mFirebaseDatabaseReference;
-    private String username = "akshat";
-
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mFirebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,91 +21,20 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash_screen);
 
-        Looper looper = Looper.getMainLooper();
-        handler = new Handler(looper);
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
-        mAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        // Initialize Firebase Auth
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d(Constants.TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(Constants.TAG, "onAuthStateChanged:signed_out");
-                }
-            }
-        };
-
-    }
-
-    private void doFirebaseAuth() {
-
-        Log.d(Constants.TAG, "doing FB auth....");
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull final Task<AuthResult> task) {
-                        Log.d(Constants.TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Log.w(Constants.TAG, "signInAnonymously", task.getException());
-                            Toast.makeText(SplashScreenActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }else{
-                            String userId;
-                            if(getSharedPreferences("UserKey",MODE_PRIVATE).contains("userId")){
-                                userId = getSharedPreferences("UserKey",MODE_PRIVATE).getString("userId",null);
-                            }else{
-                                userId = mFirebaseDatabaseReference.child("users").push().getKey();
-                                // save it
-                                getSharedPreferences("UserKey",MODE_PRIVATE).edit().putString("userId",userId).apply();
-                                User owner = new User(username, null, userId);
-                                mFirebaseDatabaseReference.child("users").child(userId).setValue(owner.toMap());
-
-                            }
-//                            Query usedIdQuery = mFirebaseDatabaseReference.child("users").child()
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Intent mainAct = new Intent(SplashScreenActivity.this,TripActivity.class);
-                                    mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    Log.d(Constants.TAG, "Firebase user : " + task.getResult().getUser());
-                                    MemoApplication.setFirebaseUser(task.getResult());
-                                    startActivity(mainAct);
-                                    finish();
-                                }
-                            },2000);
-                        }
-
-                    }
-                });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+        if (mFirebaseUser == null) {
+            // Not signed in, launch the Sign In activity
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+            return;
+        } else {
+            Intent mainAct = new Intent(SplashScreenActivity.this, TripActivity.class);
+            mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(mainAct);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        doFirebaseAuth();
     }
 }
