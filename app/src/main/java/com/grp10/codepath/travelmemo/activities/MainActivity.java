@@ -216,11 +216,25 @@ public class MainActivity extends AppCompatActivity
 //                pushUser();
 //                setUser();
 //                pushTrip();
-                addMemos("-KPaf3VPedre2XxbB9Uj");
-                addMemos("-KPagAJQojzLpMOidYAh");
+                addMemo("-KPaf3VPedre2XxbB9Uj");
+//                addMemos("-KPagAJQojzLpMOidYAh");
                 mMessageEditText.setText("");
             }
         });
+    }
+
+    private void addMemo(String tripKey) {
+        Author author = new Author("Mike Qi", mPhotoUrl, mFirebaseUser.getUid());
+//        DatabaseReference postRef = mFirebaseDatabaseReference.child("trips").child(tripKey);
+        String photoUrl = String.format("https://www.nps.gov/yose/planyourvisit/images/dr-tunnel-view-pp-bigweb_1.jpg");
+        String thumbUrl = String.format("http://static.travel.usnews.com/images/destinations/94/edited_yosemite_mirror_lake_getty_michael_h_spiva_445x280.jpg");
+        long curTime = System.currentTimeMillis();
+        Memo memo = new Memo(author, curTime, photoUrl, mMessageEditText.getText().toString(), Memo.TYPE_PHOTO, thumbUrl);
+        DatabaseReference postRef = mFirebaseDatabaseReference.child("memos");
+        DatabaseReference newPostRef = postRef.push();
+        newPostRef.setValue(memo);
+        String memoKey = newPostRef.getKey();
+        mFirebaseDatabaseReference.child("trips").child(tripKey).child("memos").child(memoKey).setValue(curTime);
     }
 
     private void addMemos(String tripKey) {
