@@ -2,6 +2,7 @@
 
 #propertie file
 **/*/res/values/secrets.xml
+app/google-services.json
 
 # built application files
 *.apk
