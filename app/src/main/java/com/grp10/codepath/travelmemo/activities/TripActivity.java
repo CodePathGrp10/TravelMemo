@@ -22,8 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
-import com.grp10.codepath.travelmemo.app.MemoApplication;
 import com.grp10.codepath.travelmemo.data.DemoImages;
+import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.Trip;
 import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.fragments.OverlapFragment;
@@ -69,6 +69,8 @@ public class TripActivity extends AppCompatActivity {
     private MyFragmentPagerAdapter pagerAdapter;
     private DatabaseReference mFirebaseDatabaseReference;
 
+    private String mUsername;
+    private String mUserId;
     String username = "akshat";
 
     @Override
@@ -90,7 +92,9 @@ public class TripActivity extends AppCompatActivity {
             }
         });
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-
+        // Initialize Current User
+        mUsername = FirebaseUtil.getCurrentUserName();
+        mUserId = FirebaseUtil.getCurrentUserId();
 //        Constants.colorizeToolbar(toolbar,R.color.colorPrimary,this);
     }
 
@@ -205,23 +209,23 @@ public class TripActivity extends AppCompatActivity {
 
     private void createNewTrip(final String tripName, final String description) {
 
-        User owner = new User(username, null, MemoApplication.getAuthResult().getUser().getUid());
+        User owner = new User(mUsername, null, mUserId);
         final String tripKey = mFirebaseDatabaseReference.child("trips").push().getKey();
 
         Log.d(Constants.TAG,"trip id == " + tripKey);
 //            DatabaseReference newPostRef = postRef.push();
         Trip trip = new Trip(tripKey,owner, tripName, description);
-        String userId = getSharedPreferences("UserKey",MODE_PRIVATE).getString("userId",null);
+//        String userId = getSharedPreferences("UserKey",MODE_PRIVATE).getString("userId",null);
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/trips/" + tripKey, trip.toMap());
-        childUpdates.put("/user-trips/" + userId + "/" + tripKey, trip.toMap());
+        childUpdates.put("/user-trips/" + mUserId + "/" + tripKey, trip.toMap());
 
         // Create a new trip
         mFirebaseDatabaseReference.child("trips").child(tripKey).setValue(trip.toMap());
         // Now create a new trip associated with the user.
 
-        mFirebaseDatabaseReference.child("user-trips").child(userId).child("trips").child(tripKey).setValue(trip.toMap(), new DatabaseReference.CompletionListener() {
+        mFirebaseDatabaseReference.child("user-trips").child(mUserId).child("trips").child(tripKey).setValue(trip.toMap(), new DatabaseReference.CompletionListener() {
 
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
