@@ -11,4 +11,5 @@
     <string name="need_location_permission">Need Location permission</string>
     <string name="Album">Album</string>
     <string name="Camera">Camera</string>
+    <string name="google_map_key">AIzaSyAW1wk_b5BfTwrK8HYO1v2VHDqAWLq84OY</string>
 </resources>
