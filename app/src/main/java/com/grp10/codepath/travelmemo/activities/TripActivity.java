@@ -12,13 +12,20 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.app.MemoApplication;
 import com.grp10.codepath.travelmemo.data.DemoImages;
+import com.grp10.codepath.travelmemo.firebase.Trip;
+import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.fragments.OverlapFragment;
 import com.grp10.codepath.travelmemo.interfaces.FragmentLifecycle;
 import com.grp10.codepath.travelmemo.utils.Constants;
@@ -34,12 +41,17 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.crosswall.lib.coverflow.CoverFlow;
 import me.crosswall.lib.coverflow.core.PagerContainer;
 
 public class TripActivity extends AppCompatActivity {
+
+    private static final String TAG = Constants.TAG;
 
     @BindView(R.id.pager_container)
     PagerContainer pagerContainer;
@@ -55,6 +67,9 @@ public class TripActivity extends AppCompatActivity {
 
     private Drawer result;
     private MyFragmentPagerAdapter pagerAdapter;
+    private DatabaseReference mFirebaseDatabaseReference;
+
+    String username = "akshat";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +89,7 @@ public class TripActivity extends AppCompatActivity {
                 createTripDialog();
             }
         });
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
 //        Constants.colorizeToolbar(toolbar,R.color.colorPrimary,this);
     }
@@ -169,11 +185,7 @@ public class TripActivity extends AppCompatActivity {
                             txtErr.setText("Enter a trip name...");
                             return;
                         }else {
-                            Intent viewTripIntent = new Intent(TripActivity.this, ViewTripActivity.class);
-                            viewTripIntent.putExtra(Constants.TRIP_NAME, tripName);
-                            viewTripIntent.putExtra(Constants.DESCRIPTION, description);
-                            viewTripIntent.putExtra(Constants.NEW_TRIP, true);
-                            startActivity(viewTripIntent);
+                            createNewTrip(tripName,description);
                             dialogInterface.dismiss();
                         }
                     }
@@ -189,6 +201,45 @@ public class TripActivity extends AppCompatActivity {
 
         alertDialog.show();
 
+    }
+
+    private void createNewTrip(final String tripName, final String description) {
+
+        User owner = new User(username, null, MemoApplication.getAuthResult().getUser().getUid());
+        final String tripKey = mFirebaseDatabaseReference.child("trips").push().getKey();
+
+        Log.d(Constants.TAG,"trip id == " + tripKey);
+//            DatabaseReference newPostRef = postRef.push();
+        Trip trip = new Trip(tripKey,owner, tripName, description);
+        String userId = getSharedPreferences("UserKey",MODE_PRIVATE).getString("userId",null);
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/trips/" + tripKey, trip.toMap());
+        childUpdates.put("/user-trips/" + userId + "/" + tripKey, trip.toMap());
+
+        // Create a new trip
+        mFirebaseDatabaseReference.child("trips").child(tripKey).setValue(trip.toMap());
+        // Now create a new trip associated with the user.
+
+        mFirebaseDatabaseReference.child("user-trips").child(userId).child("trips").child(tripKey).setValue(trip.toMap(), new DatabaseReference.CompletionListener() {
+
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if(databaseError == null || databaseError.getCode() >= 0) {
+                    Log.d(Constants.TAG,"created a new trip id == ");
+
+                    Intent viewTripIntent = new Intent(TripActivity.this, ViewTripActivity.class);
+                    viewTripIntent.putExtra(Constants.TRIP_ID, tripKey);
+                    viewTripIntent.putExtra(Constants.TRIP_NAME, tripName);
+                    viewTripIntent.putExtra(Constants.DESCRIPTION, description);
+                    viewTripIntent.putExtra(Constants.NEW_TRIP, true);
+                    startActivity(viewTripIntent);
+                }else{
+                    Log.d(Constants.TAG,"error on creating a new trip id == " + databaseError.getMessage());
+
+                }
+            }
+        });
     }
 
     public void setToolbar(Integer color) {

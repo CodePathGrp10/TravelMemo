@@ -19,10 +19,17 @@ import android.widget.Toast;
 import com.astuetz.PagerSlidingTabStrip;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.app.MemoApplication;
+import com.grp10.codepath.travelmemo.firebase.Memo;
+import com.grp10.codepath.travelmemo.firebase.Trip;
 import com.grp10.codepath.travelmemo.fragments.ViewTripInfoFragment;
 import com.grp10.codepath.travelmemo.fragments.ViewTripPhotoFragment;
 import com.grp10.codepath.travelmemo.models.TripPhoto;
@@ -33,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -41,16 +49,22 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 public class ViewTripActivity extends AppCompatActivity {
+
+    private static final String TAG = Constants.TAG;
+
     private String tabTitle[] = {"Info", "Photos"};
     ViewTripPagerAdapter viewTripPagerAdapter;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fabAddPhoto) FabSpeedDial fabSpeedDial;
     @BindView(R.id.view_trip_viewpager) ViewPager vpPager;
     @BindView(R.id.view_trip_tabstrip) PagerSlidingTabStrip tabStrip;
+
     private boolean isNewTrip;
     private String tripName;
+    private String tripId;
     private String userId = "";
     private StorageReference userRef;
+    private DatabaseReference mFirebaseDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +77,7 @@ public class ViewTripActivity extends AppCompatActivity {
         if(getIntent() != null){
             tripName = getIntent().getStringExtra(Constants.TRIP_NAME);
             getSupportActionBar().setTitle(tripName);
+            tripId = getIntent().getStringExtra(Constants.TRIP_ID);
         }
         Log.d(Constants.TAG,"user == " + MemoApplication.getAuthResult().getUser() + ", " + MemoApplication.getAuthResult().getUser().getDisplayName());
 
@@ -74,8 +89,42 @@ public class ViewTripActivity extends AppCompatActivity {
         vpPager.setAdapter(viewTripPagerAdapter);
         vpPager.setCurrentItem(1);
         tabStrip.setViewPager(vpPager);
+
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
         updateFirebaseStorage(isNewTrip,tripName);
         setListener();
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getTripDetails();
+    }
+
+    Trip tripDetails = null;
+
+    private void getTripDetails() {
+
+        mFirebaseDatabaseReference.child("trips").child(tripId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Trip trip = dataSnapshot.getValue(Trip.class);
+                        Log.d(TAG,"Trip name == " + trip.getName());
+                        Log.d(TAG,"Trip id == " + trip.getId());
+                        Log.d(TAG,"Trip owner == " + trip.getOwner().toString());
+                        tripDetails =trip;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
     }
 
     private void updateFirebaseStorage(boolean isNewTrip, String tripName) {
@@ -92,7 +141,7 @@ public class ViewTripActivity extends AppCompatActivity {
         ArrayList<TripPhoto> photos = TripPhoto.createDemoTripPhotoList();
         int random = new Random().nextInt(photos.size());
 
-        int resId = photos.get(random).getPhotoUrl();
+        final int resId = photos.get(random).getPhotoUrl();
 //        imageView.setDrawingCacheEnabled(true);
 //        imageView.buildDrawingCache();
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),resId);
@@ -116,6 +165,18 @@ public class ViewTripActivity extends AppCompatActivity {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 Log.d(Constants.TAG,"Download URK == " + downloadUrl.toString());
+
+                Memo memo = new Memo(tripDetails.getOwner(),downloadUrl.toString(),"Dummy Text",Memo.TYPE_PHOTO);
+                HashMap<String, Object> result = new HashMap<>();
+                List<Memo> memoList = tripDetails.getMemoList();
+                if(memoList == null){
+                    memoList = new ArrayList<Memo>();
+                }
+                memoList.add(memo);
+//                result.put("Memos",memoList);
+                mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").setValue(memoList);
+                tripDetails.setMemoList(memoList);
+
             }
         });
     }

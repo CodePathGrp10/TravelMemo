@@ -21,11 +21,13 @@ import java.util.ArrayList;
  */
 public class Constants {
 
+    public static String TAG = "TravelMemo";
+
     public static final String TRIP_NAME = "TripName";
     public static final String DESCRIPTION = "Description";
     public static final String NEW_TRIP = "NewTrip";
-    public static String TAG = "TravelMemo";
 
+    public static final String TRIP_ID = "TripId";
     public static final String FIREBASE_STORAGE_URL = "gs://travelmemo-1de8a.appspot.com";
 
     /**

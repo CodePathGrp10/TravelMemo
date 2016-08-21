@@ -15,8 +15,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.app.MemoApplication;
+import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -24,6 +27,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private Handler handler;
+    private DatabaseReference mFirebaseDatabaseReference;
+    private String username = "akshat";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         handler = new Handler(looper);
 
         mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -69,6 +77,18 @@ public class SplashScreenActivity extends AppCompatActivity {
                             Toast.makeText(SplashScreenActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }else{
+                            String userId;
+                            if(getSharedPreferences("UserKey",MODE_PRIVATE).contains("userId")){
+                                userId = getSharedPreferences("UserKey",MODE_PRIVATE).getString("userId",null);
+                            }else{
+                                userId = mFirebaseDatabaseReference.child("users").push().getKey();
+                                // save it
+                                getSharedPreferences("UserKey",MODE_PRIVATE).edit().putString("userId",userId).apply();
+                                User owner = new User(username, null, userId);
+                                mFirebaseDatabaseReference.child("users").child(userId).setValue(owner.toMap());
+
+                            }
+//                            Query usedIdQuery = mFirebaseDatabaseReference.child("users").child()
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
