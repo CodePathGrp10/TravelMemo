@@ -245,6 +245,9 @@ public class ViewTripActivity extends AppCompatActivity {
                 switch (id){
                     case R.id.action_camera :
                         ToastText("Camera button clicked");
+                        Intent intent = new Intent(ViewTripActivity.this, AddCaptureActivity.class);
+                        intent.putExtra("tripId", tripId);
+                        startActivity(intent);
                         break;
                     case R.id.action_album :
                         ToastText("Album button clicked....Uploading a photo");
