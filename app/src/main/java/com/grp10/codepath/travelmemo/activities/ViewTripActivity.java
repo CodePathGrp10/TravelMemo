@@ -242,16 +242,17 @@ public class ViewTripActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 int id = menuItem.getItemId();
+                Intent intent;
                 switch (id){
                     case R.id.action_camera :
                         ToastText("Camera button clicked");
-                        Intent intent = new Intent(ViewTripActivity.this, AddCaptureActivity.class);
+                        intent = new Intent(ViewTripActivity.this, AddCaptureActivity.class);
                         intent.putExtra("tripId", tripId);
                         startActivity(intent);
                         break;
                     case R.id.action_album :
                         ToastText("Album button clicked....Uploading a photo");
-                        Intent intent = new Intent();
+                        intent = new Intent();
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
