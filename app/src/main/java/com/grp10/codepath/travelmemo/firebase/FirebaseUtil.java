@@ -55,6 +55,14 @@ public class FirebaseUtil {
         return getBaseRef().child("users");
     }
 
+    public static DatabaseReference getTripsRef() {
+        return getBaseRef().child("trips");
+    }
+
+    public static String getTripsPath() {
+        return "trips/";
+    }
+
     public static DatabaseReference getCommentsRef() {
         return getBaseRef().child("comments");
     }
