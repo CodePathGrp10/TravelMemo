@@ -2,6 +2,8 @@ package com.grp10.codepath.travelmemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
@@ -13,6 +15,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +23,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_splash_screen);
+
+
+        Looper looper = Looper.getMainLooper();
+        handler = new Handler(looper);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
 
@@ -32,9 +39,17 @@ public class SplashScreenActivity extends AppCompatActivity {
             finish();
             return;
         } else {
-            Intent mainAct = new Intent(SplashScreenActivity.this, TripActivity.class);
-            mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(mainAct);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent mainAct = new Intent(SplashScreenActivity.this,TripActivity.class);
+                    mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(mainAct);
+                    finish();
+                }
+            },2000);
+
         }
     }
 }

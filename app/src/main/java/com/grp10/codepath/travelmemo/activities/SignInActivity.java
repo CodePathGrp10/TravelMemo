@@ -41,6 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.app.MemoApplication;
+import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
@@ -55,7 +56,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     private FirebaseAuth mFirebaseAuth;
 
     private DatabaseReference mFirebaseDatabaseReference;
-    private String username = "akshat";
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +145,19 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
+                            // Save the userId in the Shared Prefs.
+                            String userId;
+                            if (getSharedPreferences("UserKey", MODE_PRIVATE).contains("userId")) {
+                                userId = getSharedPreferences("UserKey", MODE_PRIVATE).getString("userId", null);
+                            } else {
+                                userId = mFirebaseDatabaseReference.child("users").push().getKey();
+                                // save it
+                                username = FirebaseUtil.getCurrentUserName();
+                                getSharedPreferences("UserKey", MODE_PRIVATE).edit().putString("userId", userId).apply();
+                                User owner = new User(username, null, userId);
+                                mFirebaseDatabaseReference.child("users").child(userId).setValue(owner.toMap());
+
+                            }
                             startActivity(new Intent(SignInActivity.this, SplashScreenActivity.class));
                             finish();
                         }

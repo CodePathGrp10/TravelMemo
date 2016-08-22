@@ -109,22 +109,24 @@ public class ViewTripActivity extends AppCompatActivity {
 
     private void getTripDetails() {
 
-        mFirebaseDatabaseReference.child("trips").child(tripId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Trip trip = dataSnapshot.getValue(Trip.class);
-                        Log.d(TAG,"Trip name == " + trip.getName());
-                        Log.d(TAG,"Trip id == " + trip.getId());
-                        Log.d(TAG,"Trip owner == " + trip.getOwner().toString());
-                        tripDetails =trip;
-                    }
+        if(isNewTrip) {     /// TODO : Fix this as this is just a hack
+            mFirebaseDatabaseReference.child("trips").child(tripId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Trip trip = dataSnapshot.getValue(Trip.class);
+                            Log.d(TAG, "Trip name == " + trip.getName());
+                            Log.d(TAG, "Trip id == " + trip.getId());
+                            Log.d(TAG, "Trip owner == " + trip.getOwner().toString());
+                            tripDetails = trip;
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+        }
 
     }
 

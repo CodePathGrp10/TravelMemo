@@ -18,9 +18,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.data.DemoImages;
 import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
@@ -96,6 +98,54 @@ public class TripActivity extends AppCompatActivity {
         mUsername = FirebaseUtil.getCurrentUserName();
         mUserId = FirebaseUtil.getCurrentUserId();
 //        Constants.colorizeToolbar(toolbar,R.color.colorPrimary,this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getUserTrips();
+    }
+
+    private void getUserTrips() {
+        Log.d(TAG,"userId name == " + mUserId);
+        mFirebaseDatabaseReference.child("user-trips").child(mUserId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d(TAG,"Data == " + dataSnapshot.toString());
+
+                        /*Collection<Object> tripList = new ArrayList<>();
+
+                        Map<String, Object> td = (HashMap<String,Object>) dataSnapshot.getValue();
+                        tripList = td.values();
+                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                            HashMap<String,Object> map = (HashMap<String, Object>) dataSnapshot1.getValue();
+
+                            Log.d(TAG, "maps  == " + map);
+
+                            Trip trip = new Trip();
+                            trip.setName((String) map.get("name"));
+                            trip.setId((String) map.get("id"));
+                            trip.setFavorite((Boolean) map.get("isFavorite"));
+                            trip.setDescription((String) map.get("description"));
+//                            trip.setTravellers();
+                            Log.d(TAG, "Trip name == " + trip.getName());
+                            Log.d(TAG, "Trip id == " + trip.getId());
+                            Log.d(TAG, "Trip owner == " + map.get("owner"));
+                            Log.d(TAG, "Trip travelers == " + map.get("Travellers"));
+                            tripList.add(trip);
+                        }
+
+                        Log.d(TAG,"Total Trips == " + tripList.size());
+*/
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
     }
 
     public void getMaterialDrawerMenu(){
