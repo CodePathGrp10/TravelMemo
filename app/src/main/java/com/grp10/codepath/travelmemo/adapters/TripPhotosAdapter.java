@@ -1,6 +1,7 @@
 package com.grp10.codepath.travelmemo.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.activities.ViewPhotoActivity;
 import com.grp10.codepath.travelmemo.models.TripPhoto;
 
 import java.util.List;
@@ -62,7 +64,16 @@ public class TripPhotosAdapter extends RecyclerView.Adapter<TripPhotosAdapter.Vi
         // Get the data model based on position
         TripPhoto tripPhoto = mTripPhotos.get(position);
 
-        Glide.with(getContext()).load(tripPhoto.getPhotoUrl()).into(viewHolder.tripPhoto);
+        Glide.with(getContext()).load(tripPhoto.getPhotoUrl())
+                .fitCenter().into(viewHolder.tripPhoto);
+
+        viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mContext, ViewPhotoActivity.class);
+                mContext.startActivity(i);
+            }
+        });
     }
 
     // Returns the total count of items in the list

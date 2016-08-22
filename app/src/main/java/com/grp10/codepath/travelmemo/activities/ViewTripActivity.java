@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,9 +15,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -56,6 +59,8 @@ public class ViewTripActivity extends AppCompatActivity {
     private String tabTitle[] = {"Info", "Photos"};
     ViewTripPagerAdapter viewTripPagerAdapter;
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
+    @BindView(R.id.backdrop) ImageView ivBackdrop;
     @BindView(R.id.fabAddPhoto) FabSpeedDial fabSpeedDial;
     @BindView(R.id.view_trip_viewpager) ViewPager vpPager;
     @BindView(R.id.view_trip_tabstrip) PagerSlidingTabStrip tabStrip;
@@ -66,6 +71,7 @@ public class ViewTripActivity extends AppCompatActivity {
     private String userId = "";
     private StorageReference userRef;
     private DatabaseReference mFirebaseDatabaseReference;
+    Trip tripDetails = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,38 +80,35 @@ public class ViewTripActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         if(getIntent() != null){
             tripName = getIntent().getStringExtra(Constants.TRIP_NAME);
-            getSupportActionBar().setTitle(tripName);
             tripId = getIntent().getStringExtra(Constants.TRIP_ID);
+            getSupportActionBar().setTitle(tripName);
+            collapsingToolbar.setTitle(tripName);
+            Glide.with(this).load(R.mipmap.goldengate).centerCrop().into(ivBackdrop);
         }
         Log.d(Constants.TAG,"user == " + FirebaseUtil.getCurrentUserId() + ", " + FirebaseUtil.getCurrentUserName());
 
-        userId = FirebaseUtil.getCurrentUserId();       /// TODO : update this to real user name
-        if(getIntent() != null){
-            isNewTrip = getIntent().getBooleanExtra(Constants.NEW_TRIP,false);
-        }
         viewTripPagerAdapter = new ViewTripPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(viewTripPagerAdapter);
         vpPager.setCurrentItem(1);
         tabStrip.setViewPager(vpPager);
 
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-
+        userId = FirebaseUtil.getCurrentUserId();       /// TODO : update this to real user name
+        if(getIntent() != null){
+            isNewTrip = getIntent().getBooleanExtra(Constants.NEW_TRIP,false);
+        }
         updateFirebaseStorage(isNewTrip,tripName);
         setListener();
-
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
         getTripDetails();
     }
-
-    Trip tripDetails = null;
 
     private void getTripDetails() {
 
@@ -223,6 +226,7 @@ public class ViewTripActivity extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 getSupportActionBar().setTitle(tabTitle[position]);
+//                collapsingToolbar.setTitle(tabTitle[position]);
                 if(position == 1){
                     fabSpeedDial.show();
                 }else{

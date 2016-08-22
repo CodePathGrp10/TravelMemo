@@ -85,7 +85,7 @@ public class ViewTripPhotoFragment extends Fragment implements
                 }
 
                 // For zooming automatically to the location of the marker
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(37.422, -122.084)).zoom(7).build();
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(37.422, -122.084)).zoom(14).build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                 loadMap(mMap);
@@ -93,9 +93,9 @@ public class ViewTripPhotoFragment extends Fragment implements
         });
 
         //Add Photo fragments
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.flContainer, new TripPhotoFragment());
-        ft.commit();
+//        FragmentTransaction ft = getFragmentManager().beginTransaction();
+//        ft.replace(R.id.flContainer, new TripPhotoFragment());
+//        ft.commit();
         return v;
 
     }
