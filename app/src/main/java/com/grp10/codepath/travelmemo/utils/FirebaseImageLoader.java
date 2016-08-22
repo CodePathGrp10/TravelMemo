@@ -1,7 +1,49 @@
 package com.grp10.codepath.travelmemo.utils;
 
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.data.DataFetcher;
+import com.bumptech.glide.load.model.stream.StreamModelLoader;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.InputStream;
+
 /**
  * Created by traviswkim on 8/22/16.
  */
-public class FirebaseImageLoader {
+public class FirebaseImageLoader implements StreamModelLoader<StorageReference> {
+
+    @Override
+    public DataFetcher<InputStream> getResourceFetcher(StorageReference model, int width, int height) {
+        return new FirebaseStorageFetcher(model);
+    }
+
+    private class FirebaseStorageFetcher implements DataFetcher<InputStream> {
+
+        private StorageReference mRef;
+
+        FirebaseStorageFetcher(StorageReference ref) {
+            mRef = ref;
+        }
+
+        @Override
+        public InputStream loadData(Priority priority) throws Exception {
+            return Tasks.await(mRef.getStream()).getStream();
+        }
+
+        @Override
+        public void cleanup() {
+            // No cleanup possible, Task does not expose cancellation
+        }
+
+        @Override
+        public String getId() {
+            return mRef.getPath();
+        }
+
+        @Override
+        public void cancel() {
+            // No cancellation possible, Task does not expose cancellation
+        }
+    }
 }
