@@ -1,5 +1,6 @@
 package com.grp10.codepath.travelmemo.activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -211,6 +212,9 @@ public class ViewTripActivity extends AppCompatActivity {
                 switch (id){
                     case R.id.action_camera :
                         ToastText("Camera button clicked");
+                        Intent intent = new Intent(ViewTripActivity.this, AddCaptureActivity.class);
+                        intent.putExtra("tripId", tripId);
+                        startActivity(intent);
                         break;
                     case R.id.action_album :
                         ToastText("Album button clicked....Uploading a photo");
