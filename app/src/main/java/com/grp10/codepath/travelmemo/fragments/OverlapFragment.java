@@ -54,12 +54,14 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     }
 
     int resourceId;
+    String tripId;
     static final String ARG_RES_ID = "ARG_RES_ID";
 
-    public static OverlapFragment newInstance(int resourceId) {
+    public static OverlapFragment newInstance(int resourceId, String tripId) {
         OverlapFragment overlapFragment = new OverlapFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_RES_ID, resourceId);
+        bundle.putString(Constants.TRIP_ID, tripId);
         overlapFragment.setArguments(bundle);
         return overlapFragment;
     }
@@ -67,6 +69,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         resourceId = getArguments().getInt(ARG_RES_ID);
+        tripId = getArguments().getString(Constants.TRIP_ID);
     }
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -91,6 +94,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
 
                 Intent viewTripIntent = new Intent(getContext(), ViewTripActivity.class);
                 viewTripIntent.putExtra(Constants.TRIP_NAME, txtTripName.getText().toString());
+                viewTripIntent.putExtra(Constants.TRIP_ID, tripId);
                 viewTripIntent.putExtra(Constants.NEW_TRIP, false);
                 getContext().startActivity(viewTripIntent);
             }

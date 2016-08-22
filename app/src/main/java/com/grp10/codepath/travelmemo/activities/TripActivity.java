@@ -308,7 +308,7 @@ public class TripActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return OverlapFragment.newInstance(DemoImages.covers[position]);
+            return OverlapFragment.newInstance(DemoImages.covers[position], "-KPinKfmgOsZFl-55mNN");
         }
 
         @Override

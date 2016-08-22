@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.grp10.codepath.travelmemo.Manifest;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,7 +53,16 @@ public class ViewTripPhotoFragment extends Fragment implements
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private String tripId;
     @BindView(R.id.mapView) MapView mMapView;
+
+    public static ViewTripPhotoFragment newInstance(String tripId) {
+        ViewTripPhotoFragment viewTripPhotoFragment = new ViewTripPhotoFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.TRIP_ID, tripId);
+        viewTripPhotoFragment.setArguments(bundle);
+        return viewTripPhotoFragment;
+    }
 
     @Nullable
     @Override
@@ -93,11 +103,19 @@ public class ViewTripPhotoFragment extends Fragment implements
         });
 
         //Add Photo fragments
-//        FragmentTransaction ft = getFragmentManager().beginTransaction();
-//        ft.replace(R.id.flContainer, new TripPhotoFragment());
-//        ft.commit();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.flContainer, new TripPhotoFragment());
+        ft.commit();
         return v;
 
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null) {
+            tripId = getArguments().getString(Constants.TRIP_ID);
+        }
     }
 
     protected void loadMap(GoogleMap googleMap) {
@@ -323,10 +341,6 @@ public class ViewTripPhotoFragment extends Fragment implements
 
     }
 */
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     /*
      * Called when the Activity becomes visible.

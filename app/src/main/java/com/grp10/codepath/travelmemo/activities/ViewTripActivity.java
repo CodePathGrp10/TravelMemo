@@ -1,9 +1,11 @@
 package com.grp10.codepath.travelmemo.activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -13,6 +15,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -34,12 +37,14 @@ import com.grp10.codepath.travelmemo.app.MemoApplication;
 import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.firebase.Trip;
+import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.fragments.ViewTripInfoFragment;
 import com.grp10.codepath.travelmemo.fragments.ViewTripPhotoFragment;
 import com.grp10.codepath.travelmemo.models.TripPhoto;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,6 +60,7 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 public class ViewTripActivity extends AppCompatActivity {
 
     private static final String TAG = Constants.TAG;
+    private static final int SELECT_PICTURE = 1;
 
     private String tabTitle[] = {"Info", "Photos"};
     ViewTripPagerAdapter viewTripPagerAdapter;
@@ -140,6 +146,33 @@ public class ViewTripActivity extends AppCompatActivity {
         userRef = tripRef.child(userId);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK) {
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                storeMemoToFirebase(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void storeMemoToFirebase(Bitmap bm) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+        Bitmap bitmap = bm;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] bytes = baos.toByteArray();
+        String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+
+        Memo memo = new Memo(new User("travis", "", ""), base64Image, "Dummy Text",Memo.TYPE_PHOTO);
+        mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").push().setValue(memo.toMap());
+    }
+
     private void uploadFile(boolean isNewTrip, StorageReference userRef) {
         if(isNewTrip){
 
@@ -172,11 +205,12 @@ public class ViewTripActivity extends AppCompatActivity {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 Log.d(Constants.TAG,"Download URK == " + downloadUrl.toString());
 
-                Memo memo = new Memo(tripDetails.getOwner(),downloadUrl.toString(),"Dummy Text",Memo.TYPE_PHOTO);
+                Memo memo = new Memo(new User("travis", "", ""), downloadUrl.toString(), "Dummy Text",Memo.TYPE_PHOTO);
                 HashMap<String, Object> result = new HashMap<>();
-                List<Memo> memoList = tripDetails.getMemoList();
-                if(memoList == null){
-                    memoList = new ArrayList<Memo>();
+
+                List<Memo> memoList = new ArrayList<Memo>();
+                if(tripDetails != null){
+                    memoList = tripDetails.getMemoList();
                 }
                 memoList.add(memo);
 //                result.put("Memos",memoList);
@@ -214,7 +248,11 @@ public class ViewTripActivity extends AppCompatActivity {
                         break;
                     case R.id.action_album :
                         ToastText("Album button clicked....Uploading a photo");
-                        uploadFile(isNewTrip, userRef);
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+
                         break;
                 }
                 //TODO: Start some activity
@@ -256,10 +294,10 @@ public class ViewTripActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             if(position == 0){
-                fragment =  new ViewTripInfoFragment();
+                fragment =  new ViewTripInfoFragment().newInstance(tripId);
                 hm.put(0, fragment);
             }else if(position == 1){
-                fragment =  new ViewTripPhotoFragment();
+                fragment =  new ViewTripPhotoFragment().newInstance(tripId);
                 hm.put(1, fragment);
             }else{
                 return null;
