@@ -20,6 +20,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="27dp"
-        android:layout_marginBottom="27dp" />
+        android:layout_marginBottom="27dp"
+        android:visibility="gone"/>
 
 </RelativeLayout>

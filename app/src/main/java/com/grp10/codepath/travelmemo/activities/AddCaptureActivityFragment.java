@@ -2,39 +2,22 @@ package com.grp10.codepath.travelmemo.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.grp10.codepath.travelmemo.R;
-import com.grp10.codepath.travelmemo.app.MemoApplication;
-import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
-import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -56,7 +39,7 @@ public class AddCaptureActivityFragment extends DialogFragment {
     }
 
     public interface AddCaptureListener {
-        void onFinishAddCapture();
+        void onFinishAddCapture(String filePath);
     }
 
     @Override
@@ -68,7 +51,6 @@ public class AddCaptureActivityFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mAddCaptureListener.onFinishAddCapture();
     }
 
     public AddCaptureActivityFragment() {
@@ -79,6 +61,7 @@ public class AddCaptureActivityFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_capture, container, false);
 
+        /*
         FloatingActionButton fabAddCapture = (FloatingActionButton) view.findViewById(R.id.fabAddCapture);
         fabAddCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +74,7 @@ public class AddCaptureActivityFragment extends DialogFragment {
                 dismiss();
             }
         });
+        */
 
         mTripId = getArguments().getString("tripId");
 
@@ -126,12 +110,16 @@ public class AddCaptureActivityFragment extends DialogFragment {
                 if (resultCode == Activity.RESULT_OK) {
                     Uri takenPhotoUri = getPhotoFileUri(photoFileName);
                     // by this point we have the camera photo on disk
-                    Bitmap takenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
-                    uploadFile(takenImage);
+//                    Bitmap takenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
+//                    uploadFile(takenImage);
+
+                    Log.d(TAG,"Image saved here : " + takenPhotoUri.getPath());
+                    mAddCaptureListener.onFinishAddCapture(takenPhotoUri.getPath());
+
                     // RESIZE BITMAP, see section below
                     // Load the taken image into a preview
-                    ImageView ivPreview = (ImageView) getView().findViewById(R.id.ivCapturePreview);
-                    ivPreview.setImageBitmap(takenImage);
+//                    ImageView ivPreview = (ImageView) getView().findViewById(R.id.ivCapturePreview);
+//                    ivPreview.setImageBitmap(takenImage);
                 } else { // Result was a failure
                     Toast.makeText(getView().getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
                 }
@@ -179,6 +167,7 @@ public class AddCaptureActivityFragment extends DialogFragment {
         return state.equals(Environment.MEDIA_MOUNTED);
     }
 
+    /*
     private void uploadFile(Bitmap takenImage) {
         StorageReference reference = MemoApplication.getFBStorageReference();
 
@@ -207,14 +196,32 @@ public class AddCaptureActivityFragment extends DialogFragment {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                Log.d(Constants.TAG,"Download URK == " + downloadUrl.toString());
+                Log.d(Constants.TAG,"Download URL == " + downloadUrl.toString());
 
                 Memo memo = new Memo(FirebaseUtil.getAuthor(),downloadUrl.toString(),"Dummy Text",Memo.TYPE_PHOTO);
                 DatabaseReference newPostRef = FirebaseUtil.getMemosRef().push();
                 String memoId = newPostRef.getKey();
                 newPostRef.setValue(memo);
                 FirebaseUtil.getTripsRef().child(mTripId).child(memoId).setValue(memo.getCreateAt());
+
+
+                HashMap<String, Object> result = new HashMap<>();
+
+                List<Memo> memoList = new ArrayList<Memo>();
+                if(tripDetails != null){
+                    memoList = tripDetails.getMemoList();
+                    if(memoList == null)
+                        memoList = new ArrayList<Memo>();
+                }
+                memoList.add(memo);
+//                result.put("Memos",memoList);
+                mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").setValue(memoList);
+                tripDetails.setMemoList(memoList);
+
+
+
             }
         });
     }
+    */
 }

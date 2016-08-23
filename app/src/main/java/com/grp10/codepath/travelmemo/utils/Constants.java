@@ -21,6 +21,7 @@ import java.util.ArrayList;
  */
 public class Constants {
 
+    public static final int IMAGE_CAPTURE_REQUEST_CODE = 1000;
     public static String TAG = "TravelMemo";
 
     public static final String TRIP_NAME = "TripName";

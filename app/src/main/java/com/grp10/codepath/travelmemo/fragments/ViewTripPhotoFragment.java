@@ -104,7 +104,7 @@ public class ViewTripPhotoFragment extends Fragment implements
 
         //Add Photo fragments
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.flContainer, new TripPhotoFragment());
+        ft.replace(R.id.flContainer, TripPhotoFragment.newInstance(tripId));
         ft.commit();
         return v;
 

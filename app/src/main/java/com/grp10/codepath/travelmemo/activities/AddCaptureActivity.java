@@ -1,5 +1,6 @@
 package com.grp10.codepath.travelmemo.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +30,10 @@ public class AddCaptureActivity extends AppCompatActivity implements AddCaptureA
     }
 
     @Override
-    public void onFinishAddCapture() {
+    public void onFinishAddCapture(String path) {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("FilePath",path);
+        setResult(RESULT_OK,returnIntent);
         finish();
     }
 }

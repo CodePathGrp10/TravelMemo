@@ -1,13 +1,10 @@
 package com.grp10.codepath.travelmemo.fragments;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,10 +39,10 @@ public class TripPhotoFragment extends Fragment {
 
     @BindView(R.id.rvTripPhotos) RecyclerView rvTripPhotos;
 
-    public static TripPhotoFragment newInstance(int tripId) {
+    public static TripPhotoFragment newInstance(String tripId) {
         TripPhotoFragment tripPhotoFragment = new TripPhotoFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(ARG_TRIP_ID, tripId);
+        bundle.putString(ARG_TRIP_ID, tripId);
         tripPhotoFragment.setArguments(bundle);
         return tripPhotoFragment;
     }
@@ -54,8 +51,8 @@ public class TripPhotoFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFbDBReference = FirebaseDatabase.getInstance().getReference();
-        //tripId = getArguments().getString(ARG_TRIP_ID);
-        tripId = "-KPinKfmgOsZFl-55mNN";
+        tripId = getArguments().getString(ARG_TRIP_ID);
+//        tripId = "-KPinKfmgOsZFl-55mNN";
         mFbDBReference = mFbDBReference.child("trips").child(tripId).child("Memos");
     }
 
@@ -93,14 +90,10 @@ public class TripPhotoFragment extends Fragment {
                         //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
                         if(model.getType().equals("photo")){
                             String pictureString = model.getMediaUrl();
-                            byte[] picture = Base64.decode(pictureString, Base64.DEFAULT);
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
-                            Glide.with(getContext()).load(picture)
+                            Glide.with(getActivity()).load(pictureString)
                                 .fitCenter().into(viewHolder.tripPhoto);
-//                            viewHolder.tripPhoto.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
                             viewHolder.tripText.setText(model.getText());
-                            Log.d(Constants.TAG + getClass().getName(), model.getMediaUrl());
-//                            System.out.println("Downloaded image with length: " + picture.length);
+                            Log.d(Constants.TAG , "Media URL == " + pictureString);
                         }
                     }
 

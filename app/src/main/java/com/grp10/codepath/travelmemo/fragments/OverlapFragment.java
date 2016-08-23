@@ -110,6 +110,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
                 Intent viewTripIntent = new Intent(getContext(), ViewTripActivity.class);
                 viewTripIntent.putExtra(Constants.TRIP_NAME, tripName);
                 viewTripIntent.putExtra(Constants.TRIP_ID, tripId);
+                viewTripIntent.putExtra(Constants.DESCRIPTION, tripDesc);
                 viewTripIntent.putExtra(Constants.NEW_TRIP, false);
                 getContext().startActivity(viewTripIntent);
             }

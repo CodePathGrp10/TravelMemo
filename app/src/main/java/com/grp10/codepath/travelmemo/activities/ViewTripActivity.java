@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -40,17 +39,17 @@ import com.grp10.codepath.travelmemo.firebase.Trip;
 import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.fragments.ViewTripInfoFragment;
 import com.grp10.codepath.travelmemo.fragments.ViewTripPhotoFragment;
-import com.grp10.codepath.travelmemo.models.TripPhoto;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -106,7 +105,7 @@ public class ViewTripActivity extends AppCompatActivity {
         if(getIntent() != null){
             isNewTrip = getIntent().getBooleanExtra(Constants.NEW_TRIP,false);
         }
-        updateFirebaseStorage(isNewTrip,tripName);
+        updateFirebaseStorage(isNewTrip,tripId);
         setListener();
     }
 
@@ -118,7 +117,7 @@ public class ViewTripActivity extends AppCompatActivity {
 
     private void getTripDetails() {
 
-        if(isNewTrip) {     /// TODO : Fix this as this is just a hack
+//        if(isNewTrip) {     /// TODO : Fix this as this is just a hack
             mFirebaseDatabaseReference.child("trips").child(tripId)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -127,6 +126,36 @@ public class ViewTripActivity extends AppCompatActivity {
                             Log.d(TAG, "Trip name == " + trip.getName());
                             Log.d(TAG, "Trip id == " + trip.getId());
                             Log.d(TAG, "Trip owner == " + trip.getOwner().toString());
+
+                            Map map = (HashMap<String,String>) dataSnapshot.getValue();
+
+                            User owner = new User();
+                            HashMap<String, String> mapOwners = (HashMap<String, String>) map.get("owner");
+                            owner.setName(mapOwners.get("name"));
+                            owner.setUid(mapOwners.get("uid"));
+                            trip.setOwner(owner);
+
+                            List<User> travellers = new ArrayList<User>();
+                            List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map.get("Travellers");
+                            for (HashMap<String, String> members : listTravellers) {
+                                User member = new User();
+                                member.setName(members.get("name"));
+                                member.setUid(members.get("uid"));
+                                travellers.add(member);
+                            }
+                            trip.setTravellers(travellers);
+
+                            List<Memo> memoList = new ArrayList<Memo>();
+                            List<HashMap<String, String>> listMemos = (List<HashMap<String, String>>) map.get("Memos");
+                            for (HashMap<String, String> allMemos : listMemos) {
+                                Memo memo = new Memo();
+                                memo.setMediaUrl(allMemos.get("mediaUrl"));
+                                memo.setText(allMemos.get("text"));
+                                memo.setType(allMemos.get("type"));
+                                Log.d(TAG,"Memo for trip == "+ memo.toString());
+                                memoList.add(memo);
+                            }
+                            trip.setMemoList(memoList);
                             tripDetails = trip;
                         }
 
@@ -135,27 +164,39 @@ public class ViewTripActivity extends AppCompatActivity {
 
                         }
                     });
-        }
+//        }
 
     }
 
-    private void updateFirebaseStorage(boolean isNewTrip, String tripName) {
+    private void updateFirebaseStorage(boolean isNewTrip, String tripId) {
         StorageReference reference = MemoApplication.getFBStorageReference();
 
-        StorageReference tripRef = reference.child(tripName);
+        StorageReference tripRef = reference.child(tripId);
         userRef = tripRef.child(userId);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK) {
-            Bitmap bitmap = null;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
-                storeMemoToFirebase(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if(requestCode == Constants.IMAGE_CAPTURE_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                String path = data.getStringExtra("FilePath");
+                Log.d(TAG,"ViewTrip : File store here : " + path);
+                Bitmap takenImage = BitmapFactory.decodeFile(path);
+                storeMemoToFirebase(takenImage);
+                File file = new File(path);
+                if(file.exists())
+                    file.delete();
+            }
+        }else if(requestCode == SELECT_PICTURE){
+            if (resultCode == RESULT_OK) {
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                    storeMemoToFirebase(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -165,19 +206,21 @@ public class ViewTripActivity extends AppCompatActivity {
         options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
         Bitmap bitmap = bm;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] bytes = baos.toByteArray();
-        String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+//        String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-        Memo memo = new Memo(new User("travis", "", ""), base64Image, "Dummy Text",Memo.TYPE_PHOTO);
-        mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").push().setValue(memo.toMap());
+//        Memo memo = new Memo(new User("travis", "", ""), base64Image, "Dummy Text",Memo.TYPE_PHOTO);
+//        mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").push().setValue(memo.toMap());
+
+        uploadFile(true,bytes,userRef);
     }
 
-    private void uploadFile(boolean isNewTrip, StorageReference userRef) {
+    private void uploadFile(boolean isNewTrip, byte[] data, StorageReference userRef) {
         if(isNewTrip){
 
         }
-        ArrayList<TripPhoto> photos = TripPhoto.createDemoTripPhotoList();
+        /*ArrayList<TripPhoto> photos = TripPhoto.createDemoTripPhotoList();
         int random = new Random().nextInt(photos.size());
 
         final int resId = photos.get(random).getPhotoUrl();
@@ -186,7 +229,7 @@ public class ViewTripActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),resId);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
+        byte[] data = baos.toByteArray();*/
         String dateFormat = "ddMMyyyyHHmmss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         String fileName = simpleDateFormat.format(new Date(System.currentTimeMillis()));
@@ -203,14 +246,16 @@ public class ViewTripActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                Log.d(Constants.TAG,"Download URK == " + downloadUrl.toString());
+                Log.d(Constants.TAG,"Download URL == " + downloadUrl.toString());
 
-                Memo memo = new Memo(new User("travis", "", ""), downloadUrl.toString(), "Dummy Text",Memo.TYPE_PHOTO);
+                Memo memo = new Memo(new User(FirebaseUtil.getCurrentUserName(), "", userId), downloadUrl.toString(), "Dummy Text",Memo.TYPE_PHOTO);
                 HashMap<String, Object> result = new HashMap<>();
 
                 List<Memo> memoList = new ArrayList<Memo>();
                 if(tripDetails != null){
                     memoList = tripDetails.getMemoList();
+                    if(memoList == null)
+                        memoList = new ArrayList<Memo>();
                 }
                 memoList.add(memo);
 //                result.put("Memos",memoList);
@@ -248,7 +293,7 @@ public class ViewTripActivity extends AppCompatActivity {
                         ToastText("Camera button clicked");
                         intent = new Intent(ViewTripActivity.this, AddCaptureActivity.class);
                         intent.putExtra("tripId", tripId);
-                        startActivity(intent);
+                        startActivityForResult(intent,Constants.IMAGE_CAPTURE_REQUEST_CODE);
                         break;
                     case R.id.action_album :
                         ToastText("Album button clicked....Uploading a photo");

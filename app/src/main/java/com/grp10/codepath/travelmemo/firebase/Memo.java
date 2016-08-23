@@ -94,7 +94,7 @@ public class Memo {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Memo{");
-        sb.append("owner=").append(owner.getName());
+        sb.append("owner=").append(owner != null ?owner.getName() : "");
         sb.append(", type='").append(type).append('\'');
         sb.append(", media_url='").append(media_url).append('\'');
         sb.append('}');
