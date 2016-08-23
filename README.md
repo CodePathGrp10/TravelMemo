@@ -40,6 +40,16 @@ trip notes , voice notes etc and that will be visible to trip member.
    * [ ] Settings screen for some sharing/UI related options.
 
 
+
+## Video Walkthrough
+
+Here's a walkthrough of implemented user stories:
+
+<img src='http://i.imgur.com/HkloSD6.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+GIF created with [LiceCap](http://www.cockos.com/licecap/).
+
+
  ## Open-source libraries used
 
 - [ImagePicker](http://www.materialup.com/posts/imagepicker) - A simple library to pick images from the gallery and camera.
