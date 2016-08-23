@@ -8,7 +8,8 @@ trip notes , voice notes etc and that will be visible to trip member.
 
 ## User stories
  
- ###These are the **P1** stories :
+
+### These are the **P1** stories :
  
  * [X] Create Trip 
     * [X] Enter title, description & Save it
@@ -23,7 +24,7 @@ trip notes , voice notes etc and that will be visible to trip member.
     * [X] Open the camera on the device.
     * [ ] Upload the photos to Firebase storage
      
- ###These are the **P2** stories :
+###T hese are the **P2** stories :
  
  * [ ] Able to add Voice Notes
  * [ ] Edit trip
@@ -31,7 +32,7 @@ trip notes , voice notes etc and that will be visible to trip member.
  * [ ] View trips of your friends
  * [ ] Show POIs on the map
      
- ###These are the **P3** stories :
+### These are the **P3** stories :
  
  * [X] Authentication via Google/FB
  * [ ] Public or private Trip
