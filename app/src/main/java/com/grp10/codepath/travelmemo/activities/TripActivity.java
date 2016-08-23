@@ -43,7 +43,9 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -114,30 +116,43 @@ public class TripActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.d(TAG,"Data == " + dataSnapshot.toString());
 
-                        /*Collection<Object> tripList = new ArrayList<>();
+                        List<Trip> tripList = new ArrayList<>();
 
-                        Map<String, Object> td = (HashMap<String,Object>) dataSnapshot.getValue();
-                        tripList = td.values();
                         for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                            HashMap<String,Object> map = (HashMap<String, Object>) dataSnapshot1.getValue();
+                            HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String,Object>>) dataSnapshot1.getValue();
 
-                            Log.d(TAG, "maps  == " + map);
+                            for(String key : map.keySet()) {
+                                Log.d(TAG, "maps  == " + map.get(key));
+                                HashMap<String,Object> map2 = map.get(key);
+                                Trip trip = new Trip();
+                                trip.setName((String) map2.get("name"));
+                                trip.setId((String) map2.get("id"));
+                                trip.setFavorite((Boolean) map2.get("isFavorite"));
+                                trip.setDescription((String) map2.get("description"));
+                                User owner = new User();
+                                HashMap<String,String> mapOwners = (HashMap<String, String>) map2.get("owner");
+                                owner.setName(mapOwners.get("name"));
+                                owner.setUid(mapOwners.get("uid"));
+                                trip.setOwner(owner);
 
-                            Trip trip = new Trip();
-                            trip.setName((String) map.get("name"));
-                            trip.setId((String) map.get("id"));
-                            trip.setFavorite((Boolean) map.get("isFavorite"));
-                            trip.setDescription((String) map.get("description"));
-//                            trip.setTravellers();
-                            Log.d(TAG, "Trip name == " + trip.getName());
-                            Log.d(TAG, "Trip id == " + trip.getId());
-                            Log.d(TAG, "Trip owner == " + map.get("owner"));
-                            Log.d(TAG, "Trip travelers == " + map.get("Travellers"));
-                            tripList.add(trip);
+                                List<User> travellers = new ArrayList<User>();
+                                List<HashMap<String,String>> listTravellers = (List<HashMap<String,String>>) map2.get("Travellers");
+                                for(HashMap<String,String> members : listTravellers){
+                                    User member = new User();
+                                    member.setName(members.get("name"));
+                                    member.setUid(members.get("uid"));
+                                    travellers.add(member);
+                                }
+                                trip.setTravellers(travellers);
+                                Log.d(TAG, "Trip name == " + trip.getName());
+                                Log.d(TAG, "Trip id == " + trip.getId());
+                                Log.d(TAG, "Trip owner == " + trip.getOwner());
+                                Log.d(TAG, "Trip travelers == " + trip.getTravellers());
+                                tripList.add(trip);
+                            }
                         }
 
                         Log.d(TAG,"Total Trips == " + tripList.size());
-*/
                     }
 
                     @Override
