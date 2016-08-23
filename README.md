@@ -24,7 +24,7 @@ trip notes , voice notes etc and that will be visible to trip member.
     * [X] Open the camera on the device.
     * [ ] Upload the photos to Firebase storage
      
-###T hese are the **P2** stories :
+### These are the **P2** stories :
  
  * [ ] Able to add Voice Notes
  * [ ] Edit trip

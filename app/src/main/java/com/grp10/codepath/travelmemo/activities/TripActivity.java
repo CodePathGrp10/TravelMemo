@@ -76,6 +76,7 @@ public class TripActivity extends AppCompatActivity {
     private String mUsername;
     private String mUserId;
     String username = "akshat";
+    private List<Trip> tripList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +117,8 @@ public class TripActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.d(TAG,"Data == " + dataSnapshot.toString());
 
-                        List<Trip> tripList = new ArrayList<>();
+                        if(tripList == null)
+                            tripList = new ArrayList<>();
 
                         for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                             HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String,Object>>) dataSnapshot1.getValue();
@@ -127,32 +129,41 @@ public class TripActivity extends AppCompatActivity {
                                 Trip trip = new Trip();
                                 trip.setName((String) map2.get("name"));
                                 trip.setId((String) map2.get("id"));
-                                trip.setFavorite((Boolean) map2.get("isFavorite"));
-                                trip.setDescription((String) map2.get("description"));
-                                User owner = new User();
-                                HashMap<String,String> mapOwners = (HashMap<String, String>) map2.get("owner");
-                                owner.setName(mapOwners.get("name"));
-                                owner.setUid(mapOwners.get("uid"));
-                                trip.setOwner(owner);
+                                if(tripList.contains(trip)){
+                                    Log.d(TAG,"List aleadry contains the trip : " + trip.getName());
+                                    continue;
+                                }else {
+                                    trip.setFavorite((Boolean) map2.get("isFavorite"));
+                                    trip.setDescription((String) map2.get("description"));
+                                    User owner = new User();
+                                    HashMap<String, String> mapOwners = (HashMap<String, String>) map2.get("owner");
+                                    owner.setName(mapOwners.get("name"));
+                                    owner.setUid(mapOwners.get("uid"));
+                                    trip.setOwner(owner);
 
-                                List<User> travellers = new ArrayList<User>();
-                                List<HashMap<String,String>> listTravellers = (List<HashMap<String,String>>) map2.get("Travellers");
-                                for(HashMap<String,String> members : listTravellers){
-                                    User member = new User();
-                                    member.setName(members.get("name"));
-                                    member.setUid(members.get("uid"));
-                                    travellers.add(member);
+                                    List<User> travellers = new ArrayList<User>();
+                                    List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map2.get("Travellers");
+                                    for (HashMap<String, String> members : listTravellers) {
+                                        User member = new User();
+                                        member.setName(members.get("name"));
+                                        member.setUid(members.get("uid"));
+                                        travellers.add(member);
+                                    }
+                                    trip.setTravellers(travellers);
+                                    Log.d(TAG, "Trip name == " + trip.getName());
+                                    Log.d(TAG, "Trip id == " + trip.getId());
+                                    Log.d(TAG, "Trip owner == " + trip.getOwner());
+                                    Log.d(TAG, "Trip travelers == " + trip.getTravellers());
+
+                                    tripList.add(trip);
                                 }
-                                trip.setTravellers(travellers);
-                                Log.d(TAG, "Trip name == " + trip.getName());
-                                Log.d(TAG, "Trip id == " + trip.getId());
-                                Log.d(TAG, "Trip owner == " + trip.getOwner());
-                                Log.d(TAG, "Trip travelers == " + trip.getTravellers());
-                                tripList.add(trip);
                             }
                         }
-
                         Log.d(TAG,"Total Trips == " + tripList.size());
+
+                        if(pagerAdapter != null)
+                            pagerAdapter.notifyDataSetChanged();
+                        updateCarousalView();
                     }
 
                     @Override
@@ -160,6 +171,24 @@ public class TripActivity extends AppCompatActivity {
 
                     }
                 });
+
+    }
+
+    private void updateCarousalView() {
+
+        if(pagerAdapter == null) {
+            pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        }
+        viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
+        viewPager.setAdapter(pagerAdapter);
+
+        //Manually setting the first View to be elevated
+        viewPager.post(new Runnable() {
+            @Override public void run() {
+                Fragment fragment = (Fragment) viewPager.getAdapter().instantiateItem(viewPager, 0);
+                ViewCompat.setElevation(fragment.getView(), 8.0f);
+            }
+        });
 
     }
 
@@ -209,19 +238,7 @@ public class TripActivity extends AppCompatActivity {
                 .build();
 
         pagerContainer.setOverlapEnabled(true);
-
-        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
-        viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
-        viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(pageChangeListener);
-
-        //Manually setting the first View to be elevated
-        viewPager.post(new Runnable() {
-            @Override public void run() {
-                Fragment fragment = (Fragment) viewPager.getAdapter().instantiateItem(viewPager, 0);
-                ViewCompat.setElevation(fragment.getView(), 8.0f);
-            }
-        });
 
     }
 
@@ -323,12 +340,13 @@ public class TripActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return OverlapFragment.newInstance(DemoImages.covers[position], "-KPinKfmgOsZFl-55mNN");
+            Trip trip = tripList.get(position);
+            return OverlapFragment.newInstance(DemoImages.covers[position%6], trip.getName(), trip.getDescription(), trip.getId());
         }
 
         @Override
         public int getCount() {
-            return DemoImages.covers.length;
+            return tripList.size();
         }
     }
 

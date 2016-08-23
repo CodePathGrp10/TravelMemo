@@ -47,6 +47,12 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     @BindView(R.id.txtTripName)
     TextView txtTripName;
 
+    @BindView(R.id.txtDate)
+    TextView txtDate;
+
+    @BindView(R.id.txtDesc)
+    TextView txtDesc;
+
     Integer color;
 
     public OverlapFragment() {
@@ -55,13 +61,18 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
 
     int resourceId;
     String tripId;
+    String tripName;
+    String tripDesc;
     static final String ARG_RES_ID = "ARG_RES_ID";
 
-    public static OverlapFragment newInstance(int resourceId, String tripId) {
+    public static OverlapFragment newInstance(int resourceId, String name, String description, String tripId) {
         OverlapFragment overlapFragment = new OverlapFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_RES_ID, resourceId);
         bundle.putString(Constants.TRIP_ID, tripId);
+        bundle.putString(Constants.TRIP_NAME, name);
+        bundle.putString(Constants.DESCRIPTION, description);
+
         overlapFragment.setArguments(bundle);
         return overlapFragment;
     }
@@ -70,6 +81,8 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         super.onCreate(savedInstanceState);
         resourceId = getArguments().getInt(ARG_RES_ID);
         tripId = getArguments().getString(Constants.TRIP_ID);
+        tripName = getArguments().getString(Constants.TRIP_NAME);
+        tripDesc = getArguments().getString(Constants.DESCRIPTION);
     }
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,6 +91,8 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         ButterKnife.bind(this,rootView);
 
         Glide.with(getActivity()).load(resourceId).into(coverImageView);
+        txtTripName.setText(tripName);
+        txtDesc.setText(tripDesc);
         SharedPreferences prefs = getActivity().getSharedPreferences("Colors", Context.MODE_PRIVATE);
         if(!prefs.contains(resourceId+"")) {
             Log.d(Constants.TAG,"we dont have Dominant color ==" + color);
@@ -93,7 +108,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
             public void onClick(View view) {
 
                 Intent viewTripIntent = new Intent(getContext(), ViewTripActivity.class);
-                viewTripIntent.putExtra(Constants.TRIP_NAME, txtTripName.getText().toString());
+                viewTripIntent.putExtra(Constants.TRIP_NAME, tripName);
                 viewTripIntent.putExtra(Constants.TRIP_ID, tripId);
                 viewTripIntent.putExtra(Constants.NEW_TRIP, false);
                 getContext().startActivity(viewTripIntent);

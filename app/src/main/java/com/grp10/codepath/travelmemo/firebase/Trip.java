@@ -139,7 +139,24 @@ public class Trip {
         result.put("Travellers",travellers);
         return result;
     }
-//    public Map<String, Boolean> getParticipants() {
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Trip trip = (Trip) o;
+
+        return id.equals(trip.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    //    public Map<String, Boolean> getParticipants() {
 //        return participants;
 //    }
 //
