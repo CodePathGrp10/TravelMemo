@@ -10,4 +10,9 @@
         android:icon="@drawable/common_full_open_on_phone"
         android:title="@string/attach_photo"/>
 
+    <item
+        android:id="@+id/action_friend"
+        android:icon="@drawable/common_full_open_on_phone"
+        android:title="Add Traveller"/>
+
 </menu>
