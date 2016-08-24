@@ -17,7 +17,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,8 +43,10 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.Badgeable;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,6 +77,7 @@ public class TripActivity extends AppCompatActivity {
     private Drawer result;
     private MyFragmentPagerAdapter pagerAdapter;
     private DatabaseReference mFirebaseDatabaseReference;
+    FirebaseAuth.AuthStateListener mAuthListener;
 
     private String mUsername;
     private String mUserId;
@@ -217,13 +223,41 @@ public class TripActivity extends AppCompatActivity {
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.HOME).withIcon(GoogleMaterial.Icon.gmd_home),
                         new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.SETTINGS).withIcon(GoogleMaterial.Icon.gmd_settings)
+                        new SecondaryDrawerItem().withName(R.string.SETTINGS).withIcon(GoogleMaterial.Icon.gmd_settings),
+                        new SecondaryDrawerItem().withName(R.string.LOGOUT).withIcon(GoogleMaterial.Icon.gmd_exit_to_app)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
-                        return true;
+                        if (drawerItem != null) {
+                            if (drawerItem instanceof Nameable) {
+                                if(((Nameable) drawerItem).getName().getText(TripActivity.this).equals(getString(R.string.LOGOUT))){
+                                    FirebaseAuth.getInstance().signOut() ;
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    if (user == null) {
+                                        Toast.makeText(TripActivity.this, "Signed out successfully", Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(TripActivity.this, SignInActivity.class));
+                                        finish();
+                                    }
+                                }
+                            }
+
+                            if (drawerItem instanceof Badgeable) {
+                                Badgeable badgeable = (Badgeable) drawerItem;
+                                if (badgeable.getBadge() != null) {
+                                    //note don't do this if your badge contains a "+"
+                                    //only use toString() if you set the test as String
+                                    int badge = Integer.valueOf(badgeable.getBadge().toString());
+                                    if (badge > 0) {
+                                        badgeable.withBadge(String.valueOf(badge - 1));
+                                        result.updateItem(drawerItem);
+                                    }
+                                }
+                            }
+                        }
+
+                        return false;
                     }
                 })
                 .build();
