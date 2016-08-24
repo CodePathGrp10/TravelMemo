@@ -147,15 +147,17 @@ public class ViewTripActivity extends AppCompatActivity {
 
                             List<Memo> memoList = new ArrayList<Memo>();
                             List<HashMap<String, String>> listMemos = (List<HashMap<String, String>>) map.get("Memos");
-                            for (HashMap<String, String> allMemos : listMemos) {
-                                Memo memo = new Memo();
-                                memo.setMediaUrl(allMemos.get("mediaUrl"));
-                                memo.setText(allMemos.get("text"));
-                                memo.setType(allMemos.get("type"));
-                                Log.d(TAG,"Memo for trip == "+ memo.toString());
-                                memoList.add(memo);
+                            if(listMemos != null) {
+                                for (HashMap<String, String> allMemos : listMemos) {
+                                    Memo memo = new Memo();
+                                    memo.setMediaUrl(allMemos.get("mediaUrl"));
+                                    memo.setText(allMemos.get("text"));
+                                    memo.setType(allMemos.get("type"));
+                                    Log.d(TAG, "Memo for trip == " + memo.toString());
+                                    memoList.add(memo);
+                                }
+                                trip.setMemoList(memoList);
                             }
-                            trip.setMemoList(memoList);
                             tripDetails = trip;
                         }
 
@@ -239,7 +241,6 @@ public class ViewTripActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -261,7 +262,6 @@ public class ViewTripActivity extends AppCompatActivity {
 //                result.put("Memos",memoList);
                 mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").setValue(memoList);
                 tripDetails.setMemoList(memoList);
-
             }
         });
     }

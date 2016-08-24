@@ -182,13 +182,16 @@ public class TripActivity extends AppCompatActivity {
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         viewPager.setAdapter(pagerAdapter);
 
-        //Manually setting the first View to be elevated
-        viewPager.post(new Runnable() {
-            @Override public void run() {
-                Fragment fragment = (Fragment) viewPager.getAdapter().instantiateItem(viewPager, 0);
-                ViewCompat.setElevation(fragment.getView(), 8.0f);
-            }
-        });
+        if(pagerAdapter.getCount() > 0) {
+            //Manually setting the first View to be elevated
+            viewPager.post(new Runnable() {
+                @Override
+                public void run() {
+                    Fragment fragment = (Fragment) viewPager.getAdapter().instantiateItem(viewPager, 0);
+                    ViewCompat.setElevation(fragment.getView(), 8.0f);
+                }
+            });
+        }
 
     }
 
@@ -340,8 +343,12 @@ public class TripActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Trip trip = tripList.get(position);
-            return OverlapFragment.newInstance(DemoImages.covers[position%6], trip.getName(), trip.getDescription(), trip.getId());
+            if(tripList.size() > 0) {
+                Trip trip = tripList.get(position);
+                return OverlapFragment.newInstance(DemoImages.covers[position % 6], trip.getName(), trip.getDescription(), trip.getId());
+            }else{
+                return new OverlapFragment();
+            }
         }
 
         @Override
