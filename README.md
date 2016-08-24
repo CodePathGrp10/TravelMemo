@@ -5,6 +5,7 @@ trips with your friends. The trip can be updated/modified by people who travelle
 trip notes , voice notes etc and that will be visible to trip member.
 
 
+[![Build Status](https://travis-ci.org/CodePathGrp10/TravelMemo.svg?branch=master)](https://travis-ci.org/CodePathGrp10/TravelMemo)
 
 ## User stories
  

@@ -75,7 +75,6 @@ public class TripActivity extends AppCompatActivity {
 
     private String mUsername;
     private String mUserId;
-    String username = "akshat";
     private List<Trip> tripList;
 
     @Override
@@ -234,13 +233,21 @@ public class TripActivity extends AppCompatActivity {
 
         viewPager = pagerContainer.getViewPager();
 
+        //Set this to have a carousal effect
         new CoverFlow.Builder().with(viewPager)
                 .scale(0.3f)
                 .pagerMargin(getResources().getDimensionPixelSize(R.dimen.overlap_pager_margin))
                 .spaceSize(0f)
                 .build();
 
-        pagerContainer.setOverlapEnabled(true);
+        // Enable this for a linear page view
+//        viewPager.setPageMargin(30);
+
+
+        viewPager.setClipChildren(false);
+
+
+//        pagerContainer.setOverlapEnabled(true);
         viewPager.addOnPageChangeListener(pageChangeListener);
 
     }

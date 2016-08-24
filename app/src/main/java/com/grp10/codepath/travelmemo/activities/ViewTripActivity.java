@@ -141,11 +141,13 @@ public class ViewTripActivity extends AppCompatActivity {
 
                             List<User> travellers = new ArrayList<User>();
                             List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map.get("Travellers");
-                            for (HashMap<String, String> members : listTravellers) {
-                                User member = new User();
-                                member.setName(members.get("name"));
-                                member.setUid(members.get("uid"));
-                                travellers.add(member);
+                            if(listTravellers != null) {
+                                for (HashMap<String, String> members : listTravellers) {
+                                    User member = new User();
+                                    member.setName(members.get("name"));
+                                    member.setUid(members.get("uid"));
+                                    travellers.add(member);
+                                }
                             }
                             trip.setTravellers(travellers);
 
@@ -160,8 +162,8 @@ public class ViewTripActivity extends AppCompatActivity {
                                     Log.d(TAG, "Memo for trip == " + memo.toString());
                                     memoList.add(memo);
                                 }
-                                trip.setMemoList(memoList);
                             }
+                            trip.setMemoList(memoList);
                             tripDetails = trip;
                         }
 
@@ -211,14 +213,9 @@ public class ViewTripActivity extends AppCompatActivity {
         mProgressBar.progressiveStart();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
-        Bitmap bitmap = bm;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] bytes = baos.toByteArray();
-//        String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
-
-//        Memo memo = new Memo(new User("travis", "", ""), base64Image, "Dummy Text",Memo.TYPE_PHOTO);
-//        mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").push().setValue(memo.toMap());
 
         uploadFile(true,bytes,userRef);
     }
@@ -227,16 +224,7 @@ public class ViewTripActivity extends AppCompatActivity {
         if(isNewTrip){
 
         }
-        /*ArrayList<TripPhoto> photos = TripPhoto.createDemoTripPhotoList();
-        int random = new Random().nextInt(photos.size());
 
-        final int resId = photos.get(random).getPhotoUrl();
-//        imageView.setDrawingCacheEnabled(true);
-//        imageView.buildDrawingCache();
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),resId);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();*/
         String dateFormat = "ddMMyyyyHHmmss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         String fileName = simpleDateFormat.format(new Date(System.currentTimeMillis()));
@@ -247,7 +235,6 @@ public class ViewTripActivity extends AppCompatActivity {
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
                 mProgressBar.progressiveStop();
-
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -266,7 +253,6 @@ public class ViewTripActivity extends AppCompatActivity {
                         memoList = new ArrayList<Memo>();
                 }
                 memoList.add(memo);
-//                result.put("Memos",memoList);
                 mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").setValue(memoList);
                 tripDetails.setMemoList(memoList);
                 mProgressBar.progressiveStop();
