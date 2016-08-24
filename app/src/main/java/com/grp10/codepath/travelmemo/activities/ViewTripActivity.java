@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -53,6 +54,8 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
@@ -69,6 +72,7 @@ public class ViewTripActivity extends AppCompatActivity {
     @BindView(R.id.fabAddPhoto) FabSpeedDial fabSpeedDial;
     @BindView(R.id.view_trip_viewpager) ViewPager vpPager;
     @BindView(R.id.view_trip_tabstrip) PagerSlidingTabStrip tabStrip;
+    @BindView(R.id.progressbar) SmoothProgressBar mProgressBar;
 
     private boolean isNewTrip;
     private String tripName;
@@ -204,6 +208,7 @@ public class ViewTripActivity extends AppCompatActivity {
     }
 
     private void storeMemoToFirebase(Bitmap bm) {
+        mProgressBar.progressiveStart();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
         Bitmap bitmap = bm;
@@ -241,6 +246,8 @@ public class ViewTripActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
+                mProgressBar.progressiveStop();
+
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -262,8 +269,11 @@ public class ViewTripActivity extends AppCompatActivity {
 //                result.put("Memos",memoList);
                 mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").setValue(memoList);
                 tripDetails.setMemoList(memoList);
+                mProgressBar.progressiveStop();
             }
         });
+        //Make sure to stop progressbar
+        mProgressBar.progressiveStop();
     }
 
     @Override
@@ -278,6 +288,19 @@ public class ViewTripActivity extends AppCompatActivity {
     }
 
     private void setListener() {
+        mProgressBar.setSmoothProgressDrawableCallbacks(new SmoothProgressDrawable.Callbacks() {
+            @Override
+            public void onStop() {
+                mProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onStart() {
+                mProgressBar.setVisibility(View.VISIBLE);
+            }
+        });
+        mProgressBar.progressiveStop();
+
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {

@@ -40,7 +40,14 @@
         app:pstsShouldExpand="true"
         app:pstsTextAllCaps="true"
         app:pstsTabBackground="@color/primary"
-        app:pstsIndicatorColor="@color/primary_light"
+        app:pstsIndicatorColor="@color/colorAccent"
         app:pstsIndicatorHeight="3dp"/>
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        style="@style/GNowProgressBar"
+        android:indeterminate="true"/>
 
 </android.support.design.widget.AppBarLayout>

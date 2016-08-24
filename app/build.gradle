@@ -61,7 +61,7 @@ dependencies {
     
     // Gmail auth
     compile 'com.google.android.gms:play-services-auth:9.4.0'
-
+    compile 'com.github.castorflex.smoothprogressbar:library:1.0.1-SNAPSHOT@aar'
 }
 
 apply plugin: 'com.google.gms.google-services'
