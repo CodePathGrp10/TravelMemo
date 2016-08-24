@@ -57,7 +57,8 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
  ## Open-source libraries used
 
 - [ImagePicker](http://www.materialup.com/posts/imagepicker) - A simple library to pick images from the gallery and camera.
-- [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) - The flexible, easy to use, all in one drawer library for your Android project
+- [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) - The flexible, easy to use, all in one drawer library for your Android project.
+- [SmoothProgressBar](https://github.com/castorflex/SmoothProgressBar) - A small Android library allowing you to have a smooth and customizable horizontal indeterminate ProgressBar.
 
 ## License
 
