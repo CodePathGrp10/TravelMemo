@@ -42,6 +42,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.Badgeable;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -91,6 +92,10 @@ public class TripActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+        // Initialize Current User
+        mUsername = FirebaseUtil.getCurrentUserName();
+        mUserId = FirebaseUtil.getCurrentUserId();
+        
         getMaterialDrawerMenu();
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         setupCarousal();
@@ -102,9 +107,6 @@ public class TripActivity extends AppCompatActivity {
             }
         });
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        // Initialize Current User
-        mUsername = FirebaseUtil.getCurrentUserName();
-        mUserId = FirebaseUtil.getCurrentUserId();
 //        Constants.colorizeToolbar(toolbar,R.color.colorPrimary,this);
     }
 
@@ -206,6 +208,7 @@ public class TripActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
+                        new ProfileDrawerItem().withName(mUsername).withEmail(FirebaseUtil.getCurrentUserEmail())
                 )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
