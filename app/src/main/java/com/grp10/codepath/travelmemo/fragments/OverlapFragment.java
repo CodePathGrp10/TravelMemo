@@ -101,9 +101,9 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
             computeDominantColorTask.execute(resourceId);
         }else{
             color = prefs.getInt(resourceId + "",-1);
-            cardView.setBackgroundColor(color);
+            cardView.setCardBackgroundColor(color);
         }
-        coverImageView.setOnClickListener(new View.OnClickListener() {
+        cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -122,8 +122,8 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     public void onDominantColorComputed(Integer color) {
 
         Log.d(Constants.TAG,"afterExec : Dominant color ==" + color);
-        layout.setBackgroundColor(color);
-        cardView.setBackgroundColor(color);
+//        layout.setBackgroundColor(color);
+        cardView.setCardBackgroundColor(color);
         SharedPreferences prefs = getActivity().getSharedPreferences("Colors", Context.MODE_PRIVATE);
         prefs.edit().putInt(resourceId + "",color).apply();
 
