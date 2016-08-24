@@ -1,5 +1,7 @@
 package com.grp10.codepath.travelmemo.firebase;
 
+import android.net.Uri;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -21,6 +23,14 @@ public class FirebaseUtil {
         return null;
     }
 
+    public static String getCurrentUserEmail() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            return user.getEmail();
+        }
+        return "";
+    }
+
     public static String getCurrentUserName() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -28,6 +38,15 @@ public class FirebaseUtil {
         }
         return null;
     }
+
+    public static Uri getCurrentUserProfilePhoto() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            return user.getPhotoUrl();
+        }
+        return null;
+    }
+
 
     public static User getAuthor() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
