@@ -250,7 +250,6 @@ public class ViewTripActivity extends AppCompatActivity {
                 memoList.add(memo);
                 mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").setValue(memoList);
                 tripDetails.setMemoList(memoList);
-
             }
         });
     }
