@@ -12,6 +12,7 @@ trip notes , voice notes etc and that will be visible to trip member.
 
 ### These are the **P1** stories :
  
+ * [X] Sign-in with google account
  * [X] Create Trip 
     * [X] Enter title, description & Save it
     * [X] Save the trip to firebase database
@@ -24,6 +25,7 @@ trip notes , voice notes etc and that will be visible to trip member.
     * [X] Upload the selected photo to Firebase storage
     * [X] Open the camera on the device.
     * [ ] Upload the photos to Firebase storage
+ * [X] Sign-out
      
 ### These are the **P2** stories :
  
