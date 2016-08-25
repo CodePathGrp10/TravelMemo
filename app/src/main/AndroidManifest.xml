@@ -68,7 +68,8 @@
         </service>
 
         <activity android:name=".activities.ViewPhotoActivity" />
-        <activity android:name=".activities.AddCaptureActivity"></activity>
+        <activity android:name=".activities.AddCaptureActivity" />
+        <activity android:name=".activities.AddUserActivity"></activity>
     </application>
 
 </manifest>
