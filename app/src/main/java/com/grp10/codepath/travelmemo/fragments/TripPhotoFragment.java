@@ -61,7 +61,6 @@ public class TripPhotoFragment extends Fragment {
         ButterKnife.bind(this, v);
 
         layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-//        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE); // This line has a problem with FirebaseRecyclerView which does not show anything.
         layoutManager.setReverseLayout(false);
         rvTripPhotos.setLayoutManager(layoutManager);
         return v;

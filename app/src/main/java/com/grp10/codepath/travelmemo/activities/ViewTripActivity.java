@@ -3,9 +3,9 @@ package com.grp10.codepath.travelmemo.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -44,7 +44,9 @@ import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -198,26 +200,53 @@ public class ViewTripActivity extends AppCompatActivity {
             }
         }else if(requestCode == SELECT_PICTURE){
             if (resultCode == RESULT_OK) {
-                Bitmap bitmap = null;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
-                    storeMemoToFirebase(bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    Log.d(Constants.TAG,"+++++++++file stored here == " + data.getData().toString());
+                //// Doing this here was causing memory to be leaked and never reclaimed...
+//                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                    storeMemoToFirebase(data.getData());
             }
         }
     }
 
-    private void storeMemoToFirebase(Bitmap bm) {
+    private void storeMemoToFirebase(Uri file){
         mProgressBar.progressiveStart();
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] bytes = baos.toByteArray();
+        // shrink it down otherwise we will use stupid amounts of memory
+        options.inSampleSize = 8; // TODO : Remove it ....
 
-        uploadFile(true,bytes,userRef);
+        InputStream is = null;
+        try {
+            is = getContentResolver().openInputStream(file);
+            Bitmap bitmap = BitmapFactory.decodeStream(is,new Rect(),options);
+            storeMemoToFirebase(bitmap);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            try {
+                is.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+
+    }
+    private void storeMemoToFirebase(Bitmap bm) {
+        Log.d(Constants.TAG,"+++++++++uploading file == " );
+        mProgressBar.progressiveStart();
+        ByteArrayOutputStream baos = null;
+        try {
+            baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] bytes = baos.toByteArray();
+
+            uploadFile(true, bytes, userRef);
+        }finally {
+            // Free up space by making them GC'ed
+            Log.d(Constants.TAG,"+++++++++freeing up memory == " );
+
+            baos = null;
+            bm.recycle();
+        }
     }
 
     private void uploadFile(boolean isNewTrip, byte[] data, StorageReference userRef) {
@@ -258,6 +287,8 @@ public class ViewTripActivity extends AppCompatActivity {
                 mProgressBar.progressiveStop();
             }
         });
+
+        data = null;
         //Make sure to stop progressbar
         mProgressBar.progressiveStop();
     }

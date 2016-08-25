@@ -20,11 +20,11 @@ trip notes , voice notes etc and that will be visible to trip member.
     * [X] View trip name and description
     * [X] Show trip photos from Firebase storage
     * [ ] Show Markers on map where the photo was taken
- * [ ] Add a Photo
+ * [X] Add a Photo
     * [X] Select a photo from the Gallery on the device
     * [X] Upload the selected photo to Firebase storage
     * [X] Open the camera on the device.
-    * [ ] Upload the photos to Firebase storage
+    * [X] Upload the photos to Firebase storage
  * [X] Sign-out
      
 ### These are the **P2** stories :
