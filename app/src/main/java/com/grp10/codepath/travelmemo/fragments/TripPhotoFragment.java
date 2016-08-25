@@ -62,15 +62,6 @@ public class TripPhotoFragment extends Fragment {
         View v =  inflater.inflate(R.layout.fragment_photos, parent, false);
         ButterKnife.bind(this, v);
 
-//        tripPhotos = TripPhoto.createDemoTripPhotoList();
-//        TripPhotosAdapter adapter = new TripPhotosAdapter(getContext(), tripPhotos);
-//        rvTripPhotos.setAdapter(adapter);
-//        adapter.notifyDataSetChanged();// First param is number of columns and second param is orientation i.e Vertical or Horizontal
-//        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-        // Attach the layout manager to the recycler view
-//        rvTripPhotos.setLayoutManager(layoutManager);
-//        SpacesItemDecoration decoration = new SpacesItemDecoration(16);
-//        rvTripPhotos.addItemDecoration(decoration);
 
         layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(false);
