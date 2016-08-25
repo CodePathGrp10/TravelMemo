@@ -3,8 +3,8 @@ package com.grp10.codepath.travelmemo.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,9 +34,7 @@ public class TripPhotoFragment extends Fragment {
     private DatabaseReference mFbDBReference;
     private String tripId;
     ArrayList<TripPhoto> tripPhotos;
-    private LinearLayoutManager layoutManager;
-//    StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-
+    StaggeredGridLayoutManager layoutManager;
     @BindView(R.id.rvTripPhotos) RecyclerView rvTripPhotos;
 
     public static TripPhotoFragment newInstance(String tripId) {
@@ -62,20 +60,9 @@ public class TripPhotoFragment extends Fragment {
         View v =  inflater.inflate(R.layout.fragment_photos, parent, false);
         ButterKnife.bind(this, v);
 
-//        tripPhotos = TripPhoto.createDemoTripPhotoList();
-//        TripPhotosAdapter adapter = new TripPhotosAdapter(getContext(), tripPhotos);
-//        rvTripPhotos.setAdapter(adapter);
-//        adapter.notifyDataSetChanged();// First param is number of columns and second param is orientation i.e Vertical or Horizontal
-//        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-        // Attach the layout manager to the recycler view
-//        rvTripPhotos.setLayoutManager(layoutManager);
-//        SpacesItemDecoration decoration = new SpacesItemDecoration(16);
-//        rvTripPhotos.addItemDecoration(decoration);
-
-        layoutManager = new LinearLayoutManager(getContext());
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+//        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE); // This line has a problem with FirebaseRecyclerView which does not show anything.
         layoutManager.setReverseLayout(false);
-
-        rvTripPhotos.setHasFixedSize(false);
         rvTripPhotos.setLayoutManager(layoutManager);
         return v;
     }
@@ -96,14 +83,12 @@ public class TripPhotoFragment extends Fragment {
                             Log.d(Constants.TAG , "Media URL == " + pictureString);
                         }
                     }
-
                 };
 
         // Scroll to bottom on new messages
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
-//                layoutManager.smoothScrollToPosition(rvTripPhotos, null, adapter.getItemCount());
                 layoutManager.smoothScrollToPosition(rvTripPhotos, null, adapter.getItemCount());
             }
         });
