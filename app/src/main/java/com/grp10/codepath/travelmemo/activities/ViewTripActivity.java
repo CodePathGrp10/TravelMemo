@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -124,7 +125,7 @@ public class ViewTripActivity extends AppCompatActivity {
             tripId = getIntent().getStringExtra(Constants.TRIP_ID);
             getSupportActionBar().setTitle(tripName);
             collapsingToolbar.setTitle(tripName);
-            Glide.with(this).load(R.mipmap.goldengate).centerCrop().into(ivBackdrop);
+            Glide.with(this).load(R.mipmap.goldengate).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(ivBackdrop);
         }
         Log.d(Constants.TAG,"user == " + FirebaseUtil.getCurrentUserId() + ", " + FirebaseUtil.getCurrentUserName());
 

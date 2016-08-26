@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.activities.ViewPhotoActivity;
 import com.grp10.codepath.travelmemo.models.TripPhoto;
@@ -64,7 +65,9 @@ public class TripPhotosAdapter extends RecyclerView.Adapter<TripPhotosAdapter.Vi
         // Get the data model based on position
         TripPhoto tripPhoto = mTripPhotos.get(position);
 
-        Glide.with(getContext()).load(tripPhoto.getPhotoUrl())
+        Glide.with(getContext())
+                .load(tripPhoto.getPhotoUrl())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .fitCenter().into(viewHolder.tripPhoto);
 
         viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {

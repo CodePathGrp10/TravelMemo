@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.firebase.User;
 
@@ -93,6 +94,7 @@ public class UsersArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         vh.tvUserName.setText(user.getName());
         Glide.with(vh.ivUserProfile.getContext())
                 .load(user.getProfile_image_url())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(vh.ivUserProfile);
     }
 
