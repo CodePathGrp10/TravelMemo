@@ -1,14 +1,20 @@
 package com.grp10.codepath.travelmemo.activities;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -82,7 +88,11 @@ public class ViewTripActivity extends AppCompatActivity {
     private String userId = "";
     private StorageReference userRef;
     private DatabaseReference mFirebaseDatabaseReference;
+    String locationProvider = LocationManager.NETWORK_PROVIDER;
+    LocationManager locationManager;
     Trip tripDetails = null;
+    Double photoLat;
+    Double photoLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +102,12 @@ public class ViewTripActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//        Criteria criteria = new Criteria();
+//        String provider = locationManager.getBestProvider(criteria, false);
+
+//        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//        LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
 
         if(getIntent() != null){
             tripName = getIntent().getStringExtra(Constants.TRIP_NAME);
@@ -124,56 +140,49 @@ public class ViewTripActivity extends AppCompatActivity {
     private void getTripDetails() {
 
 //        if(isNewTrip) {     /// TODO : Fix this as this is just a hack
-            mFirebaseDatabaseReference.child("trips").child(tripId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Trip trip = dataSnapshot.getValue(Trip.class);
-                            Log.d(TAG, "Trip name == " + trip.getName());
-                            Log.d(TAG, "Trip id == " + trip.getId());
-                            Log.d(TAG, "Trip owner == " + trip.getOwner().toString());
+        mFirebaseDatabaseReference.child("trips").child(tripId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Trip trip = dataSnapshot.getValue(Trip.class);
+                        Log.d(TAG, "Trip name == " + trip.getName());
+                        Log.d(TAG, "Trip id == " + trip.getId());
+                        Log.d(TAG, "Trip owner == " + trip.getOwner().toString());
 
-                            Map map = (HashMap<String,String>) dataSnapshot.getValue();
+                        Map map = (HashMap<String, String>) dataSnapshot.getValue();
 
-                            User owner = new User();
-                            HashMap<String, String> mapOwners = (HashMap<String, String>) map.get("owner");
-                            owner.setName(mapOwners.get("name"));
-                            owner.setUid(mapOwners.get("uid"));
-                            trip.setOwner(owner);
+                        User owner = new User();
+                        HashMap<String, String> mapOwners = (HashMap<String, String>) map.get("owner");
+                        owner.setName(mapOwners.get("name"));
+                        owner.setUid(mapOwners.get("uid"));
+                        trip.setOwner(owner);
 
-                            List<User> travellers = new ArrayList<User>();
-                            List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map.get("Travellers");
-                            if(listTravellers != null) {
-                                for (HashMap<String, String> members : listTravellers) {
-                                    User member = new User();
-                                    member.setName(members.get("name"));
-                                    member.setUid(members.get("uid"));
-                                    travellers.add(member);
-                                }
+                        List<User> travellers = new ArrayList<User>();
+                        List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map.get("Travellers");
+                        if (listTravellers != null) {
+                            for (HashMap<String, String> members : listTravellers) {
+                                User member = new User();
+                                member.setName(members.get("name"));
+                                member.setUid(members.get("uid"));
+                                travellers.add(member);
                             }
-                            trip.setTravellers(travellers);
-
-                            List<Memo> memoList = new ArrayList<Memo>();
-                            List<HashMap<String, String>> listMemos = (List<HashMap<String, String>>) map.get("Memos");
-                            if(listMemos != null) {
-                                for (HashMap<String, String> allMemos : listMemos) {
-                                    Memo memo = new Memo();
-                                    memo.setMediaUrl(allMemos.get("mediaUrl"));
-                                    memo.setText(allMemos.get("text"));
-                                    memo.setType(allMemos.get("type"));
-                                    Log.d(TAG, "Memo for trip == " + memo.toString());
-                                    memoList.add(memo);
-                                }
-                            }
-                            trip.setMemoList(memoList);
-                            tripDetails = trip;
                         }
+                        trip.setTravellers(travellers);
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
+                        List<Memo> memoList = new ArrayList<Memo>();
+                        for (DataSnapshot memoSnapshot: dataSnapshot.child("Memos").getChildren()) {
+                            Memo aMemo = memoSnapshot.getValue(Memo.class);
+                            memoList.add(aMemo);
                         }
-                    });
+                        trip.setMemoList(memoList);
+                        tripDetails = trip;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 //        }
 
     }
@@ -188,36 +197,42 @@ public class ViewTripActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == Constants.IMAGE_CAPTURE_REQUEST_CODE){
-            if(resultCode == RESULT_OK){
+        if (requestCode == Constants.IMAGE_CAPTURE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
                 String path = data.getStringExtra("FilePath");
-                Log.d(TAG,"ViewTrip : File store here : " + path);
+                Log.d(TAG, "ViewTrip : File store here : " + path);
                 Bitmap takenImage = BitmapFactory.decodeFile(path);
+                setPhotoLatLng(path);
                 storeMemoToFirebase(takenImage);
                 File file = new File(path);
-                if(file.exists())
+                if (file.exists())
                     file.delete();
             }
-        }else if(requestCode == SELECT_PICTURE){
+        } else if (requestCode == SELECT_PICTURE) {
             if (resultCode == RESULT_OK) {
-                    Log.d(Constants.TAG,"+++++++++file stored here == " + data.getData().toString());
+                Log.d(Constants.TAG, "+++++++++file stored here == " + data.getData().toString());
                 //// Doing this here was causing memory to be leaked and never reclaimed...
 //                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
-                    storeMemoToFirebase(data.getData());
+                storeMemoToFirebase(data.getData());
             }
         }
     }
 
-    private void storeMemoToFirebase(Uri file){
+    private void setPhotoLatLng(String path){
+        //setting Lanlng for photo here
+    }
+
+    private void storeMemoToFirebase(Uri file) {
         mProgressBar.progressiveStart();
         BitmapFactory.Options options = new BitmapFactory.Options();
         // shrink it down otherwise we will use stupid amounts of memory
         options.inSampleSize = 8; // TODO : Remove it ....
 
+        setPhotoLatLng(file.getPath());
         InputStream is = null;
         try {
             is = getContentResolver().openInputStream(file);
-            Bitmap bitmap = BitmapFactory.decodeStream(is,new Rect(),options);
+            Bitmap bitmap = BitmapFactory.decodeStream(is, new Rect(), options);
             storeMemoToFirebase(bitmap);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -230,8 +245,9 @@ public class ViewTripActivity extends AppCompatActivity {
 
 
     }
+
     private void storeMemoToFirebase(Bitmap bm) {
-        Log.d(Constants.TAG,"+++++++++uploading file == " );
+        Log.d(Constants.TAG, "+++++++++uploading file == ");
         mProgressBar.progressiveStart();
         ByteArrayOutputStream baos = null;
         try {
@@ -250,10 +266,16 @@ public class ViewTripActivity extends AppCompatActivity {
     }
 
     private void uploadFile(boolean isNewTrip, byte[] data, StorageReference userRef) {
-        if(isNewTrip){
+        if (isNewTrip) {
 
         }
 
+        final Location lastKnownLocation;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            lastKnownLocation = null;
+        }else{
+            lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);;
+        }
         String dateFormat = "ddMMyyyyHHmmss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         String fileName = simpleDateFormat.format(new Date(System.currentTimeMillis()));
@@ -272,7 +294,18 @@ public class ViewTripActivity extends AppCompatActivity {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 Log.d(Constants.TAG,"Download URL == " + downloadUrl.toString());
 
-                Memo memo = new Memo(new User(FirebaseUtil.getCurrentUserName(), "", userId), downloadUrl.toString(), "Dummy Text",Memo.TYPE_PHOTO);
+                Double lat = null;
+                Double lng = null;
+                //For now use device location for all photo, but need to add code to extract lat and lng existing photo.
+                if(lastKnownLocation != null){
+                    lat = lastKnownLocation.getLatitude();
+                    lng = lastKnownLocation.getLongitude();
+                }else{
+                    //Uber HQ - 37.775206, -122.417694
+                    lat = 37.775206;
+                    lng = -122.417694;
+                }
+                Memo memo = new Memo(new User(FirebaseUtil.getCurrentUserName(), "", userId), downloadUrl.toString(), "Dummy Text", Memo.TYPE_PHOTO, lat, lng);
                 HashMap<String, Object> result = new HashMap<>();
 
                 List<Memo> memoList = new ArrayList<Memo>();
@@ -282,7 +315,7 @@ public class ViewTripActivity extends AppCompatActivity {
                         memoList = new ArrayList<Memo>();
                 }
                 memoList.add(memo);
-                mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").setValue(memoList);
+                mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").push().setValue(memo);
                 tripDetails.setMemoList(memoList);
                 mProgressBar.progressiveStop();
             }

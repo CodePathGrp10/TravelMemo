@@ -62,6 +62,7 @@ public class TripPhotoFragment extends Fragment {
 
         layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setReverseLayout(false);
+        rvTripPhotos.hasFixedSize();
         rvTripPhotos.setLayoutManager(layoutManager);
         return v;
     }

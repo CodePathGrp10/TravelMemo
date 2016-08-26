@@ -4,11 +4,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="3dp">
+    android:padding="1dp">
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
         tools:src="@mipmap/ic_launcher"
         android:id="@+id/ivTripPhoto" />
 
