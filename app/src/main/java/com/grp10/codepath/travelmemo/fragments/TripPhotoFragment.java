@@ -73,6 +73,7 @@ public class TripPhotoFragment extends Fragment {
 
         layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setReverseLayout(false);
+        rvTripPhotos.hasFixedSize();
         rvTripPhotos.setLayoutManager(layoutManager);
         rvTripPhotos.setHasFixedSize(true);
         // Required to clear image when the view is recycled

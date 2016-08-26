@@ -18,8 +18,8 @@ public class Memo {
     private String text;            // trip description
     private long create_at;      // the timestamp when create the memo
     private String media_url;       // the URI of memo photo or audio clip
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
 
     public Memo() {
     }
@@ -31,13 +31,15 @@ public class Memo {
         this.create_at = System.currentTimeMillis();
     }
 
-    public Memo(User owner, String media_url, String text, String type) {
+    public Memo(User owner, String media_url, String text, String type, Double latitude, Double longitude) {
         this.owner = owner;
         this.create_at = System.currentTimeMillis();
         this.media_url = media_url;
         if (!text.isEmpty())
             this.text = text;
         this.type = type;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public User getOwner() {
@@ -80,6 +82,22 @@ public class Memo {
         this.type = type;
     }
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("mediaUrl",media_url);
@@ -97,6 +115,8 @@ public class Memo {
         sb.append("owner=").append(owner != null ?owner.getName() : "");
         sb.append(", type='").append(type).append('\'');
         sb.append(", media_url='").append(media_url).append('\'');
+        sb.append(", latitude='").append(latitude).append('\'');
+        sb.append(", longitude='").append(longitude).append('\'');
         sb.append('}');
         return sb.toString();
     }

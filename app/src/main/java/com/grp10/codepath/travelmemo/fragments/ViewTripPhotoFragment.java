@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,12 +32,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.Manifest;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -54,6 +60,7 @@ public class ViewTripPhotoFragment extends Fragment implements
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private DatabaseReference mFbDBReference;
     private String tripId;
     @BindView(R.id.mapView) MapView mMapView;
 
@@ -81,6 +88,7 @@ public class ViewTripPhotoFragment extends Fragment implements
 
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately
+        mFbDBReference = FirebaseDatabase.getInstance().getReference().child("trips").child(tripId).child("Memos");
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -92,20 +100,39 @@ public class ViewTripPhotoFragment extends Fragment implements
             @Override
             public void onMapReady(GoogleMap mGoogleMap) {
                 mMap = mGoogleMap;
-                HashMap<Integer, LatLng> photoLoc = new HashMap<Integer, LatLng>();
-                // For dropping a marker at a point on the Map
-                photoLoc.put(123456789, new LatLng(37.422, -122.084));
-                photoLoc.put(123456788, new LatLng(37.419635, -122.083583));
-                photoLoc.put(123456787, new LatLng(37.420334, -122.082092));
-                photoLoc.put(123456786, new LatLng(37.421160, -122.082328));
-                photoLoc.put(123456785, new LatLng(37.420581, -122.084549));
-                for(Map.Entry<Integer, LatLng> e: photoLoc.entrySet()){
-                    mMap.addMarker(new MarkerOptions().position(e.getValue()).title("Marker Title").snippet("Marker Description"));
-                }
 
-                // For zooming automatically to the location of the marker
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(37.422, -122.084)).zoom(14).build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                //Add Firebase call to get memo data
+                mFbDBReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        LatLng mPhotoPos = null;
+                        for (DataSnapshot postSnapshot: snapshot.getChildren()) {
+                            Memo memo = postSnapshot.getValue(Memo.class);
+                            if(memo.getType().equals("photo") && memo.getLatitude() != null && memo.getLongitude() != null) {
+                                mPhotoPos = new LatLng(memo.getLatitude(), memo.getLongitude());
+                                mMap.addMarker(new MarkerOptions().position(mPhotoPos).snippet(memo.getText()));
+                            }
+                        }
+                        // For zooming automatically to the location of the marker
+                        if(mPhotoPos != null) {
+                            CameraPosition cameraPosition = new CameraPosition.Builder().target(mPhotoPos).zoom(14).build();
+                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d(Constants.TAG, "The read failed: " + databaseError.getMessage());
+                    }
+                });
+
+                // For dropping a marker at a point on the Map
+//                MemoLoc.put(123456789, new LatLng(37.422, -122.084));
+//                MemoLoc.put(123456788, new LatLng(37.419635, -122.083583));
+//                MemoLoc.put(123456787, new LatLng(37.420334, -122.082092));
+//                MemoLoc.put(123456786, new LatLng(37.421160, -122.082328));
+//                MemoLoc.put(123456785, new LatLng(37.420581, -122.084549));
 
                 loadMap(mMap);
             }
