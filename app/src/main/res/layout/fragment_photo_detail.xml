@@ -25,6 +25,8 @@
             android:layout_height="wrap_content"
             android:text="New Text"
             android:id="@+id/tvTripText"
+            android:paddingBottom="20dp"
+            android:paddingLeft="10dp"
             android:textColor="@color/colorAccent"
             android:layout_gravity="bottom|start" />
 
