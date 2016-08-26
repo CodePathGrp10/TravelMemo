@@ -226,7 +226,7 @@ public class ViewTripActivity extends AppCompatActivity {
         mProgressBar.progressiveStart();
         BitmapFactory.Options options = new BitmapFactory.Options();
         // shrink it down otherwise we will use stupid amounts of memory
-        options.inSampleSize = 8; // TODO : Remove it ....
+        options.inSampleSize = 4; // TODO : Remove it ....
 
         setPhotoLatLng(file.getPath());
         InputStream is = null;
@@ -252,7 +252,7 @@ public class ViewTripActivity extends AppCompatActivity {
         ByteArrayOutputStream baos = null;
         try {
             baos = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            bm.compress(Bitmap.CompressFormat.JPEG, 80, baos);
             byte[] bytes = baos.toByteArray();
 
             uploadFile(true, bytes, userRef);
@@ -416,10 +416,10 @@ public class ViewTripActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             if(position == 0){
-                fragment =  new ViewTripInfoFragment().newInstance(tripId);
+                fragment =  ViewTripInfoFragment.newInstance(tripId);
                 hm.put(0, fragment);
             }else if(position == 1){
-                fragment =  new ViewTripPhotoFragment().newInstance(tripId);
+                fragment =  ViewTripPhotoFragment.newInstance(ViewTripActivity.this,tripId);
                 hm.put(1, fragment);
             }else{
                 return null;
