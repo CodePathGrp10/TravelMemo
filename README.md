@@ -25,6 +25,7 @@ trip notes , voice notes etc and that will be visible to trip member.
     * [X] Upload the selected photo to Firebase storage
     * [X] Open the camera on the device.
     * [X] Upload the photos to Firebase storage
+    * [X] Put mark on the map based on location of device
  * [X] Sign-out
      
 ### These are the **P2** stories :
@@ -61,6 +62,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 - [ImagePicker](http://www.materialup.com/posts/imagepicker) - A simple library to pick images from the gallery and camera.
 - [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) - The flexible, easy to use, all in one drawer library for your Android project.
 - [SmoothProgressBar](https://github.com/castorflex/SmoothProgressBar) - A small Android library allowing you to have a smooth and customizable horizontal indeterminate ProgressBar.
+- [Android-SimpleLocation](https://github.com/delight-im/Android-SimpleLocation) - Utility class for easy access to the device location on Android
 
 ## License
 
