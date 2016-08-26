@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.grp10.codepath.travelmemo.activities.ViewPhotoActivity">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:background="@color/md_black_1000"
+                tools:context="com.grp10.codepath.travelmemo.activities.ViewPhotoActivity">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vpPhotos"
+    <me.crosswall.lib.coverflow.core.PagerContainer
+        android:id="@+id/pager_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
 
-</RelativeLayout>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vpPhotos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
+
+    </me.crosswall.lib.coverflow.core.PagerContainer>
+
+</FrameLayout>

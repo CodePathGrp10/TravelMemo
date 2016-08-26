@@ -1,6 +1,7 @@
 package com.grp10.codepath.travelmemo.fragments;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -56,11 +57,19 @@ public class ViewTripPhotoFragment extends Fragment implements
     private String tripId;
     @BindView(R.id.mapView) MapView mMapView;
 
-    public static ViewTripPhotoFragment newInstance(String tripId) {
-        ViewTripPhotoFragment viewTripPhotoFragment = new ViewTripPhotoFragment();
+    private Context mContext;
+
+    public ViewTripPhotoFragment(Context context) {
+        this.mContext = context;
+    }
+
+
+    public static ViewTripPhotoFragment newInstance(Context context,String tripId) {
+        ViewTripPhotoFragment viewTripPhotoFragment = new ViewTripPhotoFragment(context);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TRIP_ID, tripId);
         viewTripPhotoFragment.setArguments(bundle);
+
         return viewTripPhotoFragment;
     }
 
@@ -104,7 +113,7 @@ public class ViewTripPhotoFragment extends Fragment implements
 
         //Add Photo fragments
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.flContainer, TripPhotoFragment.newInstance(tripId));
+        ft.replace(R.id.flContainer, TripPhotoFragment.newInstance(mContext,tripId));
         ft.commit();
         return v;
 
@@ -122,11 +131,11 @@ public class ViewTripPhotoFragment extends Fragment implements
         mMap = googleMap;
         if (mMap != null) {
             // Map is ready
-            Toast.makeText(getActivity(), "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
             //MapDemoActivityPermissionsDispatcher.getMyLocationWithCheck(this);
             mMap.setOnMapLongClickListener(this);
         } else {
-            Toast.makeText(getActivity(), "Error - Map was null!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -137,7 +146,7 @@ public class ViewTripPhotoFragment extends Fragment implements
             if (permissions.length == 1 && permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getMyLocation();
             } else {
-                Toast.makeText(getActivity(), R.string.need_location_permission, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.need_location_permission, Toast.LENGTH_SHORT).show();
             }
         //}
     }
@@ -147,7 +156,7 @@ public class ViewTripPhotoFragment extends Fragment implements
         if (mMap != null) {
             // For showing a move to my location button
             mMap.setMyLocationEnabled(true);
-            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+            mGoogleApiClient = new GoogleApiClient.Builder(mContext)
                     .addApi(LocationServices.API)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -198,12 +207,12 @@ public class ViewTripPhotoFragment extends Fragment implements
         // Display the connection status
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
-            Toast.makeText(getActivity(), "GPS location was found!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "GPS location was found!", Toast.LENGTH_SHORT).show();
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
             mMap.animateCamera(cameraUpdate);
         } else {
-            Toast.makeText(getActivity(), "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
         }
         startLocationUpdates();
     }
@@ -221,7 +230,7 @@ public class ViewTripPhotoFragment extends Fragment implements
         String msg = "Updated Location: " +
                 Double.toString(location.getLatitude()) + "," +
                 Double.toString(location.getLongitude());
-        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 
     }
     /*
@@ -231,9 +240,9 @@ public class ViewTripPhotoFragment extends Fragment implements
     @Override
     public void onConnectionSuspended(int i) {
         if (i == CAUSE_SERVICE_DISCONNECTED) {
-            Toast.makeText(getActivity(), "Disconnected. Please re-connect.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Disconnected. Please re-connect.", Toast.LENGTH_SHORT).show();
         } else if (i == CAUSE_NETWORK_LOST) {
-            Toast.makeText(getActivity(), "Network lost. Please re-connect.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Network lost. Please re-connect.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -260,7 +269,7 @@ public class ViewTripPhotoFragment extends Fragment implements
                 e.printStackTrace();
             }
         } else {
-            Toast.makeText(getActivity(), "Sorry. Location services not available to you", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, "Sorry. Location services not available to you", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -290,7 +299,7 @@ public class ViewTripPhotoFragment extends Fragment implements
 
     @Override
     public void onMapLongClick(final LatLng point){
-        Toast.makeText(getActivity(), "Long Press" + point.toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(mContext, "Long Press" + point.toString(), Toast.LENGTH_LONG).show();
         //showAlertDialogForPoint(point);
 
     }

@@ -1,5 +1,7 @@
 package com.grp10.codepath.travelmemo.fragments;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +19,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.activities.ViewPhotoActivity;
 import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.models.TripPhoto;
 import com.grp10.codepath.travelmemo.utils.Constants;
@@ -37,8 +40,14 @@ public class TripPhotoFragment extends Fragment {
     StaggeredGridLayoutManager layoutManager;
     @BindView(R.id.rvTripPhotos) RecyclerView rvTripPhotos;
 
-    public static TripPhotoFragment newInstance(String tripId) {
-        TripPhotoFragment tripPhotoFragment = new TripPhotoFragment();
+    private Context mContext;
+
+    public TripPhotoFragment(Context context) {
+        this.mContext = context;
+    }
+
+    public static TripPhotoFragment newInstance(Context context, String tripId) {
+        TripPhotoFragment tripPhotoFragment = new TripPhotoFragment(context);
         Bundle bundle = new Bundle();
         bundle.putString(ARG_TRIP_ID, tripId);
         tripPhotoFragment.setArguments(bundle);
@@ -76,10 +85,18 @@ public class TripPhotoFragment extends Fragment {
                         //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
                         if(model.getType().equals("photo")){
                             String pictureString = model.getMediaUrl();
-                            Glide.with(getActivity()).load(pictureString)
+                            Glide.with(mContext).load(pictureString)
                                 .fitCenter().into(viewHolder.tripPhoto);
                             viewHolder.tripText.setText(model.getText());
                             Log.d(Constants.TAG , "Media URL == " + pictureString);
+
+                            viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent i = new Intent(mContext, ViewPhotoActivity.class);
+                                    mContext.startActivity(i);
+                                }
+                            });
                         }
                     }
                 };
@@ -91,6 +108,8 @@ public class TripPhotoFragment extends Fragment {
                 layoutManager.smoothScrollToPosition(rvTripPhotos, null, adapter.getItemCount());
             }
         });
+
+
         rvTripPhotos.setAdapter(adapter);
     }
 
