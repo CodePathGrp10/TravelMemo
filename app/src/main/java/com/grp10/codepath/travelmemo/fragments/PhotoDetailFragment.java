@@ -4,13 +4,13 @@ package com.grp10.codepath.travelmemo.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.grp10.codepath.travelmemo.R;
 
 import butterknife.BindView;
@@ -46,7 +46,10 @@ public class PhotoDetailFragment extends Fragment {
         int resourceId = getArguments().getInt("resId");
         String tripName = getArguments().getString("name");
 
-        Glide.with(getActivity()).load(resourceId).into(coverImageView);
+        Glide.with(getActivity())
+                .load(resourceId)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(coverImageView);
         txtTripName.setText(tripName);
 
 

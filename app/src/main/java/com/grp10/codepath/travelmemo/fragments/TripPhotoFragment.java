@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -41,6 +42,7 @@ public class TripPhotoFragment extends Fragment {
     @BindView(R.id.rvTripPhotos) RecyclerView rvTripPhotos;
 
     private Context mContext;
+    private FirebaseRecyclerAdapter<Memo, PhotoViewHolder> adapter;
 
     public TripPhotoFragment(Context context) {
         this.mContext = context;
@@ -72,34 +74,40 @@ public class TripPhotoFragment extends Fragment {
         layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setReverseLayout(false);
         rvTripPhotos.setLayoutManager(layoutManager);
-        return v;
-    }
+        rvTripPhotos.setHasFixedSize(true);
+        // Required to clear image when the view is recycled
+// See  : https://github.com/bumptech/glide/issues/710
+//model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
+        adapter = new FirebaseRecyclerAdapter<Memo, PhotoViewHolder>(Memo.class, R.layout.item_trip_photo, PhotoViewHolder.class, mFbDBReference) {
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        final FirebaseRecyclerAdapter<Memo, PhotoViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Memo, PhotoViewHolder>(Memo.class, R.layout.item_trip_photo, PhotoViewHolder.class, mFbDBReference) {
-                    @Override
-                    protected void populateViewHolder(PhotoViewHolder viewHolder, Memo model, int position) {
-                        //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
-                        if(model.getType().equals("photo")){
-                            String pictureString = model.getMediaUrl();
-                            Glide.with(mContext).load(pictureString)
-                                .fitCenter().into(viewHolder.tripPhoto);
-                            viewHolder.tripText.setText(model.getText());
-                            Log.d(Constants.TAG , "Media URL == " + pictureString);
+           @Override
+           public void onViewRecycled(PhotoViewHolder holder) {
+               super.onViewRecycled(holder);
+               // Required to clear image when the view is recycled
+               // See  : https://github.com/bumptech/glide/issues/710
+               Glide.clear(holder.tripPhoto);
+           }
 
-                            viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Intent i = new Intent(mContext, ViewPhotoActivity.class);
-                                    mContext.startActivity(i);
-                                }
-                            });
-                        }
-                    }
-                };
+           @Override
+           protected void populateViewHolder(PhotoViewHolder viewHolder, Memo model, int position) {
+               //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
+               if(model.getType().equals("photo")){
+                   String pictureString = model.getMediaUrl();
+                   Glide.with(mContext).load(pictureString).diskCacheStrategy(DiskCacheStrategy.ALL)
+                           .fitCenter().into(viewHolder.tripPhoto);
+                   viewHolder.tripText.setText(model.getText());
+                   Log.d(Constants.TAG , "Media URL == " + pictureString);
+
+                   viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           Intent i = new Intent(mContext, ViewPhotoActivity.class);
+                           mContext.startActivity(i);
+                       }
+                   });
+               }
+           }
+       };
 
         // Scroll to bottom on new messages
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -110,7 +118,21 @@ public class TripPhotoFragment extends Fragment {
         });
 
 
+        return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
         rvTripPhotos.setAdapter(adapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
     public static class PhotoViewHolder extends RecyclerView.ViewHolder{

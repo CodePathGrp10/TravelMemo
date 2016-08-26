@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.activities.TripActivity;
 import com.grp10.codepath.travelmemo.activities.ViewTripActivity;
@@ -90,7 +91,10 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         View rootView = inflater.inflate(R.layout.trip_images, container, false);
         ButterKnife.bind(this,rootView);
 
-        Glide.with(getActivity()).load(resourceId).into(coverImageView);
+        Glide.with(getActivity()).
+                load(resourceId)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(coverImageView);
         txtTripName.setText(tripName);
         txtDesc.setText(tripDesc);
         SharedPreferences prefs = getActivity().getSharedPreferences("Colors", Context.MODE_PRIVATE);
