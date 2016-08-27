@@ -35,6 +35,7 @@ trip notes , voice notes etc and that will be visible to trip member.
  * [ ] Delete a trip
  * [ ] View trips of your friends
  * [ ] Show POIs on the map
+ * [X] View Photos of the trip fullscreen
      
 ### These are the **P3** stories :
  
