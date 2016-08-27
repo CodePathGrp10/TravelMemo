@@ -1,14 +1,10 @@
 package com.grp10.codepath.travelmemo.activities;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.grp10.codepath.travelmemo.Manifest;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.app.MemoApplication;
 import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
@@ -65,6 +63,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
+import im.delight.android.location.SimpleLocation;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
@@ -72,6 +71,7 @@ public class ViewTripActivity extends AppCompatActivity {
 
     private static final String TAG = Constants.TAG;
     private static final int SELECT_PICTURE = 1;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9001;
 
     private String tabTitle[] = {"Info", "Photos"};
     ViewTripPagerAdapter viewTripPagerAdapter;
@@ -89,8 +89,7 @@ public class ViewTripActivity extends AppCompatActivity {
     private String userId = "";
     private StorageReference userRef;
     private DatabaseReference mFirebaseDatabaseReference;
-    String locationProvider = LocationManager.NETWORK_PROVIDER;
-    LocationManager locationManager;
+    private SimpleLocation mLocation;
     Trip tripDetails = null;
     Double photoLat;
     Double photoLng;
@@ -103,12 +102,25 @@ public class ViewTripActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//        Criteria criteria = new Criteria();
-//        String provider = locationManager.getBestProvider(criteria, false);
+        mLocation = new SimpleLocation(this);
 
-//        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//        LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+        //Need to ask permission at runtime if targetSDK is 23 or higher. that's why I did not use SimpleLocation.openSettings(this) to check a permission.
+        if (ContextCompat.checkSelfPermission(ViewTripActivity.this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ViewTripActivity.this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                ToastText("Waiting for your response for use of location permission");
+                ActivityCompat.requestPermissions(ViewTripActivity.this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            } else {
+                ActivityCompat.requestPermissions(ViewTripActivity.this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            }
+        }
 
         if(getIntent() != null){
             tripName = getIntent().getStringExtra(Constants.TRIP_NAME);
@@ -136,6 +148,13 @@ public class ViewTripActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getTripDetails();
+        mLocation.beginUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        mLocation.endUpdates();
+        super.onPause();
     }
 
     private void getTripDetails() {
@@ -196,6 +215,20 @@ public class ViewTripActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Do nothing
+                } else {
+                    //Alert user that location service with photo will no be correct.
+                }
+                return;
+            }
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.IMAGE_CAPTURE_REQUEST_CODE) {
@@ -203,7 +236,6 @@ public class ViewTripActivity extends AppCompatActivity {
                 String path = data.getStringExtra("FilePath");
                 Log.d(TAG, "ViewTrip : File store here : " + path);
                 Bitmap takenImage = BitmapFactory.decodeFile(path);
-                setPhotoLatLng(path);
                 storeMemoToFirebase(takenImage);
                 File file = new File(path);
                 if (file.exists())
@@ -219,10 +251,6 @@ public class ViewTripActivity extends AppCompatActivity {
         }
     }
 
-    private void setPhotoLatLng(String path){
-        //setting Lanlng for photo here
-    }
-
     public List<Memo> getTripMemos(){
         return tripDetails != null ? tripDetails.getMemoList() : null;
     }
@@ -233,7 +261,6 @@ public class ViewTripActivity extends AppCompatActivity {
         // shrink it down otherwise we will use stupid amounts of memory
         options.inSampleSize = 4; // TODO : Remove it ....
 
-        setPhotoLatLng(file.getPath());
         InputStream is = null;
         try {
             is = getContentResolver().openInputStream(file);
@@ -275,12 +302,6 @@ public class ViewTripActivity extends AppCompatActivity {
 
         }
 
-        final Location lastKnownLocation;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            lastKnownLocation = null;
-        }else{
-            lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);;
-        }
         String dateFormat = "ddMMyyyyHHmmss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         String fileName = simpleDateFormat.format(new Date(System.currentTimeMillis()));
@@ -301,12 +322,12 @@ public class ViewTripActivity extends AppCompatActivity {
 
                 Double lat = null;
                 Double lng = null;
-                //For now use device location for all photo, but need to add code to extract lat and lng existing photo.
-                if(lastKnownLocation != null){
-                    lat = lastKnownLocation.getLatitude();
-                    lng = lastKnownLocation.getLongitude();
+                //For now use device location for all photo, but need to add code to extract lat and lng existing photo from gallery.
+                if(mLocation != null){
+                    lat = mLocation.getLatitude();
+                    lng = mLocation.getLongitude();
                 }else{
-                    //Uber HQ - 37.775206, -122.417694
+                    //For testing purpose, set Uber HQ as default- 37.775206, -122.417694
                     lat = 37.775206;
                     lng = -122.417694;
                 }

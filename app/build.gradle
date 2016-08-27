@@ -45,6 +45,7 @@ dependencies {
     compile 'io.github.yavski:fab-speed-dial:1.0.4'
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.android.gms:play-services-location:9.4.0'
+    compile 'com.github.delight-im:Android-SimpleLocation:v1.0.1'
 
     // Configure FAB icon
     compile 'io.github.yavski:fab-speed-dial:1.0.4'
