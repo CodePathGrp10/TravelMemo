@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,8 +41,8 @@ import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +64,7 @@ public class ViewTripPhotoFragment extends Fragment implements
     @BindView(R.id.mapView) MapView mMapView;
 
     private Context mContext;
+    private ArrayList<Memo> listMemos;
 
     public ViewTripPhotoFragment(Context context) {
         this.mContext = context;
@@ -95,7 +95,6 @@ public class ViewTripPhotoFragment extends Fragment implements
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mGoogleMap) {
@@ -105,6 +104,7 @@ public class ViewTripPhotoFragment extends Fragment implements
                 mFbDBReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
+                        listMemos = new ArrayList<>();
                         LatLng mPhotoPos = null;
                         for (DataSnapshot postSnapshot: snapshot.getChildren()) {
                             Memo memo = postSnapshot.getValue(Memo.class);
@@ -112,6 +112,8 @@ public class ViewTripPhotoFragment extends Fragment implements
                                 mPhotoPos = new LatLng(memo.getLatitude(), memo.getLongitude());
                                 mMap.addMarker(new MarkerOptions().position(mPhotoPos).snippet(memo.getText()));
                             }
+                            listMemos.add(memo);
+
                         }
                         // For zooming automatically to the location of the marker
                         if(mPhotoPos != null) {
@@ -119,6 +121,10 @@ public class ViewTripPhotoFragment extends Fragment implements
                             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                         }
+
+                        TripPhotoFragment tripPhotoFragment = (TripPhotoFragment) getFragmentManager().findFragmentByTag("TripPhotos");
+                        if(tripPhotoFragment != null)
+                            tripPhotoFragment.setMemoList(listMemos);
                     }
 
                     @Override
@@ -140,7 +146,7 @@ public class ViewTripPhotoFragment extends Fragment implements
 
         //Add Photo fragments
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.flContainer, TripPhotoFragment.newInstance(mContext,tripId));
+        ft.replace(R.id.flContainer, TripPhotoFragment.newInstance(mContext,tripId),"TripPhotos");
         ft.commit();
         return v;
 

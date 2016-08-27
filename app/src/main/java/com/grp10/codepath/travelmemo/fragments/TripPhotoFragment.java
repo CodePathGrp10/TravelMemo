@@ -43,6 +43,7 @@ public class TripPhotoFragment extends Fragment {
 
     private Context mContext;
     private FirebaseRecyclerAdapter<Memo, PhotoViewHolder> adapter;
+    private ArrayList<Memo> memoList;
 
     public TripPhotoFragment(Context context) {
         this.mContext = context;
@@ -103,6 +104,7 @@ public class TripPhotoFragment extends Fragment {
                        @Override
                        public void onClick(View view) {
                            Intent i = new Intent(mContext, ViewPhotoActivity.class);
+                           i.putParcelableArrayListExtra("Photos",memoList);
                            mContext.startActivity(i);
                        }
                    });
@@ -134,6 +136,10 @@ public class TripPhotoFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+    }
+
+    public void setMemoList(ArrayList<Memo> listMemos) {
+        this.memoList = listMemos;
     }
 
     public static class PhotoViewHolder extends RecyclerView.ViewHolder{

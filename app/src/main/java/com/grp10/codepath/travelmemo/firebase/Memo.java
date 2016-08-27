@@ -1,12 +1,14 @@
 package com.grp10.codepath.travelmemo.firebase;
 
+import android.os.Parcelable;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by qiming on 8/19/2016.
  */
-public class Memo {
+public class Memo implements Parcelable {
 
     // TODO : maybe use an enum
     public final static String TYPE_PHOTO = "photo";
@@ -120,4 +122,42 @@ public class Memo {
         sb.append('}');
         return sb.toString();
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(android.os.Parcel dest, int flags) {
+        dest.writeParcelable(this.owner, flags);
+        dest.writeString(this.type);
+        dest.writeString(this.text);
+        dest.writeLong(this.create_at);
+        dest.writeString(this.media_url);
+        dest.writeValue(this.latitude);
+        dest.writeValue(this.longitude);
+    }
+
+    protected Memo(android.os.Parcel in) {
+        this.owner = in.readParcelable(User.class.getClassLoader());
+        this.type = in.readString();
+        this.text = in.readString();
+        this.create_at = in.readLong();
+        this.media_url = in.readString();
+        this.latitude = (Double) in.readValue(Double.class.getClassLoader());
+        this.longitude = (Double) in.readValue(Double.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<Memo> CREATOR = new Parcelable.Creator<Memo>() {
+        @Override
+        public Memo createFromParcel(android.os.Parcel source) {
+            return new Memo(source);
+        }
+
+        @Override
+        public Memo[] newArray(int size) {
+            return new Memo[size];
+        }
+    };
 }

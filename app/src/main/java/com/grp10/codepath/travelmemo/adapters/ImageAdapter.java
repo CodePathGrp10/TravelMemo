@@ -1,29 +1,21 @@
 package com.grp10.codepath.travelmemo.adapters;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.grp10.codepath.travelmemo.R;
-import com.grp10.codepath.travelmemo.firebase.Trip;
+import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.fragments.PhotoDetailFragment;
+
+import java.util.ArrayList;
 
 /**
  * Created by traviswkim on 8/20/16.
  */
 
 public class ImageAdapter extends FragmentPagerAdapter {
-    Context context;
-    private int[] GalImages = new int[] {
-            R.mipmap.goldengate,
-            R.mipmap.ny,
-            R.mipmap.grand_canyon,
-            R.mipmap.shanghai,
-            R.mipmap.yellowstone,
-            R.mipmap.istanbu,
-            R.mipmap.tokyo
-    };
+
+    private ArrayList<Memo> memoList;
 
     public ImageAdapter(FragmentManager fm){
         super(fm);
@@ -31,15 +23,16 @@ public class ImageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Trip trip = new Trip();
-        trip.setName("Dummy trip");
-        trip.setDescription("Dummy desc");
-        trip.setId("RandomId");
-        return PhotoDetailFragment.newInstance(GalImages[position % 6], trip.getName(), trip.getDescription(), trip.getId());
+        Memo memo = memoList.get(position);
+        return PhotoDetailFragment.newInstance(memo.getMediaUrl(), memo.getText());
     }
     @Override
     public int getCount() {
-        return GalImages.length;
+        return memoList.size();
+    }
+
+    public void setMemoList(ArrayList<Memo> memoList) {
+        this.memoList = memoList;
     }
 
     /*

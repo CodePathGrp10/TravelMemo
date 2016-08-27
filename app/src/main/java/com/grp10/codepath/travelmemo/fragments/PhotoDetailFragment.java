@@ -43,11 +43,11 @@ public class PhotoDetailFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_photo_detail, container, false);
         ButterKnife.bind(this,rootView);
-        int resourceId = getArguments().getInt("resId");
+        String url = getArguments().getString("url");
         String tripName = getArguments().getString("name");
 
         Glide.with(getActivity())
-                .load(resourceId)
+                .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(coverImageView);
         txtTripName.setText(tripName);
@@ -62,13 +62,11 @@ public class PhotoDetailFragment extends Fragment {
         return rootView;
     }
 
-    public static Fragment newInstance(int resId, String name, String description, String id) {
+    public static Fragment newInstance(String url, String name) {
         PhotoDetailFragment fragment = new PhotoDetailFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("resId",resId);
+        bundle.putString("url",url);
         bundle.putString("name",name);
-        bundle.putString("desc",description);
-        bundle.putString("id",id);
         fragment.setArguments(bundle);
         return fragment;
     }

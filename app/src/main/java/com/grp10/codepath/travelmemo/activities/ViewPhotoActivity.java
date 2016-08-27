@@ -8,6 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.adapters.ImageAdapter;
+import com.grp10.codepath.travelmemo.firebase.Memo;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,15 +25,18 @@ public class ViewPhotoActivity extends AppCompatActivity {
 
     ImageAdapter pagerAdapter;
     boolean isImmersive = false;
+    private ArrayList<Memo> memoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_photo2);
         ButterKnife.bind(this);
+        memoList = getIntent().getParcelableArrayListExtra("Photos");
 
         setupCarousal();
         updateCarousalView();
+
 
 //        pagerContainer.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
@@ -69,6 +75,8 @@ public class ViewPhotoActivity extends AppCompatActivity {
         if(pagerAdapter == null) {
             pagerAdapter = new ImageAdapter(getSupportFragmentManager());
         }
+        pagerAdapter.setMemoList(memoList);
+
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         viewPager.setAdapter(pagerAdapter);
 

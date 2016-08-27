@@ -1,12 +1,14 @@
 package com.grp10.codepath.travelmemo.firebase;
 
+import android.os.Parcelable;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by qiming on 8/18/2016.
  */
-public class User {
+public class User implements Parcelable {
 //    String uid;
     String name;
     String profile_image_url;
@@ -61,4 +63,34 @@ public class User {
         results.put("ProfileURL",profile_image_url);
         return results;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(android.os.Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.profile_image_url);
+        dest.writeString(this.uid);
+    }
+
+    protected User(android.os.Parcel in) {
+        this.name = in.readString();
+        this.profile_image_url = in.readString();
+        this.uid = in.readString();
+    }
+
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        @Override
+        public User createFromParcel(android.os.Parcel source) {
+            return new User(source);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }

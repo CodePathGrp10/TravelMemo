@@ -223,6 +223,10 @@ public class ViewTripActivity extends AppCompatActivity {
         //setting Lanlng for photo here
     }
 
+    public List<Memo> getTripMemos(){
+        return tripDetails != null ? tripDetails.getMemoList() : null;
+    }
+
     private void storeMemoToFirebase(Uri file) {
         mProgressBar.progressiveStart();
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -364,13 +368,13 @@ public class ViewTripActivity extends AppCompatActivity {
                 Intent intent;
                 switch (id){
                     case R.id.action_camera :
-                        ToastText("Camera button clicked");
+//                        ToastText("Camera button clicked");
                         intent = new Intent(ViewTripActivity.this, AddCaptureActivity.class);
                         intent.putExtra("tripId", tripId);
                         startActivityForResult(intent,Constants.IMAGE_CAPTURE_REQUEST_CODE);
                         break;
                     case R.id.action_album :
-                        ToastText("Album button clicked....Uploading a photo");
+//                        ToastText("Album button clicked....Uploading a photo");
                         intent = new Intent();
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);

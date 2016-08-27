@@ -1,5 +1,8 @@
 package com.grp10.codepath.travelmemo.firebase;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,7 +12,7 @@ import java.util.Map;
 /**
  * Created by qiming on 8/18/2016.
  */
-public class Trip {
+public class Trip implements Parcelable {
     private String id;
     private User owner;          // person who create the trip
     private String name;           // trip title/name
@@ -163,4 +166,51 @@ public class Trip {
 //    public void setParticipants(Map<String, Boolean> participants) {
 //        this.participants = participants;
 //    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeParcelable(this.owner, flags);
+        dest.writeString(this.name);
+        dest.writeString(this.description);
+        dest.writeString(this.profile_image_url);
+        dest.writeLong(this.start_at != null ? this.start_at.getTime() : -1);
+        dest.writeLong(this.end_at != null ? this.end_at.getTime() : -1);
+        dest.writeByte(this.isFavorite ? (byte) 1 : (byte) 0);
+        dest.writeTypedList(this.memoList);
+        dest.writeList(this.travellers);
+    }
+
+    protected Trip(Parcel in) {
+        this.id = in.readString();
+        this.owner = in.readParcelable(User.class.getClassLoader());
+        this.name = in.readString();
+        this.description = in.readString();
+        this.profile_image_url = in.readString();
+        long tmpStart_at = in.readLong();
+        this.start_at = tmpStart_at == -1 ? null : new Date(tmpStart_at);
+        long tmpEnd_at = in.readLong();
+        this.end_at = tmpEnd_at == -1 ? null : new Date(tmpEnd_at);
+        this.isFavorite = in.readByte() != 0;
+        this.memoList = in.createTypedArrayList(Memo.CREATOR);
+        this.travellers = new ArrayList<User>();
+        in.readList(this.travellers, User.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<Trip> CREATOR = new Parcelable.Creator<Trip>() {
+        @Override
+        public Trip createFromParcel(Parcel source) {
+            return new Trip(source);
+        }
+
+        @Override
+        public Trip[] newArray(int size) {
+            return new Trip[size];
+        }
+    };
 }
