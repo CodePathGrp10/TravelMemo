@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.adapters.UsersArrayAdapter;
@@ -77,6 +78,7 @@ public class AddUserFragment extends DialogFragment {
 //        };
 
         mUsers = new ArrayList<>();
+//        addFakeUsers();
         mUsersArrayAdapter = new UsersArrayAdapter(mUsers);
 
         FirebaseUtil.getUsersRef().orderByChild("name").addValueEventListener(new ValueEventListener() {
@@ -126,6 +128,28 @@ public class AddUserFragment extends DialogFragment {
         recyclerView.setAdapter(mUsersArrayAdapter);
 
         return view;
+    }
+
+    private void addFakeUsers() {
+        String[] strs = {
+                "Vinutha Rumale", "https://lh3.googleusercontent.com/-5RPtgygnBHM/AAAAAAAAAAI/AAAAAAAATV0/eGXHyzd2hhI/s120-c/photo.jpg",
+                "Akshat Jain", "https://lh3.googleusercontent.com/-zukcvSypOGU/AAAAAAAAAAI/AAAAAAAAHlI/EeWuW9BUVDE/s120-c/photo.jpg",
+                "Travis Kim", "https://lh3.googleusercontent.com/-Bj5zqmLrD9k/AAAAAAAAAAI/AAAAAAAABg8/i4mqXxp85Cw/s120-c/photo.jpg",
+                "Bobby Wei", "https://media.licdn.com/mpr/mpr/shrinknp_200_200/p/8/005/066/1e0/0afe3dc.jpg",
+                "Charlie Hieger", "http://lh5.googleusercontent.com/-usU3U-Wf7L0/AAAAAAAAAAI/AAAAAAAAABM/qrZMke6grsY/photo.jpg",
+                "Nathan Esquenazi", "http://sf15.techinclusion.co/wp-content/uploads/2015/09/nathan.jpg",
+                "Supriya Premkumar", "https://yt3.ggpht.com/-35Q6X3k1eMc/AAAAAAAAAAI/AAAAAAAAAAA/on-w1N6hafw/s100-c-k-no-mo-rj-c0xffffff/photo.jpg",
+                "Tarash Jain", "https://lh3.googleusercontent.com/-uzvVMiFHZkg/AAAAAAAAAAI/AAAAAAAABKM/pwjwVnfB6uY/s120-c/photo.jpg",
+                "Sameer Natekar", "https://lh3.googleusercontent.com/-612THbTDmC8/AAAAAAAAAAI/AAAAAAAAGwE/hYJgTs2FbLI/s120-c/photo.jpg",
+                "Divya Kondapalli", "https://lh3.googleusercontent.com/-lVoxZUSkhBA/AAAAAAAAAAI/AAAAAAAAEIA/XfdryGR6xSs/s120-c/photo.jpg",
+                "Jenny Jung", "https://lh3.googleusercontent.com/-P_X-SdI3nvs/AAAAAAAAAAI/AAAAAAAAAEY/c4AGXl50G5Q/s120-c/photo.jpg"
+        };
+        for (int i = 0; i < strs.length; i += 2) {
+            DatabaseReference postref = FirebaseUtil.getUsersRef().push();
+            String uid = postref.getKey();
+            User user = new User(strs[i], strs[i + 1], uid);
+            postref.setValue(user);
+        }
     }
 
 
