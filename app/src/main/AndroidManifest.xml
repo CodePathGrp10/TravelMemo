@@ -22,6 +22,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".app.MemoApplication"
@@ -40,6 +42,13 @@
         <activity android:name=".activities.TripActivity" />
         <activity android:name=".activities.ViewTripActivity" />
         <activity android:name=".activities.SignInActivity" />
+        <activity
+            android:name="io.kickflip.sdk.activity.BroadcastActivity"
+            android:keepScreenOn="true"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="io.kickflip.sdk.activity.MediaPlayerActivity"
+            android:screenOrientation="landscape" />
 
         <uses-library
             android:name="com.google.android.maps"
@@ -70,6 +79,7 @@
         <activity android:name=".activities.ViewPhotoActivity" />
         <activity android:name=".activities.AddCaptureActivity" />
         <activity android:name=".activities.AddUserActivity" />
+        <activity android:name=".activities.KickflipActivity"></activity>
     </application>
 
 </manifest>
