@@ -84,7 +84,8 @@ public class AddUserFragment extends DialogFragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
-                    mUsers.add(user);
+                    if (user.getName() != null)
+                        mUsers.add(user);
                 }
             }
 
