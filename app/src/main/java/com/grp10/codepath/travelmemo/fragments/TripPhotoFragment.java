@@ -20,6 +20,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.activities.KickflipActivity;
 import com.grp10.codepath.travelmemo.activities.ViewPhotoActivity;
 import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.models.TripPhoto;
@@ -102,8 +103,10 @@ public class TripPhotoFragment extends Fragment {
                    viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View view) {
-                           Intent i = new Intent(mContext, ViewPhotoActivity.class);
+//                           Intent i = new Intent(mContext, ViewPhotoActivity.class);
+                           Intent i = new Intent(mContext, KickflipActivity.class);
                            mContext.startActivity(i);
+
                        }
                    });
                }
