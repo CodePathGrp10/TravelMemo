@@ -66,8 +66,19 @@ public class TripActivity extends AppCompatActivity {
     @BindView(R.id.pager_container)
     PagerContainer pagerContainer;
 
-//    @BindView(R.id.viewpager)
+    @BindView(R.id.pager_container_friends)
+    PagerContainer pagerContainerFriend;
+
+    //    @BindView(R.id.viewpager)
     ViewPager viewPager;
+    ViewPager viewPagerFriends;
+
+//    @BindView(R.id.layout_1)
+//    View row1;
+//
+//    @BindView(R.id.layout_2)
+//    View row2;
+
 
     @BindView(R.id.toolbar)
     CustomToolbar toolbar;
@@ -77,6 +88,8 @@ public class TripActivity extends AppCompatActivity {
 
     private Drawer result;
     private MyFragmentPagerAdapter pagerAdapter;
+    private MyFragmentPagerAdapter pagerFriendsAdapter;
+
     private DatabaseReference mFirebaseDatabaseReference;
     FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -92,13 +105,17 @@ public class TripActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+//        pagerContainer = (PagerContainer) row1.findViewById(R.id.pager_container);
+//        pagerContainerFriend = (PagerContainer) row2.findViewById(R.id.pager_container);
         // Initialize Current User
         mUsername = FirebaseUtil.getCurrentUserName();
         mUserId = FirebaseUtil.getCurrentUserId();
         
         getMaterialDrawerMenu();
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+
         setupCarousal();
+        setupFriendsCarousal();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,7 +187,12 @@ public class TripActivity extends AppCompatActivity {
 
                         if(pagerAdapter != null)
                             pagerAdapter.notifyDataSetChanged();
+
+                        if(pagerFriendsAdapter != null)
+                            pagerFriendsAdapter.notifyDataSetChanged();
+
                         updateCarousalView();
+                        updateFriendsCarousalView();
                     }
 
                     @Override
@@ -184,7 +206,7 @@ public class TripActivity extends AppCompatActivity {
     private void updateCarousalView() {
 
         if(pagerAdapter == null) {
-            pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+            pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(),tripList);
         }
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         viewPager.setAdapter(pagerAdapter);
@@ -202,6 +224,28 @@ public class TripActivity extends AppCompatActivity {
 
     }
 
+    private void updateFriendsCarousalView() {
+
+        List<Trip> tmpList = new ArrayList<>(tripList);
+//        tmpList.add(new Trip("someId",new User("akshat",null,"1"),"3rd trip",""));
+        if(pagerFriendsAdapter == null) {
+            pagerFriendsAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), tmpList);
+        }
+        viewPagerFriends.setOffscreenPageLimit(pagerFriendsAdapter.getCount());
+        viewPagerFriends.setAdapter(pagerFriendsAdapter);
+
+        if(pagerFriendsAdapter.getCount() > 0) {
+            //Manually setting the first View to be elevated
+            viewPagerFriends.post(new Runnable() {
+                @Override
+                public void run() {
+                    Fragment fragment = (Fragment) viewPagerFriends.getAdapter().instantiateItem(viewPagerFriends, 0);
+                    ViewCompat.setElevation(fragment.getView(), 8.0f);
+                }
+            });
+        }
+
+    }
     public void getMaterialDrawerMenu(){
         // Create the AccountHeader
         AccountHeader headerResult = new AccountHeaderBuilder()
@@ -280,15 +324,31 @@ public class TripActivity extends AppCompatActivity {
         // Enable this for a linear page view
 //        viewPager.setPageMargin(30);
 
-
         viewPager.setClipChildren(false);
-
-
 //        pagerContainer.setOverlapEnabled(true);
         viewPager.addOnPageChangeListener(pageChangeListener);
 
     }
 
+    private void setupFriendsCarousal() {
+
+        viewPagerFriends = pagerContainerFriend.getViewPager();
+
+        //Set this to have a carousal effect
+        new CoverFlow.Builder().with(viewPagerFriends)
+                .scale(0.3f)
+                .pagerMargin(getResources().getDimensionPixelSize(R.dimen.overlap_pager_margin))
+                .spaceSize(0f)
+                .build();
+
+        // Enable this for a linear page view
+//        viewPagerFriends.setPageMargin(30);
+
+        viewPagerFriends.setClipChildren(false);
+//        pagerContainer.setOverlapEnabled(true);
+        viewPagerFriends.addOnPageChangeListener(friendPageChangeListener);
+
+    }
     private void createTripDialog() {
         View messageView = LayoutInflater.from(TripActivity.this).
                 inflate(R.layout.create_trip_dialog, null);
@@ -381,14 +441,16 @@ public class TripActivity extends AppCompatActivity {
 
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        public MyFragmentPagerAdapter(FragmentManager fm) {
+        private List<Trip> mTripList;
+        public MyFragmentPagerAdapter(FragmentManager fm, List<Trip> tripList) {
             super(fm);
+            mTripList = tripList;
         }
 
         @Override
         public Fragment getItem(int position) {
-            if(tripList.size() > 0) {
-                Trip trip = tripList.get(position);
+            if(mTripList.size() > 0) {
+                Trip trip = mTripList.get(position);
                 return OverlapFragment.newInstance(DemoImages.covers[position % 6], trip.getName(), trip.getDescription(), trip.getId());
             }else{
                 return new OverlapFragment();
@@ -397,9 +459,10 @@ public class TripActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return tripList.size();
+            return mTripList.size();
         }
     }
+
 
     private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
         int currentPosition = 0;
@@ -415,6 +478,31 @@ public class TripActivity extends AppCompatActivity {
             fragmentToShow.onResumeFragment(TripActivity.this);
 
             FragmentLifecycle fragmentToHide = (FragmentLifecycle)pagerAdapter.getItem(currentPosition);
+            fragmentToHide.onPauseFragment();
+
+            currentPosition = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
+
+    private ViewPager.OnPageChangeListener friendPageChangeListener = new ViewPager.OnPageChangeListener() {
+        int currentPosition = 0;
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            FragmentLifecycle fragmentToShow = (FragmentLifecycle)pagerFriendsAdapter.getItem(position);
+            fragmentToShow.onResumeFragment(TripActivity.this);
+
+            FragmentLifecycle fragmentToHide = (FragmentLifecycle)pagerFriendsAdapter.getItem(currentPosition);
             fragmentToHide.onPauseFragment();
 
             currentPosition = position;

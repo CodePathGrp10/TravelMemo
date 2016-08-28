@@ -16,14 +16,14 @@
         app:cardCornerRadius="8dp"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardElevation="4dp"
-        app:contentPadding="25dp"
+        app:contentPadding="4dp"
         app:cardUseCompatPadding="true"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
         >
 
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
@@ -32,10 +32,8 @@
                 android:id="@+id/image_cover"
                 android:layout_gravity="top|center"
                 android:layout_width="match_parent"
-                android:layout_marginTop="40dp"
                 android:layout_height="160dp"
                 android:scaleType="centerCrop"
-
                 android:visibility="visible"/>
 
             <TextView
@@ -46,9 +44,11 @@
                 android:id="@+id/txtTripName"
                 android:layout_marginTop="10dp"
                 android:textSize="28dp"
+                android:textColor="@android:color/primary_text_dark"
                 android:textStyle="bold|italic"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@+id/image_cover"
+                android:layout_gravity="bottom|center"
                 />
 
             <TextView
@@ -71,8 +71,9 @@
                 android:layout_below="@+id/txtDate"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"/>
-        </RelativeLayout>
+                android:layout_marginBottom="20dp"
+                android:visibility="gone"/>
+        </FrameLayout>
     </android.support.v7.widget.CardView>
 
 
