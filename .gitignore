@@ -68,3 +68,6 @@ local.properties
 build
 import-summary.txt
 /captures/
+
+# Kickflip-android-sdk submodule foler
+kickflip-android-sdk/
