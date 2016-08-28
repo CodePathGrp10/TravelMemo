@@ -109,13 +109,13 @@ public class ViewTripActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(ViewTripActivity.this,
+            /*if (ActivityCompat.shouldShowRequestPermissionRationale(ViewTripActivity.this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 ToastText("Waiting for your response for use of location permission");
                 ActivityCompat.requestPermissions(ViewTripActivity.this,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-            } else {
+            } else */{
                 ActivityCompat.requestPermissions(ViewTripActivity.this,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
@@ -147,7 +147,10 @@ public class ViewTripActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getTripDetails();
-        mLocation.beginUpdates();
+        if(ContextCompat.checkSelfPermission(ViewTripActivity.this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED)
+            mLocation.beginUpdates();
     }
 
     @Override
@@ -232,7 +235,7 @@ public class ViewTripActivity extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Do nothing
+                    mLocation.beginUpdates();
                 } else {
                     //Alert user that location service with photo will no be correct.
                 }
@@ -336,7 +339,8 @@ public class ViewTripActivity extends AppCompatActivity {
                 Double lat = null;
                 Double lng = null;
                 //For now use device location for all photo, but need to add code to extract lat and lng existing photo from gallery.
-                if(mLocation != null){
+                if(mLocation != null && ContextCompat.checkSelfPermission(ViewTripActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED){
                     lat = mLocation.getLatitude();
                     lng = mLocation.getLongitude();
                 }else{
