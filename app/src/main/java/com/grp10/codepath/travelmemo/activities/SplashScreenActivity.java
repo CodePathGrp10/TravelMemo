@@ -49,7 +49,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                     finish();
                 }
             },2000);
-
+//            startActivity(new Intent(this, KickflipActivity.class));
+//            finish();
         }
     }
 }
