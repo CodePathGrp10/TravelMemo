@@ -127,7 +127,6 @@ public class ViewTripActivity extends AppCompatActivity {
             tripId = getIntent().getStringExtra(Constants.TRIP_ID);
             getSupportActionBar().setTitle(tripName);
             collapsingToolbar.setTitle(tripName);
-            Glide.with(this).load(R.mipmap.goldengate).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(ivBackdrop);
         }
         Log.d(Constants.TAG,"user == " + FirebaseUtil.getCurrentUserId() + ", " + FirebaseUtil.getCurrentUserName());
 
@@ -196,6 +195,9 @@ public class ViewTripActivity extends AppCompatActivity {
                         }
                         trip.setMemoList(memoList);
                         tripDetails = trip;
+                        if(tripDetails != null) {
+                            setBackDropImginToolBar();
+                        }
                     }
 
                     @Override
@@ -204,7 +206,18 @@ public class ViewTripActivity extends AppCompatActivity {
                     }
                 });
 //        }
+    }
+    private void setBackDropImginToolBar(){
+        //set main trip photo in toolbar
+        List<Memo> memos = new ArrayList<>();
+        memos = tripDetails.getMemoList();
 
+        if(memos.size() > 0){
+            //we can set this by random or the first photo of the trip
+            Glide.with(this).load(memos.get(0).getMediaUrl()).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(ivBackdrop);
+        }else{
+            Glide.with(this).load(R.mipmap.goldengate).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(ivBackdrop);
+        }
     }
 
     private void updateFirebaseStorage(boolean isNewTrip, String tripId) {
