@@ -45,6 +45,10 @@ public class UsersArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyDataSetChanged();
     }
 
+    public Set<User> getSelectedUsers() {
+        return mSelectedUsers;
+    }
+
     public static class UserViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.ivUserProfile)
@@ -81,7 +85,7 @@ public class UsersArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     viewHolder.ivUserSelected.setVisibility(View.GONE);
                     mSelectedUsers.remove(user);
                 }
-//                mOnClickListener.onClick(view);
+                mOnClickListener.onClick(view);
             }
         });
         return new UserViewHolder(v);

@@ -41,5 +41,6 @@ public class AddUserActivity extends AppCompatActivity implements AddUserFragmen
     @Override
     public void onListFragmentInteraction() {
         Toast.makeText(this, "added user", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

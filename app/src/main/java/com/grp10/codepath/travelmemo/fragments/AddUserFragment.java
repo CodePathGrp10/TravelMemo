@@ -2,6 +2,7 @@ package com.grp10.codepath.travelmemo.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,14 +21,16 @@ import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
  * A fragment representing a list of Items.
- * <p>
+ * <p/>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
@@ -35,12 +38,17 @@ public class AddUserFragment extends DialogFragment {
 
     @BindView(R.id.rvUserList)
     RecyclerView rvUserList;
+    @BindView(R.id.fabAddUser)
+    FloatingActionButton fabAddUser;
     // TODO: Customize parameters
     private int mColumnCount = 1;
 
     private OnListFragmentInteractionListener mListener;
     private UsersArrayAdapter mUsersArrayAdapter;
     private ArrayList<User> mUsers;
+    private ArrayList<User> mSelectedUsers;
+    Map<String, User> mUserMap;
+    private String mTripId;
 //    private FirebaseRecyclerAdapter<User, UserViewHolder> mFirebaseAdapter;
 
     /**
@@ -62,6 +70,13 @@ public class AddUserFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_user_list, container, false);
         ButterKnife.bind(this, view);
 
+        fabAddUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addSelectedUsersToTrip(mTripId);
+                mListener.onListFragmentInteraction();
+            }
+        });
 //        mFirebaseAdapter = new FirebaseRecyclerAdapter<User,
 //                UserViewHolder>(
 //                User.class,
@@ -78,35 +93,28 @@ public class AddUserFragment extends DialogFragment {
 //        };
 
         mUsers = new ArrayList<>();
+        mSelectedUsers = new ArrayList<>();
 //        addFakeUsers();
         mUsersArrayAdapter = new UsersArrayAdapter(mUsers);
+        mUsersArrayAdapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSelectedUsers.addAll(mUsersArrayAdapter.getSelectedUsers());
+            }
+        });
+        mUserMap = new HashMap<>();
+        mTripId = getArguments().getString("tripId");
 
         FirebaseUtil.getUsersRef().orderByChild("name").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
                     if (user.getName() != null)
                         mUsers.add(user);
+                    mUserMap.put(user.getUid(), user);
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        FirebaseUtil.getTripsRef().child("trip id").child("travellers").orderByChild("name").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<User> users = new ArrayList<User>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
-                    users.add(user);
-                }
-                mUsers.removeAll(users);
-                mUsersArrayAdapter.notifyDataSetChanged();
+                removeExistingTravellers(mTripId);
             }
 
             @Override
@@ -128,6 +136,36 @@ public class AddUserFragment extends DialogFragment {
         recyclerView.setAdapter(mUsersArrayAdapter);
 
         return view;
+    }
+
+    private void addSelectedUsersToTrip(String tripId) {
+        for (User u : mSelectedUsers) {
+            FirebaseUtil.getTripsRef().child(tripId).child("Travellers").child(u.getUid()).setValue(u);
+        }
+    }
+
+    private void removeExistingTravellers(String tripId) {
+        FirebaseUtil.getTripsRef().child(mTripId).child("Travellers").orderByChild("name").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<User> users = new ArrayList<User>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    User user = ds.getValue(User.class);
+//                    users.add(user);
+                    String uid = user.getUid();
+                    if (mUserMap.containsKey(uid)) {
+                        users.add(mUserMap.get(uid));
+                    }
+                }
+                mUsers.removeAll(users);
+                mUsersArrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void addFakeUsers() {
@@ -183,7 +221,7 @@ public class AddUserFragment extends DialogFragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
