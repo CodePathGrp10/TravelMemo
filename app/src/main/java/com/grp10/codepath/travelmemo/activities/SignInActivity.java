@@ -37,10 +37,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.R;
-import com.grp10.codepath.travelmemo.app.MemoApplication;
 import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.utils.Constants;
@@ -134,7 +136,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull final Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
@@ -149,17 +151,49 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                             String userId;
                             if (getSharedPreferences("UserKey", MODE_PRIVATE).contains("userId")) {
                                 userId = getSharedPreferences("UserKey", MODE_PRIVATE).getString("userId", null);
+                                Log.w(TAG, "got user id from shared pref " + userId);
+
                             } else {
-                                userId = mFirebaseDatabaseReference.child("users").push().getKey();
-                                // save it
+                                Log.w(TAG, "user id does not exists in shared pref, creating a new value");
+
                                 username = FirebaseUtil.getCurrentUserName();
-                                getSharedPreferences("UserKey", MODE_PRIVATE).edit().putString("userId", userId).apply();
-                                User owner = new User(username, null, userId);
-                                mFirebaseDatabaseReference.child("users").child(userId).setValue(owner.toMap());
+                                final String userAuthId = FirebaseUtil.getCurrentUserId();
+
+                                DatabaseReference usersRef = mFirebaseDatabaseReference.child("users");
+                                usersRef.child(userAuthId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Log.d(TAG, "User Id == " + dataSnapshot.getKey());
+                                        String emailId = FirebaseUtil.getCurrentUserEmail();
+
+                                        if (dataSnapshot.getValue() == null) {
+
+//                                            String userId = mFirebaseDatabaseReference.child("users").push().getKey();
+                                            Log.d(TAG, "A new User with id == " + userAuthId);
+                                            // save it
+                                            getSharedPreferences("UserKey", MODE_PRIVATE).edit().putString("userId", userAuthId).apply();
+                                            User owner = new User(username, null, userAuthId, emailId);
+                                            Log.d(TAG, "An new User == " + owner.toString());
+                                            mFirebaseDatabaseReference.child("users").child(userAuthId).setValue(owner.toMap());
+                                        } else {
+                                            Log.d(TAG, "An existing User == ");
+
+                                        }
+
+                                        Log.d(Constants.TAG, "Firebase user : " + task.getResult().getUser());
+                                        startActivity(new Intent(SignInActivity.this, SplashScreenActivity.class));
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
 
                             }
-                            startActivity(new Intent(SignInActivity.this, SplashScreenActivity.class));
-                            finish();
+//                            Query usedIdQuery = mFirebaseDatabaseReference.child("users").child()
+
                         }
                     }
                 });
@@ -172,44 +206,4 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
-
-    private void doFirebaseAuth() {
-
-        Log.d(Constants.TAG, "doing FB auth....");
-        mFirebaseAuth.signInAnonymously()
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull final Task<AuthResult> task) {
-                        Log.d(Constants.TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Log.w(Constants.TAG, "signInAnonymously", task.getException());
-                            Toast.makeText(SignInActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            String userId;
-                            if (getSharedPreferences("UserKey", MODE_PRIVATE).contains("userId")) {
-                                userId = getSharedPreferences("UserKey", MODE_PRIVATE).getString("userId", null);
-                            } else {
-                                userId = mFirebaseDatabaseReference.child("users").push().getKey();
-                                // save it
-                                getSharedPreferences("UserKey", MODE_PRIVATE).edit().putString("userId", userId).apply();
-                                User owner = new User(username, null, userId);
-                                mFirebaseDatabaseReference.child("users").child(userId).setValue(owner.toMap());
-
-                            }
-//                            Query usedIdQuery = mFirebaseDatabaseReference.child("users").child()
-                            Log.d(Constants.TAG, "Firebase user : " + task.getResult().getUser());
-                            MemoApplication.setFirebaseUser(task.getResult());
-                            startActivity(new Intent(SignInActivity.this, SplashScreenActivity.class));
-                            finish();
-                        }
-
-                    }
-                });
-    }
-
 }

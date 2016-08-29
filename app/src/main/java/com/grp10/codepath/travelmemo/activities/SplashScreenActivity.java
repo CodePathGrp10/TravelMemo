@@ -29,27 +29,28 @@ public class SplashScreenActivity extends AppCompatActivity {
         handler = new Handler(looper);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-
-        // Initialize Firebase Auth
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-
-        if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
-        } else {
-
-            handler.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent mainAct = new Intent(SplashScreenActivity.this,TripActivity.class);
-                    mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(mainAct);
-                    finish();
+                    // Initialize Firebase Auth
+                    mFirebaseUser = mFirebaseAuth.getCurrentUser();
+
+                    if (mFirebaseUser == null) {
+                        // Not signed in, launch the Sign In activity
+                        startActivity(new Intent(SplashScreenActivity.this, SignInActivity.class));
+                        finish();
+                        return;
+                    } else {
+
+
+                        Intent mainAct = new Intent(SplashScreenActivity.this, TripActivity.class);
+                        mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(mainAct);
+                        finish();
+                    }
                 }
             },2000);
 
-        }
+
     }
 }

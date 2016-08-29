@@ -331,7 +331,7 @@ public class ViewTripActivity extends AppCompatActivity {
                     lat = 37.775206;
                     lng = -122.417694;
                 }
-                Memo memo = new Memo(new User(FirebaseUtil.getCurrentUserName(), "", userId), downloadUrl.toString(), "Dummy Text", Memo.TYPE_PHOTO, lat, lng);
+                Memo memo = new Memo(new User(FirebaseUtil.getCurrentUserName(), "", userId, FirebaseUtil.getCurrentUserEmail()), downloadUrl.toString(), "Dummy Text", Memo.TYPE_PHOTO, lat, lng);
                 HashMap<String, Object> result = new HashMap<>();
 
                 List<Memo> memoList = new ArrayList<Memo>();

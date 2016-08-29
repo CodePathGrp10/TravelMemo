@@ -26,11 +26,4 @@ public class MemoApplication extends MultiDexApplication {
         return storageRef;
     }
 
-    public static void setFirebaseUser(AuthResult authResult){
-        mAuthResult = authResult;
-    }
-
-    public static AuthResult getAuthResult() {
-        return mAuthResult;
-    }
 }

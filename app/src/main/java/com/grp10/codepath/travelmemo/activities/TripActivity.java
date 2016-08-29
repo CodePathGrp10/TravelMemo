@@ -284,6 +284,7 @@ public class TripActivity extends AppCompatActivity {
                                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                     if (user == null) {
                                         Toast.makeText(TripActivity.this, "Signed out successfully", Toast.LENGTH_SHORT).show();
+                                        getSharedPreferences("UserKey", MODE_PRIVATE).edit().clear().apply();
                                         startActivity(new Intent(TripActivity.this, SignInActivity.class));
                                         finish();
                                     }
@@ -398,7 +399,7 @@ public class TripActivity extends AppCompatActivity {
 
     private void createNewTrip(final String tripName, final String description) {
 
-        User owner = new User(mUsername, null, mUserId);
+        User owner = new User(mUsername, null, mUserId,FirebaseUtil.getCurrentUserEmail() );
         final String tripKey = mFirebaseDatabaseReference.child("trips").push().getKey();
 
         Log.d(Constants.TAG,"trip id == " + tripKey);

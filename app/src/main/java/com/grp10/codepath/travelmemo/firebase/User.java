@@ -13,14 +13,17 @@ public class User implements Parcelable {
     String name;
     String profile_image_url;
     private String uid;
+    private String emailId;
+
 
     public User() {
     }
 
-    public User(String name, String profile_image_url, String uid) {
+    public User(String name, String profile_image_url, String uid, String emailId) {
         this.name = name;
         this.profile_image_url = profile_image_url;
         this.uid = uid;
+        this.emailId = emailId;
     }
 
     public String getName() {
@@ -52,6 +55,7 @@ public class User implements Parcelable {
         final StringBuffer sb = new StringBuffer("User{");
         sb.append("name='").append(name).append('\'');
         sb.append(", uid='").append(uid).append('\'');
+        sb.append(", email='").append(emailId).append('\'');
         sb.append('}');
         return sb.toString();
     }
@@ -61,6 +65,7 @@ public class User implements Parcelable {
         results.put("id",uid);
         results.put("username",name);
         results.put("ProfileURL",profile_image_url);
+        results.put("emailId",emailId);
         return results;
     }
 
@@ -74,12 +79,14 @@ public class User implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.profile_image_url);
         dest.writeString(this.uid);
+        dest.writeString(this.emailId);
     }
 
     protected User(android.os.Parcel in) {
         this.name = in.readString();
         this.profile_image_url = in.readString();
         this.uid = in.readString();
+        this.emailId = in.readString();
     }
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
