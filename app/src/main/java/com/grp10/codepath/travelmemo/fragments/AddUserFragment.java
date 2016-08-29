@@ -147,7 +147,7 @@ public class AddUserFragment extends DialogFragment {
         for (int i = 0; i < strs.length; i += 2) {
             DatabaseReference postref = FirebaseUtil.getUsersRef().push();
             String uid = postref.getKey();
-            User user = new User(strs[i], strs[i + 1], uid);
+            User user = new User(strs[i], strs[i + 1], uid, "");
             postref.setValue(user);
         }
     }
