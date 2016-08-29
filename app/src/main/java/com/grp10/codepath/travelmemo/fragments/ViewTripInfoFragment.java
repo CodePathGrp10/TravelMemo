@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.activities.AddUserActivity;
 import com.grp10.codepath.travelmemo.firebase.Trip;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
@@ -100,10 +101,12 @@ public class ViewTripInfoFragment extends Fragment {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 int id = menuItem.getItemId();
-                Intent intent;
+                Intent intent = new Intent(getActivity(), AddUserActivity.class);
                 switch (id){
                     case R.id.action_add_user :
 //                        Toast.makeText(getContext(), "Add user button clicked").show();
+                        intent.putExtra("tripId", tripId);
+                        startActivity(intent);
                         break;
                 }
                 //TODO: Start some activity
