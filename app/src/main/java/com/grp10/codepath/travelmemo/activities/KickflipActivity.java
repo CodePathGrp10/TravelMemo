@@ -26,8 +26,6 @@ import io.kickflip.sdk.av.BroadcastListener;
 import io.kickflip.sdk.av.SessionConfig;
 import io.kickflip.sdk.exception.KickflipException;
 
-import static io.kickflip.sdk.Kickflip.isKickflipUrl;
-
 public class KickflipActivity extends Activity {
     private static final String TAG = "KickflipActivity";
     private boolean mKickflipReady = false;
@@ -87,7 +85,7 @@ public class KickflipActivity extends Activity {
             @Override
             public void onSuccess(Response response) {
                 mKickflipReady = true;
-                startBroadcastingActivity();
+//                startBroadcastingActivity();
 //                Kickflip.startMediaPlayerActivity(KickflipActivity.this, "https://kickflip.io/bb6ba0db-d541-4ed4-8d38-7b3391ed061f/", false);
 //                Kickflip.startMediaPlayerActivity(KickflipActivity.this, "https://d3mf59dq42lc44.cloudfront.net/travelmemo/1qighnpcv6ue/487023f1-6475-496e-8aa6-44dfe8026cd9/index.m3u8", false);
             }
@@ -143,11 +141,11 @@ public class KickflipActivity extends Activity {
 
     private boolean handleLaunchingIntent() {
         Uri intentData = getIntent().getData();
-        if (isKickflipUrl(intentData)) {
+        //if (isKickflipUrl(intentData)) {
             Kickflip.startMediaPlayerActivity(this, intentData.toString(), true);
             finish();
             return true;
-        }
-        return false;
+        //}
+       // return false;
     }
 }
