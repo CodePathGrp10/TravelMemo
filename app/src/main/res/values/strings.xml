@@ -13,4 +13,6 @@
     <string name="Album">Album</string>
     <string name="Camera">Camera</string>
     <string name="add_user">Add User</string>
+    
+    <string name="google_map_key">AIzaSyAW1wk_b5BfTwrK8HYO1v2VHDqAWLq84OY</string>
 </resources>
