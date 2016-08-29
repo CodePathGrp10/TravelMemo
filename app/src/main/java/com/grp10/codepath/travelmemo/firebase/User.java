@@ -62,9 +62,9 @@ public class User implements Parcelable {
 
     public Map<String,Object> toMap() {
         HashMap<String,Object> results = new HashMap<>();
-        results.put("id",uid);
-        results.put("username",name);
-        results.put("ProfileURL",profile_image_url);
+        results.put("uid",uid);
+        results.put("name",name);
+        results.put("profile_image_url", profile_image_url);
         results.put("emailId",emailId);
         return results;
     }
