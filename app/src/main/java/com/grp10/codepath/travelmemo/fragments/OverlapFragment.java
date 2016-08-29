@@ -144,24 +144,23 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Log.d(Constants.TAG, "Delete a trip from trips entity successful");
+                        mFirebaseRef.child("user-trips").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                                    String uId = postSnapshot.getKey();
+                                    mFirebaseRef.child("user-trips").child(uId).child("trips").child(tripId).removeValue();
+                                }
+                                refreshTripList();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
                     }
                 });
-
-                mFirebaseRef.child("user-trips").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                            String uId = postSnapshot.getKey();
-                            mFirebaseRef.child("user-trips").child(uId).child("trips").child(tripId).removeValue();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-                refreshTripList();
                 return true;
             }
         });

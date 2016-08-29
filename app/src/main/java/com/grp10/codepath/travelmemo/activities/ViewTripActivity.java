@@ -167,17 +167,18 @@ public class ViewTripActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Trip trip = dataSnapshot.getValue(Trip.class);
-                        Log.d(TAG, "Trip name == " + trip.getName());
-                        Log.d(TAG, "Trip id == " + trip.getId());
-                        Log.d(TAG, "Trip owner == " + trip.getOwner().toString());
+                        if(trip != null) {
+                            Log.d(TAG, "Trip name == " + trip.getName());
+                            Log.d(TAG, "Trip id == " + trip.getId());
+                            Log.d(TAG, "Trip owner == " + trip.getOwner().toString());
 
-                        Map map = (HashMap<String, Object>) dataSnapshot.getValue();
+                            Map map = (HashMap<String, Object>) dataSnapshot.getValue();
 
-                        User owner = new User();
-                        HashMap<String, String> mapOwners = (HashMap<String, String>) map.get("owner");
-                        owner.setName(mapOwners.get("name"));
-                        owner.setUid(mapOwners.get("uid"));
-                        trip.setOwner(owner);
+                            User owner = new User();
+                            HashMap<String, String> mapOwners = (HashMap<String, String>) map.get("owner");
+                            owner.setName(mapOwners.get("name"));
+                            owner.setUid(mapOwners.get("uid"));
+                            trip.setOwner(owner);
 
 //                        List<User> travellers = new ArrayList<User>();
 //                        List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map.get("Travellers");
@@ -191,15 +192,20 @@ public class ViewTripActivity extends AppCompatActivity {
 //                        }
 //                        trip.setTravellers(travellers);
 
-                        List<Memo> memoList = new ArrayList<Memo>();
-                        for (DataSnapshot memoSnapshot: dataSnapshot.child("Memos").getChildren()) {
-                            Memo aMemo = memoSnapshot.getValue(Memo.class);
-                            memoList.add(aMemo);
-                        }
-                        trip.setMemoList(memoList);
-                        tripDetails = trip;
-                        if(tripDetails != null) {
-                            setBackDropImginToolBar();
+                            List<Memo> memoList = new ArrayList<Memo>();
+                            for (DataSnapshot memoSnapshot : dataSnapshot.child("Memos").getChildren()) {
+                                Memo aMemo = memoSnapshot.getValue(Memo.class);
+                                memoList.add(aMemo);
+                            }
+                            trip.setMemoList(memoList);
+                            tripDetails = trip;
+                            if (tripDetails != null) {
+                                setBackDropImginToolBar();
+                            }
+                        }else{
+                            ToastText("No trip detail is available");
+                            finish();
+                            onBackPressed();
                         }
                     }
 
