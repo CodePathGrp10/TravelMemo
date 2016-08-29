@@ -56,12 +56,12 @@ public class Trip implements Parcelable {
         this.id = id;
     }
 
-    public boolean isFavorite() {
+    public boolean getIsFavorite() {
         return isFavorite;
     }
 
-    public void setFavorite(boolean favorite) {
-        isFavorite = favorite;
+    public void setIsFavorite(boolean isFavorite) {
+        isFavorite = isFavorite;
     }
 
     public User getOwner() {
