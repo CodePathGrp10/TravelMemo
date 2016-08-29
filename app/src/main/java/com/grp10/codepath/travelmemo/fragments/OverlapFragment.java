@@ -29,6 +29,7 @@ import com.grp10.codepath.travelmemo.utils.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -93,6 +94,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
 
         Glide.with(getActivity()).
                 load(resourceId)
+                .bitmapTransform(new RoundedCornersTransformation(getActivity(),30,5))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(coverImageView);
         txtTripName.setText(tripName);

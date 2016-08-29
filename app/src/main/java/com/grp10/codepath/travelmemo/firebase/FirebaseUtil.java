@@ -51,7 +51,7 @@ public class FirebaseUtil {
     public static User getAuthor() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return null;
-        return new User(user.getDisplayName(), user.getPhotoUrl().toString(), user.getUid());
+        return new User(user.getDisplayName(), user.getPhotoUrl().toString(), user.getUid(),FirebaseUtil.getCurrentUserEmail() );
     }
 
     public static DatabaseReference getCurrentUserRef() {

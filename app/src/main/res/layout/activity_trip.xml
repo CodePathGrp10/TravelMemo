@@ -10,21 +10,25 @@
 
     <include layout="@layout/appbar" />
 
-    <me.crosswall.lib.coverflow.core.PagerContainer
-        android:id="@+id/pager_container"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    >
+        android:layout_marginTop="?attr/actionBarSize"
+        >
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/viewpager"
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    </me.crosswall.lib.coverflow.core.PagerContainer>
+        <include layout="@layout/trip_layout"
+                     android:id="@+id/layout_1"
+                     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                />
+
+    </LinearLayout>
+
+    </ScrollView>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
