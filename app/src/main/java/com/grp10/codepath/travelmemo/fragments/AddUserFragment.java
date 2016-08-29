@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.adapters.UsersArrayAdapter;
 import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
+import com.grp10.codepath.travelmemo.firebase.Trip;
 import com.grp10.codepath.travelmemo.firebase.User;
 
 import java.util.ArrayList;
@@ -138,10 +139,26 @@ public class AddUserFragment extends DialogFragment {
         return view;
     }
 
-    private void addSelectedUsersToTrip(String tripId) {
-        for (User u : mSelectedUsers) {
-            FirebaseUtil.getTripsRef().child(tripId).child("Travellers").child(u.getUid()).setValue(u);
-        }
+    private void addSelectedUsersToTrip(final String tripId) {
+        final Trip[] trip = new Trip[1];
+        FirebaseUtil.getTripsRef().child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                trip[0] = dataSnapshot.getValue(Trip.class);
+                for (User u : mSelectedUsers) {
+                    String uid = u.getUid();
+                    FirebaseUtil.getTripsRef().child(tripId).child("Travellers").child(uid).setValue(u);
+                    FirebaseUtil.getBaseRef().child("user-trips").child(uid).child("trips").child(tripId).setValue(trip[0]);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     private void removeExistingTravellers(String tripId) {
