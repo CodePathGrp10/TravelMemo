@@ -171,7 +171,7 @@ public class ViewTripActivity extends AppCompatActivity {
                         Log.d(TAG, "Trip id == " + trip.getId());
                         Log.d(TAG, "Trip owner == " + trip.getOwner().toString());
 
-                        Map map = (HashMap<String, String>) dataSnapshot.getValue();
+                        Map map = (HashMap<String, Object>) dataSnapshot.getValue();
 
                         User owner = new User();
                         HashMap<String, String> mapOwners = (HashMap<String, String>) map.get("owner");
@@ -179,17 +179,17 @@ public class ViewTripActivity extends AppCompatActivity {
                         owner.setUid(mapOwners.get("uid"));
                         trip.setOwner(owner);
 
-                        List<User> travellers = new ArrayList<User>();
-                        List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map.get("Travellers");
-                        if (listTravellers != null) {
-                            for (HashMap<String, String> members : listTravellers) {
-                                User member = new User();
-                                member.setName(members.get("name"));
-                                member.setUid(members.get("uid"));
-                                travellers.add(member);
-                            }
-                        }
-                        trip.setTravellers(travellers);
+//                        List<User> travellers = new ArrayList<User>();
+//                        List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map.get("Travellers");
+//                        if (listTravellers != null) {
+//                            for (HashMap<String, String> members : listTravellers) {
+//                                User member = new User();
+//                                member.setName(members.get("name"));
+//                                member.setUid(members.get("uid"));
+//                                travellers.add(member);
+//                            }
+//                        }
+//                        trip.setTravellers(travellers);
 
                         List<Memo> memoList = new ArrayList<Memo>();
                         for (DataSnapshot memoSnapshot: dataSnapshot.child("Memos").getChildren()) {
