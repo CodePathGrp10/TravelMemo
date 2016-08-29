@@ -9,30 +9,87 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/view_trip_layout"
         android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/view_trip_layout"
         android:orientation="vertical"
+
         >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Trip Name"
+            android:textColor="@android:color/primary_text_light"
+            android:layout_margin="10dp"
             android:id="@+id/tvTripName" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Start Date - End Date"
-            android:id="@+id/tvTripDate" />
+            android:layout_margin="10dp"
+            android:textColor="@android:color/primary_text_light"
+            android:id="@+id/tvTripDate"
+            android:visibility="gone"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Description"
+            android:textColor="@android:color/primary_text_light"
+            android:layout_margin="10dp"
             android:id="@+id/tvTripDesc" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_trip_layout"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Trip Name"
+                android:layout_margin="10dp"
+                android:id="@+id/editTripName" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Start Date - End Date"
+                android:layout_margin="10dp"
+                android:id="@+id/editTripDate"
+                android:visibility="gone"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description"
+                android:layout_margin="10dp"
+                android:id="@+id/editTripDesc" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="end"
+                >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ok"
+                android:id="@+id/btnSave"
+                android:textColor="@android:color/primary_text_light"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnCancel"
+                android:text="Cancel"
+                android:textColor="@android:color/primary_text_light"/>
+
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

@@ -430,6 +430,9 @@ public class ViewTripActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case R.id.action_edit:
+                        ViewTripInfoFragment fragment = (ViewTripInfoFragment) viewTripPagerAdapter.getItem(vpPager.getCurrentItem());
+                        fragment.editTrip();
+                        fabSDPhoto.hide();
                         break;
                 }
                 //TODO: Start some activity
@@ -456,6 +459,10 @@ public class ViewTripActivity extends AppCompatActivity {
         });
     }
 
+    public void showFabIcon() {
+        fabSDPhoto.show();
+    }
+
     public class ViewTripPagerAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
         HashMap<Integer, Fragment> hm = new HashMap<>();
@@ -465,14 +472,20 @@ public class ViewTripActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if(position == 0){
-                fragment =  ViewTripInfoFragment.newInstance(tripId);
-                hm.put(0, fragment);
-            }else if(position == 1){
-                fragment =  ViewTripPhotoFragment.newInstance(ViewTripActivity.this,tripId);
-                hm.put(1, fragment);
+            if(hm.get(position) == null) {
+                if (position == 0) {
+                    if (hm.get(0) == null) {
+                        fragment = ViewTripInfoFragment.newInstance(tripId);
+                        hm.put(0, fragment);
+                    }
+                } else if (position == 1) {
+                    fragment = ViewTripPhotoFragment.newInstance(ViewTripActivity.this, tripId);
+                    hm.put(1, fragment);
+                } else {
+                    return null;
+                }
             }else{
-                return null;
+                fragment = hm.get(position);
             }
             return fragment;
         }
