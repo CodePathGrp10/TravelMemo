@@ -157,7 +157,7 @@ public class TripActivity extends AppCompatActivity {
                                     Log.d(TAG,"List aleadry contains the trip : " + trip.getName());
                                     continue;
                                 }else {
-                                    trip.setFavorite((Boolean) map2.get("isFavorite"));
+                                    trip.setIsFavorite((Boolean) map2.get("isFavorite"));
                                     trip.setDescription((String) map2.get("description"));
                                     User owner = new User();
                                     HashMap<String, String> mapOwners = (HashMap<String, String>) map2.get("owner");
@@ -166,13 +166,13 @@ public class TripActivity extends AppCompatActivity {
                                     trip.setOwner(owner);
 
                                     List<User> travellers = new ArrayList<User>();
-                                    List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map2.get("Travellers");
-                                    for (HashMap<String, String> members : listTravellers) {
-                                        User member = new User();
-                                        member.setName(members.get("name"));
-                                        member.setUid(members.get("uid"));
-                                        travellers.add(member);
-                                    }
+//                                    List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map2.get("Travellers");
+//                                    for (HashMap<String, String> members : listTravellers) {
+//                                        User member = new User();
+//                                        member.setName(members.get("name"));
+//                                        member.setUid(members.get("uid"));
+//                                        travellers.add(member);
+//                                    }
                                     trip.setTravellers(travellers);
                                     Log.d(TAG, "Trip name == " + trip.getName());
                                     Log.d(TAG, "Trip id == " + trip.getId());
