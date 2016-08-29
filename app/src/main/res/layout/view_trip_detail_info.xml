@@ -27,5 +27,16 @@
             tools:text="Description"
             android:id="@+id/tvTripDesc" />
 
+        <io.github.yavski.fabspeeddial.FabSpeedDial
+            android:id="@+id/fabInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            app:fabGravity="bottom_start"
+            app:fabMenu="@menu/add_trip_info_button"
+            app:miniFabBackgroundTint="@android:color/white"
+            app:miniFabDrawableTint="?attr/colorPrimaryDark"
+            app:miniFabTitleTextColor="?attr/colorPrimaryDark" />
     </LinearLayout>
+
 </android.support.v4.widget.NestedScrollView>

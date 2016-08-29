@@ -1,10 +1,13 @@
 package com.grp10.codepath.travelmemo.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.internal.NavigationMenu;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,6 +23,8 @@ import com.grp10.codepath.travelmemo.utils.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 /**
  * Created by traviswkim on 8/16/16.
@@ -30,6 +35,7 @@ public class ViewTripInfoFragment extends Fragment {
     @BindView(R.id.tvTripName) TextView tvTripName;
     @BindView(R.id.tvTripDate) TextView tvTripDate;
     @BindView(R.id.tvTripDesc) TextView tvTripDesc;
+    @BindView(R.id.fabInfo) FabSpeedDial fabSDInfo;
 
     public static ViewTripInfoFragment newInstance(String tripId) {
         ViewTripInfoFragment viewTripInfoFragment = new ViewTripInfoFragment();
@@ -45,6 +51,7 @@ public class ViewTripInfoFragment extends Fragment {
         View v = inflater.inflate(R.layout.view_trip_detail_info, container, false);
         ButterKnife.bind(this, v);
         getTripInfo();
+        setListener();
         return v;
     }
 
@@ -80,6 +87,28 @@ public class ViewTripInfoFragment extends Fragment {
                 Log.d(Constants.TAG + getClass().getName(), databaseError.getMessage());
             }
 
+        });
+    }
+
+    public void setListener(){
+        fabSDInfo.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                // TODO: Do something with your menu items, or return false if you don't want to show them
+                return true;
+            }
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                Intent intent;
+                switch (id){
+                    case R.id.action_add_user :
+//                        Toast.makeText(getContext(), "Add user button clicked").show();
+                        break;
+                }
+                //TODO: Start some activity
+                return false;
+            }
         });
     }
 }

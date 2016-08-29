@@ -78,7 +78,7 @@ public class ViewTripActivity extends AppCompatActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.backdrop) ImageView ivBackdrop;
-    @BindView(R.id.fabAddPhoto) FabSpeedDial fabSpeedDial;
+    @BindView(R.id.fabAddPhoto) FabSpeedDial fabSDPhoto;
     @BindView(R.id.view_trip_viewpager) ViewPager vpPager;
     @BindView(R.id.view_trip_tabstrip) PagerSlidingTabStrip tabStrip;
     @BindView(R.id.progressbar) SmoothProgressBar mProgressBar;
@@ -394,7 +394,7 @@ public class ViewTripActivity extends AppCompatActivity {
         });
         mProgressBar.progressiveStop();
 
-        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+        fabSDPhoto.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
                 // TODO: Do something with your menu items, or return false if you don't want to show them
@@ -431,9 +431,9 @@ public class ViewTripActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(tabTitle[position]);
 //                collapsingToolbar.setTitle(tabTitle[position]);
                 if(position == 1){
-                    fabSpeedDial.show();
+                    fabSDPhoto.show();
                 }else{
-                    fabSpeedDial.hide();
+                    fabSDPhoto.hide();
                 }
             }
 
