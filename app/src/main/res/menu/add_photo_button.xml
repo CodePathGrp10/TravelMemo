@@ -9,4 +9,15 @@
         android:id="@+id/action_album"
         android:icon="@drawable/ic_album"
         android:title="@string/Album"/>
+
+    <item
+        android:id="@+id/action_add_user"
+        android:icon="@drawable/ic_account_plus"
+        android:title="@string/add_user" />
+
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/edittrip"/>
+
 </menu>

@@ -397,7 +397,13 @@ public class ViewTripActivity extends AppCompatActivity {
         fabSDPhoto.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                // TODO: Do something with your menu items, or return false if you don't want to show them
+                if(vpPager.getCurrentItem() == 1){
+                    navigationMenu.removeItem(R.id.action_add_user);
+                    navigationMenu.removeItem(R.id.action_edit);
+                }else if(vpPager.getCurrentItem() == 0){
+                    navigationMenu.removeItem(R.id.action_camera);
+                    navigationMenu.removeItem(R.id.action_album);
+                }
                 return true;
             }
             @Override
@@ -417,7 +423,13 @@ public class ViewTripActivity extends AppCompatActivity {
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
-
+                        break;
+                    case R.id.action_add_user :
+                        intent = new Intent(ViewTripActivity.this, AddUserActivity.class);
+                        intent.putExtra("tripId", tripId);
+                        startActivity(intent);
+                        break;
+                    case R.id.action_edit:
                         break;
                 }
                 //TODO: Start some activity
@@ -430,11 +442,6 @@ public class ViewTripActivity extends AppCompatActivity {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 getSupportActionBar().setTitle(tabTitle[position]);
 //                collapsingToolbar.setTitle(tabTitle[position]);
-                if(position == 1){
-                    fabSDPhoto.show();
-                }else{
-                    fabSDPhoto.hide();
-                }
             }
 
             @Override
