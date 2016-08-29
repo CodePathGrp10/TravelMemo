@@ -31,9 +31,9 @@ trip notes , voice notes etc and that will be visible to trip member.
 ### These are the **P2** stories :
  
  * [ ] Able to add Voice Notes
- * [ ] Edit trip
- * [ ] Delete a trip
- * [ ] View trips of your friends
+ * [X] Edit trip
+ * [X] Delete a trip
+ * [X] View trips of your friends
  * [ ] Show POIs on the map
  * [X] View Photos of the trip fullscreen
      
