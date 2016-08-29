@@ -2,9 +2,10 @@ package com.grp10.codepath.travelmemo.fragments;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -16,9 +17,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.activities.TripActivity;
 import com.grp10.codepath.travelmemo.activities.ViewTripActivity;
@@ -56,6 +65,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     TextView txtDesc;
 
     Integer color;
+    private DatabaseReference mFirebaseRef;
 
     public OverlapFragment() {
         // Required empty public constructor
@@ -85,6 +95,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         tripId = getArguments().getString(Constants.TRIP_ID);
         tripName = getArguments().getString(Constants.TRIP_NAME);
         tripDesc = getArguments().getString(Constants.DESCRIPTION);
+        mFirebaseRef = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,7 +132,46 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
                 getContext().startActivity(viewTripIntent);
             }
         });
+
+
+        //For delete
+        cardView.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(view.getContext(), "Delete", Toast.LENGTH_SHORT).show();
+
+                mFirebaseRef.child("trips").child(tripId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d(Constants.TAG, "Delete a trip from trips entity successful");
+                    }
+                });
+
+                mFirebaseRef.child("user-trips").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                            String uId = postSnapshot.getKey();
+                            mFirebaseRef.child("user-trips").child(uId).child("trips").child(tripId).removeValue();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                refreshTripList();
+                return true;
+            }
+        });
+
         return rootView;
+    }
+
+    private void refreshTripList() {
+        Intent intent = getActivity().getIntent();
+        startActivity(intent);
     }
 
     @Override
