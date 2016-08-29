@@ -87,9 +87,9 @@ public class KickflipActivity extends Activity {
             @Override
             public void onSuccess(Response response) {
                 mKickflipReady = true;
-//                startBroadcastingActivity();
+                startBroadcastingActivity();
 //                Kickflip.startMediaPlayerActivity(KickflipActivity.this, "https://kickflip.io/bb6ba0db-d541-4ed4-8d38-7b3391ed061f/", false);
-                Kickflip.startMediaPlayerActivity(KickflipActivity.this, "https://d3mf59dq42lc44.cloudfront.net/travelmemo/1qighnpcv6ue/487023f1-6475-496e-8aa6-44dfe8026cd9/index.m3u8", false);
+//                Kickflip.startMediaPlayerActivity(KickflipActivity.this, "https://d3mf59dq42lc44.cloudfront.net/travelmemo/1qighnpcv6ue/487023f1-6475-496e-8aa6-44dfe8026cd9/index.m3u8", false);
             }
 
             @Override
@@ -108,7 +108,7 @@ public class KickflipActivity extends Activity {
 
     private void createExampleMemo() {
         User author = FirebaseUtil.getAuthor();
-        Memo memo = new Memo(author, mStream.getStreamUrl(), "video", Memo.TYPE_AUDIO_CLIP, 0.0, 0.0);
+        Memo memo = new Memo(author, mStream.getStreamUrl(), "video", Memo.TYPE_PHOTO, 0.0, 0.0);
         DatabaseReference postRef = FirebaseUtil.getTripsRef().child("-KQEjI8Dnar-pz4QRf_C").child("Memos").push();
         postRef.setValue(memo);
         String memoId = postRef.getKey();

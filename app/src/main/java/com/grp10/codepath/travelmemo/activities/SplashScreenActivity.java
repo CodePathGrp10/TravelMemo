@@ -40,17 +40,17 @@ public class SplashScreenActivity extends AppCompatActivity {
             return;
         } else {
 
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent mainAct = new Intent(SplashScreenActivity.this,TripActivity.class);
-                    mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(mainAct);
-                    finish();
-                }
-            },2000);
-//            startActivity(new Intent(this, KickflipActivity.class));
-//            finish();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Intent mainAct = new Intent(SplashScreenActivity.this,TripActivity.class);
+//                    mainAct.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    startActivity(mainAct);
+//                    finish();
+//                }
+//            },2000);
+            startActivity(new Intent(this, KickflipActivity.class));
+            finish();
         }
     }
 }
