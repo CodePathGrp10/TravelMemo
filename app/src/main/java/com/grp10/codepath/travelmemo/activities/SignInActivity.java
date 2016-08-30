@@ -45,7 +45,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.User;
-import com.grp10.codepath.travelmemo.utils.Constants;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
@@ -152,51 +151,44 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                             if (getSharedPreferences("UserKey", MODE_PRIVATE).contains("userId")) {
                                 userId = getSharedPreferences("UserKey", MODE_PRIVATE).getString("userId", null);
                                 Log.w(TAG, "got user id from shared pref " + userId);
+                                startActivity(new Intent(SignInActivity.this, SplashScreenActivity.class));
+                                finish();
 
                             } else {
                                 Log.w(TAG, "user id does not exists in shared pref, creating a new value");
+                                FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
+                                // save it
+                                getSharedPreferences("UserKey", MODE_PRIVATE).edit().putString("userId", firebaseUser.getUid()).apply();
 
-                                username = FirebaseUtil.getCurrentUserName();
-                                final String userAuthId = FirebaseUtil.getCurrentUserId();
-
-                                DatabaseReference usersRef = mFirebaseDatabaseReference.child("users");
-                                usersRef.child(userAuthId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        Log.d(TAG, "User Id == " + dataSnapshot.getKey());
-                                        String emailId = FirebaseUtil.getCurrentUserEmail();
-
-                                        if (dataSnapshot.getValue() == null) {
-
-//                                            String userId = mFirebaseDatabaseReference.child("users").push().getKey();
-                                            Log.d(TAG, "A new User with id == " + userAuthId);
-                                            // save it
-                                            getSharedPreferences("UserKey", MODE_PRIVATE).edit().putString("userId", userAuthId).apply();
-                                            User owner = new User(username, null, userAuthId, emailId);
-                                            Log.d(TAG, "An new User == " + owner.toString());
-                                            mFirebaseDatabaseReference.child("users").child(userAuthId).setValue(owner.toMap());
-                                        } else {
-                                            Log.d(TAG, "An existing User == ");
-
-                                        }
-
-                                        Log.d(Constants.TAG, "Firebase user : " + task.getResult().getUser());
-                                        startActivity(new Intent(SignInActivity.this, SplashScreenActivity.class));
-                                        finish();
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-
+                                addUserToFirebase(firebaseUser);
                             }
 //                            Query usedIdQuery = mFirebaseDatabaseReference.child("users").child()
 
                         }
                     }
                 });
+    }
+
+    private void addUserToFirebase(final FirebaseUser firebaseUser) {
+        final String uid = firebaseUser.getUid();
+        FirebaseUtil.getUsersRef().child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    User user = new User(firebaseUser.getDisplayName(),
+                            firebaseUser.getPhotoUrl().toString(), firebaseUser.getUid(), firebaseUser.getEmail());
+                    FirebaseUtil.getUsersRef().child(firebaseUser.getUid()).setValue(user);
+                }
+
+                startActivity(new Intent(SignInActivity.this, SplashScreenActivity.class));
+                finish();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
