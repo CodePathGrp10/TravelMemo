@@ -4,16 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
     <android.support.design.widget.CollapsingToolbarLayout
         android:id="@+id/collapsing_toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:expandedTitleMarginEnd="64dp"
+        app:expandedTitleMarginStart="64dp"
         android:fitsSystemWindows="true"
         app:contentScrim="?attr/colorPrimary"
-        app:expandedTitleMarginEnd="64dp"
-        app:expandedTitleMarginStart="48dp"
         app:layout_scrollFlags="scroll|enterAlways">
 
         <ImageView
@@ -21,14 +22,26 @@
             android:layout_width="wrap_content"
             android:layout_height="250dp"
             android:scaleType="centerCrop"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:layout_collapseMode="parallax"
             android:minHeight="?attr/actionBarSize"/>
+
+        <com.like.LikeButton
+            app:icon_type="star"
+            app:icon_size="25dp"
+            android:id="@+id/fav_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:layout_marginBottom="5dp"/>
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:layout_collapseMode="pin"/>
 
     </android.support.design.widget.CollapsingToolbarLayout>
 

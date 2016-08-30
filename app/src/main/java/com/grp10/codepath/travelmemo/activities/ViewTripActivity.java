@@ -46,6 +46,8 @@ import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.fragments.ViewTripInfoFragment;
 import com.grp10.codepath.travelmemo.fragments.ViewTripPhotoFragment;
 import com.grp10.codepath.travelmemo.utils.Constants;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -82,6 +84,7 @@ public class ViewTripActivity extends AppCompatActivity {
     @BindView(R.id.view_trip_viewpager) ViewPager vpPager;
     @BindView(R.id.view_trip_tabstrip) PagerSlidingTabStrip tabStrip;
     @BindView(R.id.progressbar) SmoothProgressBar mProgressBar;
+    @BindView(R.id.fav_btn) LikeButton mFavButton;
 
     private boolean isNewTrip;
     private String tripName;
@@ -91,8 +94,7 @@ public class ViewTripActivity extends AppCompatActivity {
     private DatabaseReference mFirebaseDatabaseReference;
     private SimpleLocation mLocation;
     Trip tripDetails = null;
-    Double photoLat;
-    Double photoLng;
+    boolean isFavorite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,6 +216,24 @@ public class ViewTripActivity extends AppCompatActivity {
 
                     }
                 });
+
+        //User specific trip data like favorite trip (for shared trip, each user must have different value)
+        mFirebaseDatabaseReference.child("user-trips").child(userId).child("trips").child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Trip userTrip = dataSnapshot.getValue(Trip.class);
+                isFavorite = userTrip.getIsFavorite();
+                if(isFavorite){
+                    mFavButton.setLiked(isFavorite);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 //        }
     }
     private void setBackDropImginToolBar(){
@@ -449,7 +469,7 @@ public class ViewTripActivity extends AppCompatActivity {
         vpPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                getSupportActionBar().setTitle(tabTitle[position]);
+                //getSupportActionBar().setTitle(tabTitle[position]);
 //                collapsingToolbar.setTitle(tabTitle[position]);
             }
 
@@ -461,6 +481,18 @@ public class ViewTripActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+
+        mFavButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                mFirebaseDatabaseReference.child("user-trips").child(userId).child("trips").child(tripId).child("isFavorite").setValue(true);
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                mFirebaseDatabaseReference.child("user-trips").child(userId).child("trips").child(tripId).child("isFavorite").setValue(false);
             }
         });
     }

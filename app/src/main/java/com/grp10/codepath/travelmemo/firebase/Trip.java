@@ -62,7 +62,7 @@ public class Trip implements Parcelable,Comparable {
     }
 
     public void setIsFavorite(boolean isFavorite) {
-        isFavorite = isFavorite;
+        this.isFavorite = isFavorite;
     }
 
     public User getOwner() {
