@@ -12,13 +12,13 @@ import java.util.Map;
 /**
  * Created by qiming on 8/18/2016.
  */
-public class Trip implements Parcelable {
+public class Trip implements Parcelable,Comparable {
     private String id;
     private User owner;          // person who create the trip
     private String name;           // trip title/name
     private String description;            // trip description
     private String profile_image_url;        // trip thumbnail
-    private Date start_at;      // the date when trip starts
+    private long start_at;      // the date when trip starts
     private Date end_at;        // the date when trip ends
     private boolean isFavorite;
 //    private Map<String, Boolean> participants;      // persons who can view/post memos to this trip
@@ -46,6 +46,7 @@ public class Trip implements Parcelable {
         memoList = new ArrayList<>();
         travellers = new ArrayList<>();
         travellers.add(owner);      // he himself is part of the trip
+        start_at = System.currentTimeMillis();
     }
 
     public String getId() {
@@ -96,11 +97,11 @@ public class Trip implements Parcelable {
         this.profile_image_url = profile_image_url;
     }
 
-    public Object getStart_date() {
+    public long getStartDate() {
         return start_at;
     }
 
-    public void setStart_date(Date start_at) {
+    public void setStartDate(long start_at) {
         this.start_at = start_at;
     }
 
@@ -151,8 +152,8 @@ public class Trip implements Parcelable {
         Trip trip = (Trip) o;
 
         return id.equals(trip.id);
-
     }
+
 
     @Override
     public int hashCode() {
@@ -179,7 +180,7 @@ public class Trip implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.description);
         dest.writeString(this.profile_image_url);
-        dest.writeLong(this.start_at != null ? this.start_at.getTime() : -1);
+        dest.writeLong(this.start_at);
         dest.writeLong(this.end_at != null ? this.end_at.getTime() : -1);
         dest.writeByte(this.isFavorite ? (byte) 1 : (byte) 0);
         dest.writeTypedList(this.memoList);
@@ -192,8 +193,7 @@ public class Trip implements Parcelable {
         this.name = in.readString();
         this.description = in.readString();
         this.profile_image_url = in.readString();
-        long tmpStart_at = in.readLong();
-        this.start_at = tmpStart_at == -1 ? null : new Date(tmpStart_at);
+        long start_at = in.readLong();
         long tmpEnd_at = in.readLong();
         this.end_at = tmpEnd_at == -1 ? null : new Date(tmpEnd_at);
         this.isFavorite = in.readByte() != 0;
@@ -213,4 +213,12 @@ public class Trip implements Parcelable {
             return new Trip[size];
         }
     };
+
+    @Override
+    public int compareTo(Object o) {
+        Trip trip = (Trip)o;
+        if(this.start_at == trip.start_at)
+            return 0;
+        return this.start_at < trip.start_at ? -1 : 1;
+    }
 }

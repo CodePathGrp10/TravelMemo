@@ -66,6 +66,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
 
     Integer color;
     private DatabaseReference mFirebaseRef;
+    private Context mContext;
 
     public OverlapFragment() {
         // Required empty public constructor
@@ -98,18 +99,18 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         mFirebaseRef = FirebaseDatabase.getInstance().getReference();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                        Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.trip_images, container, false);
         ButterKnife.bind(this,rootView);
 
-        Glide.with(getActivity()).
-                load(resourceId)
-                .bitmapTransform(new RoundedCornersTransformation(getActivity(),30,5))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(coverImageView);
-        txtTripName.setText(tripName);
-        txtDesc.setText(tripDesc);
+        updateUI(mContext);
         SharedPreferences prefs = getActivity().getSharedPreferences("Colors", Context.MODE_PRIVATE);
         if(!prefs.contains(resourceId+"")) {
             Log.d(Constants.TAG,"we dont have Dominant color ==" + color);
@@ -168,6 +169,19 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         return rootView;
     }
 
+    private void updateUI(Context context) {
+
+        if(context != null) {
+            Glide.with(mContext).
+                    load(resourceId)
+                    .bitmapTransform(new RoundedCornersTransformation(getActivity(), 30, 5))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(coverImageView);
+            txtTripName.setText(tripName);
+            txtDesc.setText(tripDesc);
+        }
+    }
+
     private void refreshTripList() {
         Intent intent = getActivity().getIntent();
         startActivity(intent);
@@ -194,5 +208,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         int color =  activity.getSharedPreferences("Colors", Context.MODE_PRIVATE).getInt(resourceId+"",-1);
         Log.d(Constants.TAG,"+++Resume fragment= " + color);
         ((TripActivity)activity).setToolbar(color);
+//        updateUI(activity);
     }
+
 }

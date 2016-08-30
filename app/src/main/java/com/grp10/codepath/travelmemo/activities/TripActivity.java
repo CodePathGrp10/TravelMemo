@@ -50,7 +50,9 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -91,11 +93,11 @@ public class TripActivity extends AppCompatActivity {
     private MyFragmentPagerAdapter pagerFriendsAdapter;
 
     private DatabaseReference mFirebaseDatabaseReference;
-    FirebaseAuth.AuthStateListener mAuthListener;
 
     private String mUsername;
     private String mUserId;
     private List<Trip> tripList;
+    private ValueEventListener valueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,34 +127,59 @@ public class TripActivity extends AppCompatActivity {
         });
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 //        Constants.colorizeToolbar(toolbar,R.color.colorPrimary,this);
-        addInvitedTripListener();
     }
 
     private void addInvitedTripListener() {
         mFirebaseDatabaseReference.child("user-trips").child(mUserId).child("trips").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                getUserTrips();
+                Log.d(TAG,"++++ OnChildAdded");
+//                getUserTrips();
+                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
+
+                Trip trip = parseTripDetails(map);
+                if(tripList == null)
+                    tripList = new ArrayList<Trip>();
+                tripList.add(trip);
+
+                Log.d(TAG,"Total Trips == " + tripList.size());
+
+                refreshCarousalView();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                Log.d(TAG,"++++ OnChildChanged");
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d(TAG,"++++ onChildRemoved");
+                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
+                String id = null;
+                Log.d(TAG, "removing maps  == " + map);
+                id = (String) map.get("id");
 
+                Iterator<Trip> iterator = tripList.iterator();
+                while (iterator.hasNext()){
+                    Trip trip = iterator.next();
+                    if(trip.getId().equals(id))
+                        iterator.remove();
+                }
+
+                Log.d(TAG,"Total Trips == " + tripList.size());
+
+                refreshCarousalView();
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                Log.d(TAG,"++++ onChildMoved");
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d(TAG,"++++ onCancelled");
             }
         });
     }
@@ -161,41 +188,71 @@ public class TripActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getUserTrips();
+//        addInvitedTripListener();
     }
 
     private void getUserTrips() {
         Log.d(TAG,"userId name == " + mUserId);
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "Data == " + dataSnapshot.toString());
+
+//                        if(tripList == null)
+                tripList = new ArrayList<>();
+
+                if (dataSnapshot.getValue() != null) {
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) dataSnapshot1.getValue();
+
+                        for (String key : map.keySet()) {
+                            Log.d(TAG, "maps  == " + map.get(key));
+                            HashMap<String, Object> map2 = map.get(key);
+                            Trip trip = parseTripDetails(map2);
+                            if (trip != null)
+                                tripList.add(trip);
+                        }
+                    }
+
+                } else {          // for fixing a crash when you delete the last trip and create a new one.
+                    tripList.clear();
+                }
+                Log.d(TAG, "Total Trips == " + tripList.size());
+                Collections.sort(tripList);
+                refreshCarousalView();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
         mFirebaseDatabaseReference.child("user-trips").child(mUserId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d(TAG,"Data == " + dataSnapshot.toString());
+                .addValueEventListener(valueEventListener);
 
-                        if(tripList == null)
-                            tripList = new ArrayList<>();
+    }
 
-                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                            HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String,Object>>) dataSnapshot1.getValue();
+    private Trip parseTripDetails(HashMap<String, Object> map2) {
+        Trip trip = new Trip();
+        trip.setName((String) map2.get("name"));
+        trip.setId((String) map2.get("id"));
+        if (tripList.contains(trip)) {
+            Log.d(TAG, "List aleadry contains the trip : " + trip.getName());
+            return null;
+        } else
+        {
+            trip.setIsFavorite((Boolean) map2.get("isFavorite"));
+            trip.setDescription((String) map2.get("description"));
+            trip.setStartDate((Long) map2.get("startDate"));
 
-                            for(String key : map.keySet()) {
-                                Log.d(TAG, "maps  == " + map.get(key));
-                                HashMap<String,Object> map2 = map.get(key);
-                                Trip trip = new Trip();
-                                trip.setName((String) map2.get("name"));
-                                trip.setId((String) map2.get("id"));
-                                if(tripList.contains(trip)){
-                                    Log.d(TAG,"List aleadry contains the trip : " + trip.getName());
-                                    continue;
-                                }else {
-                                    trip.setIsFavorite((Boolean) map2.get("isFavorite"));
-                                    trip.setDescription((String) map2.get("description"));
-                                    User owner = new User();
-                                    HashMap<String, String> mapOwners = (HashMap<String, String>) map2.get("owner");
-                                    owner.setName(mapOwners.get("name"));
-                                    owner.setUid(mapOwners.get("uid"));
-                                    trip.setOwner(owner);
+            User owner = new User();
+            HashMap<String, String> mapOwners = (HashMap<String, String>) map2.get("owner");
+            owner.setName(mapOwners.get("name"));
+            owner.setUid(mapOwners.get("uid"));
+            trip.setOwner(owner);
 
-                                    List<User> travellers = new ArrayList<User>();
+            List<User> travellers = new ArrayList<User>();
 //                                    List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map2.get("Travellers");
 //                                    for (HashMap<String, String> members : listTravellers) {
 //                                        User member = new User();
@@ -203,34 +260,32 @@ public class TripActivity extends AppCompatActivity {
 //                                        member.setUid(members.get("uid"));
 //                                        travellers.add(member);
 //                                    }
-                                    trip.setTravellers(travellers);
-                                    Log.d(TAG, "Trip name == " + trip.getName());
-                                    Log.d(TAG, "Trip id == " + trip.getId());
-                                    Log.d(TAG, "Trip owner == " + trip.getOwner());
-                                    Log.d(TAG, "Trip travelers == " + trip.getTravellers());
+            trip.setTravellers(travellers);
+            Log.d(TAG, "Trip name == " + trip.getName());
+            Log.d(TAG, "Trip id == " + trip.getId());
+            Log.d(TAG, "Trip owner == " + trip.getOwner());
+            Log.d(TAG, "Trip travelers == " + trip.getTravellers());
+            return trip;
+        }
+    }
 
-                                    tripList.add(trip);
-                                }
-                            }
-                        }
-                        Log.d(TAG,"Total Trips == " + tripList.size());
+    public void refreshCarousalView() {
+        if(pagerAdapter != null) {
+            pagerAdapter.setTripList(tripList);
+            pagerAdapter.notifyDataSetChanged();
+            Log.d(TAG,"+++ PagerAdapter count == " + pagerAdapter.getCount());
 
-                        if(pagerAdapter != null)
-                            pagerAdapter.notifyDataSetChanged();
+        }else {
+            updateCarousalView();
+        }
+        if(pagerFriendsAdapter != null) {
+            pagerFriendsAdapter.setTripList(tripList);
+            pagerFriendsAdapter.notifyDataSetChanged();
+            Log.d(TAG,"+++ PagerAdapter count == " + pagerFriendsAdapter.getCount());
 
-                        if(pagerFriendsAdapter != null)
-                            pagerFriendsAdapter.notifyDataSetChanged();
-
-                        updateCarousalView();
-                        updateFriendsCarousalView();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
+        }else {
+            updateFriendsCarousalView();
+        }
     }
 
     private void updateCarousalView() {
@@ -238,6 +293,7 @@ public class TripActivity extends AppCompatActivity {
         if(pagerAdapter == null) {
             pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(),tripList);
         }
+        Log.d(TAG,"+++ PagerAdapter count == " + pagerAdapter.getCount());
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         viewPager.setAdapter(pagerAdapter);
 
@@ -257,11 +313,12 @@ public class TripActivity extends AppCompatActivity {
 
     private void updateFriendsCarousalView() {
 
-        List<Trip> tmpList = new ArrayList<>(tripList);
-//        tmpList.add(new Trip("someId",new User("akshat",null,"1"),"3rd trip",""));
         if(pagerFriendsAdapter == null) {
-            pagerFriendsAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), tmpList);
+            pagerFriendsAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), tripList);
         }
+
+        Log.d(TAG,"+++ pagerFriendsAdapter count == " + pagerAdapter.getCount());
+
         viewPagerFriends.setOffscreenPageLimit(pagerFriendsAdapter.getCount());
         viewPagerFriends.setAdapter(pagerFriendsAdapter);
 
@@ -479,6 +536,10 @@ public class TripActivity extends AppCompatActivity {
             mTripList = tripList;
         }
 
+        public void setTripList(List<Trip> tripList){
+            mTripList = tripList;
+        }
+
         @Override
         public Fragment getItem(int position) {
             if(mTripList.size() > 0) {
@@ -509,6 +570,10 @@ public class TripActivity extends AppCompatActivity {
             FragmentLifecycle fragmentToShow = (FragmentLifecycle)pagerAdapter.getItem(position);
             fragmentToShow.onResumeFragment(TripActivity.this);
 
+            /// If we have deleted more items than current position
+            if(pagerAdapter.getCount() <= currentPosition){
+                currentPosition = pagerAdapter.getCount()-1;
+            }
             FragmentLifecycle fragmentToHide = (FragmentLifecycle)pagerAdapter.getItem(currentPosition);
             fragmentToHide.onPauseFragment();
 
@@ -545,4 +610,12 @@ public class TripActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG,"Removing db event listener " + valueEventListener);
+        if(valueEventListener != null)
+            mFirebaseDatabaseReference.removeEventListener(valueEventListener);
+    }
 }
