@@ -8,7 +8,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -248,7 +247,8 @@ public class TripActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Fragment fragment = (Fragment) viewPager.getAdapter().instantiateItem(viewPager, 0);
-                    ViewCompat.setElevation(fragment.getView(), 8.0f);
+//                    if(fragment != null)
+//                        ViewCompat.setElevation(fragment.getView(), 8.0f);
                 }
             });
         }
@@ -271,7 +271,7 @@ public class TripActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Fragment fragment = (Fragment) viewPagerFriends.getAdapter().instantiateItem(viewPagerFriends, 0);
-                    ViewCompat.setElevation(fragment.getView(), 8.0f);
+//                    ViewCompat.setElevation(fragment.getView(), 8.0f);
                 }
             });
         }

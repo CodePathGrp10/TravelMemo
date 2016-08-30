@@ -40,6 +40,7 @@ public class AddCaptureActivityFragment extends DialogFragment {
 
     public interface AddCaptureListener {
         void onFinishAddCapture(String filePath);
+        void onNoImageCaptured();
     }
 
     @Override
@@ -110,16 +111,11 @@ public class AddCaptureActivityFragment extends DialogFragment {
                 if (resultCode == Activity.RESULT_OK) {
                     Uri takenPhotoUri = getPhotoFileUri(photoFileName);
                     // by this point we have the camera photo on disk
-//                    Bitmap takenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
-//                    uploadFile(takenImage);
-
                     Log.d(TAG,"Image saved here : " + takenPhotoUri.getPath());
                     mAddCaptureListener.onFinishAddCapture(takenPhotoUri.getPath());
 
                     // RESIZE BITMAP, see section below
                     // Load the taken image into a preview
-//                    ImageView ivPreview = (ImageView) getView().findViewById(R.id.ivCapturePreview);
-//                    ivPreview.setImageBitmap(takenImage);
                 } else { // Result was a failure
                     Toast.makeText(getView().getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
                 }
@@ -131,14 +127,12 @@ public class AddCaptureActivityFragment extends DialogFragment {
                 // Call the method below to trigger the cropping
                 // cropPhoto(photoUri)
             }
-//            } else if (requestCode == CROP_PHOTO_CODE) {
-//                photoBitmap = data.getParcelableExtra("data");
-//                startPreviewPhotoActivity();
-//            } else if (requestCode == POST_PHOTO_CODE) {
-//                reloadPhotos();
-//            }
+        }else if(resultCode == Activity.RESULT_CANCELED){
+            mAddCaptureListener.onNoImageCaptured();
+            dismiss();
         }
     }
+
 
     // Returns the Uri for a photo stored on disk given the fileName
     public Uri getPhotoFileUri(String fileName) {

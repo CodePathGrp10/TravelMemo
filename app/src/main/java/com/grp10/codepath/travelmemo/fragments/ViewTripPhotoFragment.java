@@ -66,13 +66,12 @@ public class ViewTripPhotoFragment extends Fragment implements
     private Context mContext;
     private ArrayList<Memo> listMemos;
 
-    public ViewTripPhotoFragment(Context context) {
-        this.mContext = context;
+    public ViewTripPhotoFragment() {
     }
 
 
     public static ViewTripPhotoFragment newInstance(Context context,String tripId) {
-        ViewTripPhotoFragment viewTripPhotoFragment = new ViewTripPhotoFragment(context);
+        ViewTripPhotoFragment viewTripPhotoFragment = new ViewTripPhotoFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TRIP_ID, tripId);
         viewTripPhotoFragment.setArguments(bundle);
@@ -150,6 +149,12 @@ public class ViewTripPhotoFragment extends Fragment implements
         ft.commit();
         return v;
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = context;
     }
 
     @Override

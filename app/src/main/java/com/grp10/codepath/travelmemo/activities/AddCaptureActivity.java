@@ -36,4 +36,9 @@ public class AddCaptureActivity extends AppCompatActivity implements AddCaptureA
         setResult(RESULT_OK,returnIntent);
         finish();
     }
+
+    @Override
+    public void onNoImageCaptured() {
+        finish();
+    }
 }

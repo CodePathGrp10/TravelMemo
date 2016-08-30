@@ -22,7 +22,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.activities.ViewPhotoActivity;
 import com.grp10.codepath.travelmemo.firebase.Memo;
-import com.grp10.codepath.travelmemo.models.TripPhoto;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ public class TripPhotoFragment extends Fragment {
     static final String ARG_TRIP_ID = "ARG_TRIP_ID";
     private DatabaseReference mFbDBReference;
     private String tripId;
-    ArrayList<TripPhoto> tripPhotos;
     StaggeredGridLayoutManager layoutManager;
     @BindView(R.id.rvTripPhotos) RecyclerView rvTripPhotos;
 
@@ -45,12 +43,12 @@ public class TripPhotoFragment extends Fragment {
     private FirebaseRecyclerAdapter<Memo, PhotoViewHolder> adapter;
     private ArrayList<Memo> memoList;
 
-    public TripPhotoFragment(Context context) {
-        this.mContext = context;
+    public TripPhotoFragment() {
+
     }
 
     public static TripPhotoFragment newInstance(Context context, String tripId) {
-        TripPhotoFragment tripPhotoFragment = new TripPhotoFragment(context);
+        TripPhotoFragment tripPhotoFragment = new TripPhotoFragment();
         Bundle bundle = new Bundle();
         bundle.putString(ARG_TRIP_ID, tripId);
         tripPhotoFragment.setArguments(bundle);
@@ -64,6 +62,12 @@ public class TripPhotoFragment extends Fragment {
         tripId = getArguments().getString(ARG_TRIP_ID);
 //        tripId = "-KPinKfmgOsZFl-55mNN";
         mFbDBReference = mFbDBReference.child("trips").child(tripId).child("Memos");
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = context;
     }
 
     @Nullable
