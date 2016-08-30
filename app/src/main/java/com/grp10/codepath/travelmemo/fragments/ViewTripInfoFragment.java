@@ -3,6 +3,8 @@ package com.grp10.codepath.travelmemo.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,6 +26,7 @@ import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.activities.ViewTripActivity;
 import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.Trip;
+import com.grp10.codepath.travelmemo.firebase.User;
 import com.grp10.codepath.travelmemo.utils.Constants;
 
 import java.util.HashMap;
@@ -29,18 +34,23 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
  * Created by traviswkim on 8/16/16.
  */
 public class ViewTripInfoFragment extends Fragment implements View.OnClickListener {
+    @BindView(R.id.rvUserIconList)
+    RecyclerView rvUserIconList;
     private DatabaseReference mFbDBReference;
     private String tripId;
     @BindView(R.id.tvTripName)
     TextView tvTripName;
-    @BindView(R.id.tvTripDate) TextView tvTripDate;
-    @BindView(R.id.tvTripDesc) TextView tvTripDesc;
+    @BindView(R.id.tvTripDate)
+    TextView tvTripDate;
+    @BindView(R.id.tvTripDesc)
+    TextView tvTripDesc;
 
     @BindView(R.id.view_trip_layout)
     LinearLayout viewTripLayout;
@@ -63,6 +73,8 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
     @BindView(R.id.editTripDesc)
     EditText editTripDesc;
 
+    private FirebaseRecyclerAdapter<User, UserIconViewHolder> mFirebaseAdapter;
+
     public static ViewTripInfoFragment newInstance(String tripId) {
         ViewTripInfoFragment viewTripInfoFragment = new ViewTripInfoFragment();
         Bundle bundle = new Bundle();
@@ -80,18 +92,49 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
         btnSave.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
         getTripInfo();
+        setupTravelerList(v);
         return v;
+    }
+
+    public static class UserIconViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.ivUserIcon)
+        CircleImageView ivUserIcon;
+//        R.layout.item_user_icon
+
+        public UserIconViewHolder(View v) {
+            super(v);
+            ButterKnife.bind(this, v);
+        }
+    }
+
+    private void setupTravelerList(View view) {
+        rvUserIconList.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<User,
+                UserIconViewHolder>(
+                User.class,
+                R.layout.item_user_icon,
+                UserIconViewHolder.class,
+                FirebaseUtil.getTripsRef().child(tripId).child("Travellers").orderByChild("name")) {
+            @Override
+            protected void populateViewHolder(UserIconViewHolder viewHolder, User model, int position) {
+                Glide.with(viewHolder.ivUserIcon.getContext())
+                        .load(model.getProfile_image_url())
+                        .into(viewHolder.ivUserIcon);
+            }
+        };
+        rvUserIconList.setAdapter(mFirebaseAdapter);
+
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             tripId = getArguments().getString(Constants.TRIP_ID);
         }
     }
 
-    public void getTripInfo(){
+    public void getTripInfo() {
         mFbDBReference = FirebaseDatabase.getInstance().getReference();
         DatabaseReference mFbDBTripReference = mFbDBReference.child("trips").child(tripId);
         mFbDBTripReference.addValueEventListener(new ValueEventListener() {
@@ -100,7 +143,7 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
                 Trip trip = dataSnapshot.getValue(Trip.class);
 
                 //Set trip information
-                if(trip != null){
+                if (trip != null) {
                     tvTripName.setText(trip.getName());
                     //tvTripDate.setText(String.format("%s - %s", trip.getStart_date().toString(), trip.getEnd_at().toString()));
                     tvTripDesc.setText(trip.getDescription());
@@ -130,7 +173,7 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btnCancel:
                 restoreViewUI();
                 break;
@@ -144,7 +187,7 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
     private void restoreViewUI() {
         editTripLayout.setVisibility(View.GONE);
         viewTripLayout.setVisibility(View.VISIBLE);
-        ((ViewTripActivity)getActivity()).showFabIcon();
+        ((ViewTripActivity) getActivity()).showFabIcon();
     }
 
     private void updateTripInfo() {
@@ -152,8 +195,8 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
         mFbDBReference = FirebaseDatabase.getInstance().getReference();
 
         DatabaseReference mFbDBTripreference = mFbDBReference.child("trips").child(tripId);
-        final Map<String,Object> mapUpdates = new HashMap<>();
-        mapUpdates.put("name",editTripName.getText().toString());
+        final Map<String, Object> mapUpdates = new HashMap<>();
+        mapUpdates.put("name", editTripName.getText().toString());
         mapUpdates.put("description", editTripDesc.getText().toString());
 
         final DatabaseReference mUserTripRef = mFbDBReference.child("user-trips").child(FirebaseUtil.getCurrentUserId()).child("trips").child(tripId);
@@ -165,7 +208,7 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
         mFbDBTripreference.updateChildren(mapUpdates, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if(databaseError == null || databaseError.getCode() >= 0) {
+                if (databaseError == null || databaseError.getCode() >= 0) {
                     Toast.makeText(getActivity(), "Successfully updated the trip info.", Toast.LENGTH_SHORT).show();
                     mUserTripRef.updateChildren(mapUpdates);
                     restoreViewUI();
@@ -174,7 +217,7 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
                     tvTripDate.setText(editTripDate.getText());
                     tvTripDesc.setText(editTripDesc.getText());
 
-                }else{
+                } else {
                     Toast.makeText(getActivity(), "Error updating the trip info. Please try again", Toast.LENGTH_SHORT).show();
                 }
             }
