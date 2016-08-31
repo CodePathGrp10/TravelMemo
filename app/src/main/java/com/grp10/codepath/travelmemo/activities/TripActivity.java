@@ -252,7 +252,7 @@ public class TripActivity extends AppCompatActivity {
             owner.setUid(mapOwners.get("uid"));
             trip.setOwner(owner);
 
-            List<User> travellers = new ArrayList<User>();
+//            List<Map<String, User>> travellers = new ArrayList<Map<String, User>>();
 //                                    List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map2.get("Travellers");
 //                                    for (HashMap<String, String> members : listTravellers) {
 //                                        User member = new User();
@@ -260,7 +260,7 @@ public class TripActivity extends AppCompatActivity {
 //                                        member.setUid(members.get("uid"));
 //                                        travellers.add(member);
 //                                    }
-            trip.setTravellers(travellers);
+//            trip.setTravellers(travellers);
             Log.d(TAG, "Trip name == " + trip.getName());
             Log.d(TAG, "Trip id == " + trip.getId());
             Log.d(TAG, "Trip owner == " + trip.getOwner());
