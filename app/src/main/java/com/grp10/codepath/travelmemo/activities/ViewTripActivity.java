@@ -450,6 +450,12 @@ public class ViewTripActivity extends AppCompatActivity {
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
                         break;
+                    case R.id.action_video :
+//                        ToastText("Album button clicked....Uploading a photo");
+                        intent = new Intent(ViewTripActivity.this, KickflipActivity.class);
+                        intent.putExtra("tripId", tripId);
+                        startActivity(intent);
+                        break;
                     case R.id.action_add_user :
                         intent = new Intent(ViewTripActivity.this, AddUserActivity.class);
                         intent.putExtra("tripId", tripId);
