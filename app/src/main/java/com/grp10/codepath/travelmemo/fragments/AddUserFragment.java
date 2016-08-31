@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -71,9 +72,12 @@ public class AddUserFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_user_list, container, false);
         ButterKnife.bind(this, view);
 
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
         fabAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mSelectedUsers.addAll(mUsersArrayAdapter.getSelectedUsers());
                 addSelectedUsersToTrip(mTripId);
                 mListener.onListFragmentInteraction();
             }
@@ -97,12 +101,7 @@ public class AddUserFragment extends DialogFragment {
         mSelectedUsers = new ArrayList<>();
 //        addFakeUsers();
         mUsersArrayAdapter = new UsersArrayAdapter(mUsers);
-        mUsersArrayAdapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSelectedUsers.addAll(mUsersArrayAdapter.getSelectedUsers());
-            }
-        });
+
         mUserMap = new HashMap<>();
         mTripId = getArguments().getString("tripId");
 

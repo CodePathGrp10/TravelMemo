@@ -85,7 +85,6 @@ public class UsersArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     viewHolder.ivUserSelected.setVisibility(View.GONE);
                     mSelectedUsers.remove(user);
                 }
-                mOnClickListener.onClick(view);
             }
         });
         return new UserViewHolder(v);
