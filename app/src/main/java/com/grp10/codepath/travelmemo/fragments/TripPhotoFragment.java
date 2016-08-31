@@ -99,19 +99,21 @@ public class TripPhotoFragment extends Fragment {
                //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
                if(model.getType().equals("photo")){
                    String pictureString = model.getMediaUrl();
-                   Glide.with(mContext).load(pictureString).diskCacheStrategy(DiskCacheStrategy.ALL)
-                           .fitCenter().into(viewHolder.tripPhoto);
-                   viewHolder.tripText.setText(model.getText());
-                   Log.d(Constants.TAG , "Media URL == " + pictureString);
+                   if(mContext != null) {
+                       Glide.with(mContext).load(pictureString).diskCacheStrategy(DiskCacheStrategy.ALL)
+                               .fitCenter().into(viewHolder.tripPhoto);
+                       viewHolder.tripText.setText(model.getText());
+                       Log.d(Constants.TAG, "Media URL == " + pictureString);
 
-                   viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View view) {
-                           Intent i = new Intent(mContext, ViewPhotoActivity.class);
-                           i.putParcelableArrayListExtra("Photos",memoList);
-                           mContext.startActivity(i);
-                       }
-                   });
+                       viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
+                           @Override
+                           public void onClick(View view) {
+                               Intent i = new Intent(mContext, ViewPhotoActivity.class);
+                               i.putParcelableArrayListExtra("Photos", memoList);
+                               mContext.startActivity(i);
+                           }
+                       });
+                   }
                }
            }
        };
@@ -131,15 +133,19 @@ public class TripPhotoFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-
         rvTripPhotos.setAdapter(adapter);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+    }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        adapter.cleanup();
+        mContext = null;
     }
 
     public void setMemoList(ArrayList<Memo> listMemos) {

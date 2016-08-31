@@ -6,6 +6,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -65,6 +66,7 @@ public class ViewTripPhotoFragment extends Fragment implements
 
     private Context mContext;
     private ArrayList<Memo> listMemos;
+    private ValueEventListener photoEventListener;
 
     public ViewTripPhotoFragment() {
     }
@@ -100,37 +102,7 @@ public class ViewTripPhotoFragment extends Fragment implements
                 mMap = mGoogleMap;
 
                 //Add Firebase call to get memo data
-                mFbDBReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        listMemos = new ArrayList<>();
-                        LatLng mPhotoPos = null;
-                        for (DataSnapshot postSnapshot: snapshot.getChildren()) {
-                            Memo memo = postSnapshot.getValue(Memo.class);
-                            if(memo.getType().equals("photo") && memo.getLatitude() != null && memo.getLongitude() != null) {
-                                mPhotoPos = new LatLng(memo.getLatitude(), memo.getLongitude());
-                                mMap.addMarker(new MarkerOptions().position(mPhotoPos).snippet(memo.getText()));
-                            }
-                            listMemos.add(memo);
-
-                        }
-                        // For zooming automatically to the location of the marker
-                        if(mPhotoPos != null) {
-                            CameraPosition cameraPosition = new CameraPosition.Builder().target(mPhotoPos).zoom(14).build();
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                        }
-
-                        TripPhotoFragment tripPhotoFragment = (TripPhotoFragment) getFragmentManager().findFragmentByTag("TripPhotos");
-                        if(tripPhotoFragment != null)
-                            tripPhotoFragment.setMemoList(listMemos);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d(Constants.TAG, "The read failed: " + databaseError.getMessage());
-                    }
-                });
+                mFbDBReference.addValueEventListener(getPhotoEventListener());
 
                 // For dropping a marker at a point on the Map
 //                MemoLoc.put(123456789, new LatLng(37.422, -122.084));
@@ -145,10 +117,47 @@ public class ViewTripPhotoFragment extends Fragment implements
 
         //Add Photo fragments
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.flContainer, TripPhotoFragment.newInstance(mContext,tripId),"TripPhotos");
+        TripPhotoFragment tripPhotoFragment = TripPhotoFragment.newInstance(mContext,tripId);
+        ft.replace(R.id.flContainer, tripPhotoFragment,"TripPhotos");
         ft.commit();
         return v;
 
+    }
+
+    @NonNull
+    private ValueEventListener getPhotoEventListener() {
+        photoEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                listMemos = new ArrayList<>();
+                LatLng mPhotoPos = null;
+                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
+                    Memo memo = postSnapshot.getValue(Memo.class);
+                    if(memo.getType().equals("photo") && memo.getLatitude() != null && memo.getLongitude() != null) {
+                        mPhotoPos = new LatLng(memo.getLatitude(), memo.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(mPhotoPos).snippet(memo.getText()));
+                    }
+                    listMemos.add(memo);
+
+                }
+                // For zooming automatically to the location of the marker
+                if(mPhotoPos != null) {
+                    CameraPosition cameraPosition = new CameraPosition.Builder().target(mPhotoPos).zoom(14).build();
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                }
+                TripPhotoFragment tripPhotoFragment = (TripPhotoFragment) getFragmentManager().findFragmentByTag("TripPhotos");
+                if(tripPhotoFragment != null)
+                    tripPhotoFragment.setMemoList(listMemos);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(Constants.TAG, "The read failed: " + databaseError.getMessage());
+            }
+        };
+
+        return photoEventListener;
     }
 
     @Override
@@ -162,6 +171,14 @@ public class ViewTripPhotoFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
             tripId = getArguments().getString(Constants.TRIP_ID);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if(photoEventListener != null) {
+            mFbDBReference.removeEventListener(photoEventListener);
         }
     }
 
