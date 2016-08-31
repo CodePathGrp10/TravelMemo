@@ -2,6 +2,7 @@ package com.grp10.codepath.travelmemo.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grp10.codepath.travelmemo.R;
+import com.grp10.codepath.travelmemo.activities.KickflipActivity;
 import com.grp10.codepath.travelmemo.activities.ViewPhotoActivity;
 import com.grp10.codepath.travelmemo.firebase.Memo;
 import com.grp10.codepath.travelmemo.utils.Constants;
@@ -97,22 +99,38 @@ public class TripPhotoFragment extends Fragment {
            @Override
            protected void populateViewHolder(PhotoViewHolder viewHolder, Memo model, int position) {
                //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
-               if(model.getType().equals("photo")){
-                   String pictureString = model.getMediaUrl();
+               if("video".equals(model.getType()) || model.getType().equals("photo")){
+                   final String pictureString = model.getMediaUrl();
                    if(mContext != null) {
-                       Glide.with(mContext).load(pictureString).diskCacheStrategy(DiskCacheStrategy.ALL)
-                               .fitCenter().into(viewHolder.tripPhoto);
-                       viewHolder.tripText.setText(model.getText());
-                       Log.d(Constants.TAG, "Media URL == " + pictureString);
+                       if ("video".equals(model.getType())) {
+                           Glide.with(mContext).load(model.getThumbnail_url()).diskCacheStrategy(DiskCacheStrategy.ALL)
+                                   .fitCenter().into(viewHolder.tripPhoto);
+                           viewHolder.tripText.setText(model.getText());
+                           Log.d(Constants.TAG, "Media URL == " + pictureString);
+                           viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
+                               @Override
+                               public void onClick(View view) {
+                                   Intent i = new Intent(mContext, KickflipActivity.class);
+                                   i.setData(Uri.parse(pictureString));
+                                   mContext.startActivity(i);
+                               }
+                           });
+                       } else {
+                           Glide.with(mContext).load(pictureString).diskCacheStrategy(DiskCacheStrategy.ALL)
+                                   .fitCenter().into(viewHolder.tripPhoto);
+                           viewHolder.tripText.setText(model.getText());
+                           Log.d(Constants.TAG, "Media URL == " + pictureString);
 
-                       viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
-                           @Override
-                           public void onClick(View view) {
-                               Intent i = new Intent(mContext, ViewPhotoActivity.class);
-                               i.putParcelableArrayListExtra("Photos", memoList);
-                               mContext.startActivity(i);
-                           }
-                       });
+                           viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
+                               @Override
+                               public void onClick(View view) {
+                                   Intent i = new Intent(mContext, ViewPhotoActivity.class);
+                                   i.putParcelableArrayListExtra("Photos", memoList);
+                                   mContext.startActivity(i);
+                               }
+                           });
+                       }
+
                    }
                }
            }
