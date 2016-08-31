@@ -3,10 +3,8 @@ package com.grp10.codepath.travelmemo.activities;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
-import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.fragments.AddUserFragment;
 
 public class AddUserActivity extends AppCompatActivity implements AddUserFragment.OnListFragmentInteractionListener {
@@ -16,8 +14,8 @@ public class AddUserActivity extends AppCompatActivity implements AddUserFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_add_user);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         mTripId = getIntent().getStringExtra("tripId");
 
