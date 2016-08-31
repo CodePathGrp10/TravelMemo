@@ -13,12 +13,14 @@ public class Memo implements Parcelable {
     // TODO : maybe use an enum
     public final static String TYPE_PHOTO = "photo";
     public final static String TYPE_NOTE = "note";
+    public final static String TYPE_VIDEO = "video";
     public final static String TYPE_AUDIO_CLIP = "audio_clip";
 
     private User owner;          // person who create the memo
     private String type;           // memo type photo, or text
     private String text;            // trip description
     private long create_at;      // the timestamp when create the memo
+    private String thumbnail_url;       // the thumbnail URI of memo photo or audio clip
     private String media_url;       // the URI of memo photo or audio clip
     private Double latitude;
     private Double longitude;
@@ -58,6 +60,14 @@ public class Memo implements Parcelable {
 
     public void setCreateAt(long create_at) {
         this.create_at = create_at;
+    }
+
+    public String getThumbnail_url() {
+        return thumbnail_url;
+    }
+
+    public void setThumbnail_url(String thumbnail_url) {
+        this.thumbnail_url = thumbnail_url;
     }
 
     public String getMediaUrl() {
@@ -102,6 +112,7 @@ public class Memo implements Parcelable {
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("thumbnailUrl",thumbnail_url);
         result.put("mediaUrl",media_url);
         result.put("text", text);
         result.put("latitude",latitude);
@@ -116,6 +127,7 @@ public class Memo implements Parcelable {
         final StringBuffer sb = new StringBuffer("Memo{");
         sb.append("owner=").append(owner != null ?owner.getName() : "");
         sb.append(", type='").append(type).append('\'');
+        sb.append(", thumbnail_url='").append(thumbnail_url).append('\'');
         sb.append(", media_url='").append(media_url).append('\'');
         sb.append(", latitude='").append(latitude).append('\'');
         sb.append(", longitude='").append(longitude).append('\'');
@@ -134,6 +146,7 @@ public class Memo implements Parcelable {
         dest.writeString(this.type);
         dest.writeString(this.text);
         dest.writeLong(this.create_at);
+        dest.writeString(this.thumbnail_url);
         dest.writeString(this.media_url);
         dest.writeValue(this.latitude);
         dest.writeValue(this.longitude);
@@ -144,6 +157,7 @@ public class Memo implements Parcelable {
         this.type = in.readString();
         this.text = in.readString();
         this.create_at = in.readLong();
+        this.thumbnail_url = in.readString();
         this.media_url = in.readString();
         this.latitude = (Double) in.readValue(Double.class.getClassLoader());
         this.longitude = (Double) in.readValue(Double.class.getClassLoader());
