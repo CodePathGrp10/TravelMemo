@@ -73,6 +73,8 @@ dependencies {
     // Glide transformations
     compile 'jp.wasabeef:glide-transformations:2.0.1'
 
+    // kickflip live video
+    compile 'io.kickflip:sdk:1.3'
 }
 
 apply plugin: 'com.google.gms.google-services'
