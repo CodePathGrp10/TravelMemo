@@ -24,7 +24,7 @@ public class Trip implements Parcelable,Comparable {
 //    private Map<String, Boolean> participants;      // persons who can view/post memos to this trip
 
     private List<Memo> memoList;
-    private List<User> travellers;
+    private Map<String, User> travellers;
 
     public Trip() {
     }
@@ -34,8 +34,8 @@ public class Trip implements Parcelable,Comparable {
         this.name = name;
         this.description = description;
         memoList = new ArrayList<>();
-        travellers = new ArrayList<>();
-        travellers.add(owner);      // he himself is part of the trip
+        travellers = new HashMap<>();
+        travellers.put(owner.getUid(), owner);      // he himself is part of the trip
     }
 
     public Trip(String id, User owner, String name, String description) {
@@ -44,8 +44,8 @@ public class Trip implements Parcelable,Comparable {
         this.name = name;
         this.description = description;
         memoList = new ArrayList<>();
-        travellers = new ArrayList<>();
-        travellers.add(owner);      // he himself is part of the trip
+        travellers = new HashMap<>();
+        travellers.put(owner.getUid(), owner);      // he himself is part of the trip
         start_at = System.currentTimeMillis();
     }
 
@@ -121,11 +121,11 @@ public class Trip implements Parcelable,Comparable {
         this.memoList = memoList;
     }
 
-    public List<User> getTravellers() {
+    public Map<String, User> getTravellers() {
         return travellers;
     }
 
-    public void setTravellers(List<User> travellers) {
+    public void setTravellers(Map<String, User> travellers) {
         this.travellers = travellers;
     }
 
@@ -184,7 +184,7 @@ public class Trip implements Parcelable,Comparable {
         dest.writeLong(this.end_at != null ? this.end_at.getTime() : -1);
         dest.writeByte(this.isFavorite ? (byte) 1 : (byte) 0);
         dest.writeTypedList(this.memoList);
-        dest.writeList(this.travellers);
+        dest.writeMap(this.travellers);
     }
 
     protected Trip(Parcel in) {
@@ -198,8 +198,8 @@ public class Trip implements Parcelable,Comparable {
         this.end_at = tmpEnd_at == -1 ? null : new Date(tmpEnd_at);
         this.isFavorite = in.readByte() != 0;
         this.memoList = in.createTypedArrayList(Memo.CREATOR);
-        this.travellers = new ArrayList<User>();
-        in.readList(this.travellers, User.class.getClassLoader());
+        this.travellers = new HashMap<String, User>();
+        in.readMap(this.travellers, User.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<Trip> CREATOR = new Parcelable.Creator<Trip>() {
