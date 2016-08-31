@@ -19,14 +19,14 @@
     <me.crosswall.lib.coverflow.core.PagerContainer
         android:id="@+id/pager_container"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="240dp"
         android:layout_marginTop="10dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
         <android.support.v4.view.ViewPager
             android:id="@+id/viewpager"
-            android:layout_width="300dp"
+            android:layout_width="340dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
@@ -55,13 +55,13 @@
         android:id="@+id/pager_container_friends"
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
-        android:layout_height="200dp"
+        android:layout_height="240dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
         <android.support.v4.view.ViewPager
             android:id="@+id/viewpager_friends"
-            android:layout_width="300dp"
+            android:layout_width="340dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"  />

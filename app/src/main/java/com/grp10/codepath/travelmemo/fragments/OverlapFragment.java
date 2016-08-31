@@ -110,7 +110,14 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         View rootView = inflater.inflate(R.layout.trip_images, container, false);
         ButterKnife.bind(this,rootView);
 
-        updateUI(mContext);
+//        updateUI(mContext);
+        Glide.with(getActivity()).
+                load(resourceId)
+                .bitmapTransform(new RoundedCornersTransformation(getActivity(), 30, 5))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(coverImageView);
+        txtTripName.setText(tripName);
+        txtDesc.setText(tripDesc);
         SharedPreferences prefs = getActivity().getSharedPreferences("Colors", Context.MODE_PRIVATE);
         if(!prefs.contains(resourceId+"")) {
             Log.d(Constants.TAG,"we dont have Dominant color ==" + color);
@@ -172,13 +179,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     private void updateUI(Context context) {
 
         if(context != null) {
-            Glide.with(mContext).
-                    load(resourceId)
-                    .bitmapTransform(new RoundedCornersTransformation(getActivity(), 30, 5))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(coverImageView);
-            txtTripName.setText(tripName);
-            txtDesc.setText(tripDesc);
+
         }
     }
 
