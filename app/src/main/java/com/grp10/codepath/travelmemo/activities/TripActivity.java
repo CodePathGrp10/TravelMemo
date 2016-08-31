@@ -491,7 +491,7 @@ public class TripActivity extends AppCompatActivity {
 
     private void createNewTrip(final String tripName, final String description) {
 
-        User owner = new User(mUsername, null, mUserId,FirebaseUtil.getCurrentUserEmail() );
+        User owner = new User(mUsername, FirebaseUtil.getCurrentUserProfilePhoto().toString(), mUserId,FirebaseUtil.getCurrentUserEmail() );
         final String tripKey = mFirebaseDatabaseReference.child("trips").push().getKey();
 
         Log.d(Constants.TAG,"trip id == " + tripKey);
