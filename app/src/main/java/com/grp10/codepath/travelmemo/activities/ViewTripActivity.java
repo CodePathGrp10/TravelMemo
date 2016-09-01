@@ -2,9 +2,6 @@ package com.grp10.codepath.travelmemo.activities;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -49,8 +46,8 @@ import com.grp10.codepath.travelmemo.utils.Constants;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,7 +83,6 @@ public class ViewTripActivity extends AppCompatActivity {
     @BindView(R.id.progressbar) SmoothProgressBar mProgressBar;
     @BindView(R.id.fav_btn) LikeButton mFavButton;
 
-    private boolean isNewTrip;
     private String tripName;
     private String tripId;
     private String userId = "";
@@ -138,10 +134,8 @@ public class ViewTripActivity extends AppCompatActivity {
         tabStrip.setViewPager(vpPager);
 
         userId = FirebaseUtil.getCurrentUserId();       /// TODO : update this to real user name
-        if(getIntent() != null){
-            isNewTrip = getIntent().getBooleanExtra(Constants.NEW_TRIP,false);
-        }
-        updateFirebaseStorage(isNewTrip,tripId);
+
+        updateFirebaseStorage(tripId);
         setListener();
     }
 
@@ -249,7 +243,7 @@ public class ViewTripActivity extends AppCompatActivity {
         }
     }
 
-    private void updateFirebaseStorage(boolean isNewTrip, String tripId) {
+    private void updateFirebaseStorage(String tripId) {
         StorageReference reference = MemoApplication.getFBStorageReference();
 
         StorageReference tripRef = reference.child(tripId);
@@ -277,11 +271,16 @@ public class ViewTripActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 String path = data.getStringExtra("FilePath");
                 Log.d(TAG, "ViewTrip : File store here : " + path);
-                Bitmap takenImage = BitmapFactory.decodeFile(path);
-                storeMemoToFirebase(takenImage);
-                File file = new File(path);
-                if (file.exists())
-                    file.delete();
+                try {
+                    File file = new File(path);
+                    InputStream stream = new FileInputStream(file);
+                    storeMemoToFirebase(stream);
+                } catch (FileNotFoundException e) {
+                    Log.e(Constants.TAG, "+++++++++file not found..== ",e);
+                    ToastText("File not found. Please try again...");
+
+                }
+
             }
         } else if (requestCode == SELECT_PICTURE) {
             if (resultCode == RESULT_OK) {
@@ -298,62 +297,46 @@ public class ViewTripActivity extends AppCompatActivity {
     }
 
     private void storeMemoToFirebase(Uri file) {
-        mProgressBar.progressiveStart();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        // shrink it down otherwise we will use stupid amounts of memory
-        options.inSampleSize = 4; // TODO : Remove it ....
-
         InputStream is = null;
         try {
             is = getContentResolver().openInputStream(file);
-            Bitmap bitmap = BitmapFactory.decodeStream(is, new Rect(), options);
-            storeMemoToFirebase(bitmap);
+            storeMemoToFirebase(is);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            try {
-                is.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
         }
 
 
     }
 
-    private void storeMemoToFirebase(Bitmap bm) {
+    private void storeMemoToFirebase(InputStream is) {
         Log.d(Constants.TAG, "+++++++++uploading file == ");
-        mProgressBar.progressiveStart();
-        ByteArrayOutputStream baos = null;
         try {
-            baos = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-            byte[] bytes = baos.toByteArray();
-
-            uploadFile(true, bytes, userRef);
+            uploadFile(is, userRef);
         }finally {
-            // Free up space by making them GC'ed
-            Log.d(Constants.TAG,"+++++++++freeing up memory == " );
-
-            baos = null;
-            bm.recycle();
         }
     }
 
-    private void uploadFile(boolean isNewTrip, byte[] data, StorageReference userRef) {
-        if (isNewTrip) {
-
-        }
+    private void uploadFile( final InputStream data, StorageReference userRef) {
+        mProgressBar.progressiveStart();
 
         String dateFormat = "ddMMyyyyHHmmss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         String fileName = simpleDateFormat.format(new Date(System.currentTimeMillis()));
         StorageReference imageRef = userRef.child(fileName + ".jpg");
-        UploadTask uploadTask = imageRef.putBytes(data);
+        UploadTask uploadTask = imageRef.putStream(data);       /// This fixes OOM exceptions
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
+                Log.d(Constants.TAG,"+++++++++Error uploading ... == " + exception.getMessage());
+                ToastText("Error uploading the photo. Please try again...");
                 mProgressBar.progressiveStop();
+                try {
+                    if(data != null)
+                        data.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -374,7 +357,7 @@ public class ViewTripActivity extends AppCompatActivity {
                     lat = 37.775206;
                     lng = -122.417694;
                 }
-                Memo memo = new Memo(new User(FirebaseUtil.getCurrentUserName(), "", userId, FirebaseUtil.getCurrentUserEmail()), downloadUrl.toString(), "Dummy Text", Memo.TYPE_PHOTO, lat, lng);
+                Memo memo = new Memo(new User(FirebaseUtil.getCurrentUserName(), FirebaseUtil.getCurrentUserProfilePhoto().toString(), userId, FirebaseUtil.getCurrentUserEmail()), downloadUrl.toString(), "Dummy Text", Memo.TYPE_PHOTO, lat, lng);
                 HashMap<String, Object> result = new HashMap<>();
 
                 List<Memo> memoList = new ArrayList<Memo>();
@@ -387,12 +370,16 @@ public class ViewTripActivity extends AppCompatActivity {
                 mFirebaseDatabaseReference.child("trips").child(tripId).child("Memos").push().setValue(memo);
                 tripDetails.setMemoList(memoList);
                 mProgressBar.progressiveStop();
+                try {
+                    if(data != null)
+                        data.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                }
             }
         });
 
-        data = null;
-        //Make sure to stop progressbar
-        mProgressBar.progressiveStop();
     }
 
     @Override

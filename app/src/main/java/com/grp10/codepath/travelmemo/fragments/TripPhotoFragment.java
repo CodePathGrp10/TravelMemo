@@ -101,7 +101,7 @@ public class TripPhotoFragment extends Fragment {
                    String pictureString = model.getMediaUrl();
                    if(mContext != null) {
                        Glide.with(mContext).load(pictureString).diskCacheStrategy(DiskCacheStrategy.ALL)
-                               .fitCenter().into(viewHolder.tripPhoto);
+                               .centerCrop().override(400,400).into(viewHolder.tripPhoto);
                        viewHolder.tripText.setText(model.getText());
                        Log.d(Constants.TAG, "Media URL == " + pictureString);
 
@@ -122,7 +122,7 @@ public class TripPhotoFragment extends Fragment {
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
-                layoutManager.smoothScrollToPosition(rvTripPhotos, null, adapter.getItemCount());
+                layoutManager.smoothScrollToPosition(rvTripPhotos, null, adapter.getItemCount()-1);
             }
         });
 
