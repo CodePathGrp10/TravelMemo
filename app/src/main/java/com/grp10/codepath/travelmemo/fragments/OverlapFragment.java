@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,20 +48,11 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     @BindView(R.id.image_cover)
     ImageView coverImageView;
 
-    @BindView(R.id.content_layout)
-    RelativeLayout layout;
-
     @BindView(R.id.cardview)
     CardView cardView;
 
     @BindView(R.id.txtTripName)
     TextView txtTripName;
-
-    @BindView(R.id.txtDate)
-    TextView txtDate;
-
-    @BindView(R.id.txtDesc)
-    TextView txtDesc;
 
     Integer color;
     private DatabaseReference mFirebaseRef;
@@ -117,7 +107,6 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(coverImageView);
         txtTripName.setText(tripName);
-        txtDesc.setText(tripDesc);
         SharedPreferences prefs = getActivity().getSharedPreferences("Colors", Context.MODE_PRIVATE);
         if(!prefs.contains(resourceId+"")) {
             Log.d(Constants.TAG,"we dont have Dominant color ==" + color);

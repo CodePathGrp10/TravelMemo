@@ -16,17 +16,10 @@
         android:layout_marginTop="?attr/actionBarSize"
         >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
         <include layout="@layout/trip_layout"
                      android:id="@+id/layout_1"
                      app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 />
-
-    </LinearLayout>
 
     </ScrollView>
     <android.support.design.widget.FloatingActionButton

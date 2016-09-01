@@ -100,7 +100,7 @@ public class TripPhotoFragment extends Fragment {
                if(model.getType().equals("photo")){
                    String pictureString = model.getMediaUrl();
                    if(mContext != null) {
-                       Glide.with(mContext).load(pictureString).diskCacheStrategy(DiskCacheStrategy.ALL)
+                       Glide.with(mContext).load(pictureString).asBitmap().atMost().dontTransform().diskCacheStrategy(DiskCacheStrategy.ALL)
                                .centerCrop().override(400,400).into(viewHolder.tripPhoto);
                        viewHolder.tripText.setText(model.getText());
                        Log.d(Constants.TAG, "Media URL == " + pictureString);
