@@ -45,13 +45,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.firebase.FirebaseUtil;
 import com.grp10.codepath.travelmemo.firebase.User;
+import com.qiushui.blurredview.BlurredView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
-    private SignInButton mSignInButton;
 
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mFirebaseAuth;
@@ -59,13 +62,14 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     private DatabaseReference mFirebaseDatabaseReference;
     private String username;
 
+    @BindView(R.id.bg_img) BlurredView bgImage;
+    @BindView(R.id.sign_in_button) SignInButton mSignInButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-
-        // Assign fields
-        mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        ButterKnife.bind(this);
 
         // Set click listeners
         mSignInButton.setOnClickListener(this);
@@ -82,6 +86,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         // Initialize FirebaseAuth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+        //Blur background image
+        bgImage.setBlurredLevel(80);
     }
 
     private void handleFirebaseAuthResult(AuthResult authResult) {
