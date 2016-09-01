@@ -1,16 +1,15 @@
 package com.grp10.codepath.travelmemo.fragments;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,7 +35,8 @@ import butterknife.ButterKnife;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class AddUserFragment extends DialogFragment {
+//public class AddUserFragment extends DialogFragment {
+public class AddUserFragment extends Fragment {
 
     @BindView(R.id.rvUserList)
     RecyclerView rvUserList;
@@ -72,7 +72,7 @@ public class AddUserFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_user_list, container, false);
         ButterKnife.bind(this, view);
 
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+//        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         fabAddUser.setOnClickListener(new View.OnClickListener() {
             @Override

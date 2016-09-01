@@ -89,4 +89,8 @@
     <style name="BaseTheme" parent="android:Theme.Holo">
     </style>
     <!--Style for progressbar end -->
+
+    <style name="ToolbarColoredBackArrow" parent="AppTheme">
+        <item name="android:textColorSecondary">@android:color/white</item>
+    </style>
 </resources>

@@ -440,6 +440,7 @@ public class ViewTripActivity extends AppCompatActivity {
                     case R.id.action_add_user :
                         intent = new Intent(ViewTripActivity.this, AddUserActivity.class);
                         intent.putExtra("tripId", tripId);
+                        intent.putExtra("tripName", tripName);
                         startActivity(intent);
                         break;
                     case R.id.action_edit:
