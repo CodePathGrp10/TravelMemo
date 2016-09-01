@@ -69,6 +69,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 - [SmoothProgressBar](https://github.com/castorflex/SmoothProgressBar) - A small Android library allowing you to have a smooth and customizable horizontal indeterminate ProgressBar.
 - [Android-SimpleLocation](https://github.com/delight-im/Android-SimpleLocation) - Utility class for easy access to the device location on Android
 - [Like Button](https://android-arsenal.com/details/1/3038) - Like Button is a library that allows you to create a button with animation effects similar to Twitter's heart when you like something.
+- [BlurredView](https://material.uplabs.com/posts/blurredview) - Dynamic blur of Image Views for Android.
 
 ## License
 

@@ -11,6 +11,8 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
@@ -47,6 +49,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:9.4.0'
     compile 'com.github.delight-im:Android-SimpleLocation:v1.0.1'
     compile 'com.github.jd-alexander:LikeButton:0.2.0'
+    compile 'com.qiushui:blurredview:0.8.1'
 
     // Configure FAB icon
     compile 'io.github.yavski:fab-speed-dial:1.0.4'
