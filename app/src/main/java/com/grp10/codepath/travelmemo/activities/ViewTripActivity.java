@@ -421,6 +421,7 @@ public class ViewTripActivity extends AppCompatActivity {
                     navigationMenu.removeItem(R.id.action_add_user);
                     navigationMenu.removeItem(R.id.action_edit);
                 }else if(vpPager.getCurrentItem() == 0){
+                    navigationMenu.removeItem(R.id.action_add_video);
                     navigationMenu.removeItem(R.id.action_camera);
                     navigationMenu.removeItem(R.id.action_album);
                 }
