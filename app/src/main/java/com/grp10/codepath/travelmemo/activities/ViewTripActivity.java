@@ -197,6 +197,7 @@ public class ViewTripActivity extends AppCompatActivity {
                             tripDetails = trip;
                             if (tripDetails != null) {
                                 setBackDropImginToolBar();
+                                setLikeIcon();
                             }
                         }else{
                             ToastText("No trip detail is available");
@@ -211,14 +212,21 @@ public class ViewTripActivity extends AppCompatActivity {
                     }
                 });
 
+//        }
+    }
+
+    private void setLikeIcon() {
         //User specific trip data like favorite trip (for shared trip, each user must have different value)
-        mFirebaseDatabaseReference.child("user-trips").child(userId).child("trips").child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
+        String tripType = userId.equals(tripDetails.getOwner().getUid()) ? "trips" : "shared-trips";
+        mFirebaseDatabaseReference.child("user-trips").child(userId).child(tripType).child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Trip userTrip = dataSnapshot.getValue(Trip.class);
-                isFavorite = userTrip.getIsFavorite();
-                if(isFavorite){
-                    mFavButton.setLiked(isFavorite);
+                if (dataSnapshot.getValue() != null) {
+                    Trip userTrip = dataSnapshot.getValue(Trip.class);
+                    isFavorite = userTrip.getIsFavorite();
+                    if (isFavorite) {
+                        mFavButton.setLiked(isFavorite);
+                    }
                 }
             }
 
@@ -227,9 +235,8 @@ public class ViewTripActivity extends AppCompatActivity {
 
             }
         });
-
-//        }
     }
+
     private void setBackDropImginToolBar(){
         //set main trip photo in toolbar
         List<Memo> memos = new ArrayList<>();
