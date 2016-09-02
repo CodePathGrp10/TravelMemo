@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,7 +51,6 @@ import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -71,9 +69,24 @@ public class TripActivity extends AppCompatActivity {
     @BindView(R.id.pager_container_friends)
     PagerContainer pagerContainerFriend;
 
+    @BindView(R.id.pager_container_favorite)
+    PagerContainer pagerContainerFav;
+
+    @BindView(R.id.txtNoTripName_mytrip)
+    TextView txtNoMyTrip;
+
+    @BindView(R.id.txtNoTripName_fav)
+    TextView txtNoFavTrip;
+
+    @BindView(R.id.txtNoTripName_friends)
+    TextView txtNoFrndTrip;
+
+
+
     //    @BindView(R.id.viewpager)
     ViewPager viewPager;
     ViewPager viewPagerFriends;
+    ViewPager viewPagerFav;
 
 //    @BindView(R.id.layout_1)
 //    View row1;
@@ -91,6 +104,7 @@ public class TripActivity extends AppCompatActivity {
     private Drawer result;
     private MyFragmentPagerAdapter pagerAdapter;
     private MyFragmentPagerAdapter pagerFriendsAdapter;
+    private MyFragmentPagerAdapter pagerFavAdapter;
 
     private DatabaseReference mFirebaseDatabaseReference;
 
@@ -98,6 +112,7 @@ public class TripActivity extends AppCompatActivity {
     private String mUserId;
     private List<Trip> tripList;
     private List<Trip> friendsTripList;
+    private List<Trip> favTripList;
     private ValueEventListener valueEventListener;
 
     @Override
@@ -119,6 +134,7 @@ public class TripActivity extends AppCompatActivity {
 
         setupCarousal();
         setupFriendsCarousal();
+        setupFavCarousal();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,66 +147,11 @@ public class TripActivity extends AppCompatActivity {
 //        FirebaseUtil.moveTrips();
     }
 
-    private void addInvitedTripListener() {
-        mFirebaseDatabaseReference.child("user-trips").child(mUserId).child("trips").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG,"++++ OnChildAdded");
-//                getUserTrips();
-                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
-
-                Trip trip = parseTripDetails(map);
-                if(tripList == null)
-                    tripList = new ArrayList<Trip>();
-                tripList.add(trip);
-
-                Log.d(TAG,"Total Trips == " + tripList.size());
-
-                refreshCarousalView();
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG,"++++ OnChildChanged");
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d(TAG,"++++ onChildRemoved");
-                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
-                String id = null;
-                Log.d(TAG, "removing maps  == " + map);
-                id = (String) map.get("id");
-
-                Iterator<Trip> iterator = tripList.iterator();
-                while (iterator.hasNext()){
-                    Trip trip = iterator.next();
-                    if(trip.getId().equals(id))
-                        iterator.remove();
-                }
-
-                Log.d(TAG,"Total Trips == " + tripList.size());
-
-                refreshCarousalView();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG,"++++ onChildMoved");
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG,"++++ onCancelled");
-            }
-        });
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         getUserTrips();
-//        addInvitedTripListener();
     }
 
     private void getUserTrips() {
@@ -203,6 +164,7 @@ public class TripActivity extends AppCompatActivity {
 //                        if(tripList == null)
                 tripList = new ArrayList<>();
                 friendsTripList = new ArrayList<>();
+                favTripList = new ArrayList<>();
 
                 if (dataSnapshot.getValue() != null) {
                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
@@ -214,16 +176,27 @@ public class TripActivity extends AppCompatActivity {
                                 Log.d(TAG, "maps  == " + map.get(key));
                                 HashMap<String, Object> map2 = map.get(key);
                                 Trip trip = parseTripDetails(map2);
-                                if (trip != null)
+                                if (trip != null) {
                                     tripList.add(trip);
+                                    if(trip.getIsFavorite()){
+                                        Log.d(TAG,"Trip is favorite " + trip.getName());
+                                        favTripList.add(trip);
+                                    }
+                                }
+
                             }
                         } else if ("shared-trips".equals(dsKey)) {
                             for (String key : map.keySet()) {
                                 Log.d(TAG, "maps  == " + map.get(key));
                                 HashMap<String, Object> map2 = map.get(key);
                                 Trip trip = parseTripDetails(map2);
-                                if (trip != null)
+                                if (trip != null) {
                                     friendsTripList.add(trip);
+                                    if(trip.getIsFavorite()){
+                                        Log.d(TAG,"Trip is favorite " + trip.getName());
+                                        favTripList.add(trip);
+                                    }
+                                }
                             }
                         }
                     }
@@ -231,10 +204,12 @@ public class TripActivity extends AppCompatActivity {
                 } else {          // for fixing a crash when you delete the last trip and create a new one.
                     tripList.clear();
                     friendsTripList.clear();
+                    favTripList.clear();
                 }
                 Log.d(TAG, "Total Trips == " + tripList.size());
                 Collections.sort(tripList);
                 Collections.sort(friendsTripList);
+                Collections.sort(favTripList);
                 refreshCarousalView();
             }
 
@@ -268,15 +243,6 @@ public class TripActivity extends AppCompatActivity {
             owner.setUid(mapOwners.get("uid"));
             trip.setOwner(owner);
 
-//            List<Map<String, User>> travellers = new ArrayList<Map<String, User>>();
-//                                    List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map2.get("Travellers");
-//                                    for (HashMap<String, String> members : listTravellers) {
-//                                        User member = new User();
-//                                        member.setName(members.get("name"));
-//                                        member.setUid(members.get("uid"));
-//                                        travellers.add(member);
-//                                    }
-//            trip.setTravellers(travellers);
             Log.d(TAG, "Trip name == " + trip.getName());
             Log.d(TAG, "Trip id == " + trip.getId());
             Log.d(TAG, "Trip owner == " + trip.getOwner());
@@ -302,18 +268,28 @@ public class TripActivity extends AppCompatActivity {
         }else {
             updateFriendsCarousalView();
         }
+
+        if(pagerFavAdapter != null) {
+            pagerFavAdapter.setTripList(favTripList);
+            pagerFavAdapter.notifyDataSetChanged();
+            Log.d(TAG,"+++ FavPagerAdapter count == " + pagerFavAdapter.getCount());
+
+        }else {
+            updateFavCarousalView();
+        }
     }
 
     private void updateCarousalView() {
 
         if(pagerAdapter == null) {
-            pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(),tripList);
+            pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(),tripList, Constants.MY_TRIP);
         }
         Log.d(TAG,"+++ PagerAdapter count == " + pagerAdapter.getCount());
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         viewPager.setAdapter(pagerAdapter);
 
         if(pagerAdapter.getCount() > 0) {
+            txtNoMyTrip.setVisibility(View.GONE);
             //Manually setting the first View to be elevated
             viewPager.post(new Runnable() {
                 @Override
@@ -323,6 +299,8 @@ public class TripActivity extends AppCompatActivity {
 //                        ViewCompat.setElevation(fragment.getView(), 8.0f);
                 }
             });
+        }else {
+            txtNoMyTrip.setVisibility(View.VISIBLE);
         }
 
     }
@@ -330,7 +308,7 @@ public class TripActivity extends AppCompatActivity {
     private void updateFriendsCarousalView() {
 
         if(pagerFriendsAdapter == null) {
-            pagerFriendsAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), friendsTripList);
+            pagerFriendsAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), friendsTripList, Constants.FRIENDS_TRIP);
         }
 
         Log.d(TAG,"+++ pagerFriendsAdapter count == " + pagerAdapter.getCount());
@@ -339,6 +317,7 @@ public class TripActivity extends AppCompatActivity {
         viewPagerFriends.setAdapter(pagerFriendsAdapter);
 
         if(pagerFriendsAdapter.getCount() > 0) {
+            txtNoFrndTrip.setVisibility(View.GONE);
             //Manually setting the first View to be elevated
             viewPagerFriends.post(new Runnable() {
                 @Override
@@ -347,9 +326,39 @@ public class TripActivity extends AppCompatActivity {
 //                    ViewCompat.setElevation(fragment.getView(), 8.0f);
                 }
             });
+        }else{
+            txtNoFrndTrip.setVisibility(View.VISIBLE);
         }
 
     }
+
+    private void updateFavCarousalView() {
+
+        if(pagerFavAdapter == null) {
+            pagerFavAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), favTripList, Constants.FAV_TRIP);
+        }
+
+        Log.d(TAG,"+++ pagerFavsAdapter count == " + pagerFavAdapter.getCount());
+
+        viewPagerFav.setOffscreenPageLimit(pagerFavAdapter.getCount());
+        viewPagerFav.setAdapter(pagerFavAdapter);
+
+        if(pagerFavAdapter.getCount() > 0) {
+            txtNoFavTrip.setVisibility(View.GONE);
+            //Manually setting the first View to be elevated
+            viewPagerFav.post(new Runnable() {
+                @Override
+                public void run() {
+                    Fragment fragment = (Fragment) viewPagerFav.getAdapter().instantiateItem(viewPagerFav, 0);
+//                    ViewCompat.setElevation(fragment.getView(), 8.0f);
+                }
+            });
+        }else{
+            txtNoFavTrip.setVisibility(View.VISIBLE);
+        }
+
+    }
+
     public void getMaterialDrawerMenu(){
         // Create the AccountHeader
         AccountHeader headerResult = new AccountHeaderBuilder()
@@ -458,6 +467,27 @@ public class TripActivity extends AppCompatActivity {
         viewPagerFriends.addOnPageChangeListener(friendPageChangeListener);
 
     }
+
+    private void setupFavCarousal() {
+
+        viewPagerFav = pagerContainerFav.getViewPager();
+
+        //Set this to have a carousal effect
+        new CoverFlow.Builder().with(viewPagerFav)
+                .scale(0.3f)
+                .pagerMargin(getResources().getDimensionPixelSize(R.dimen.overlap_pager_margin))
+                .spaceSize(0f)
+                .build();
+
+        // Enable this for a linear page view
+//        viewPagerFriends.setPageMargin(30);
+
+        viewPagerFav.setClipChildren(false);
+//        pagerContainer.setOverlapEnabled(true);
+        viewPagerFav.addOnPageChangeListener(favPageChangeListener);
+
+    }
+
     private void createTripDialog() {
         View messageView = LayoutInflater.from(TripActivity.this).
                 inflate(R.layout.create_trip_dialog, null);
@@ -550,10 +580,12 @@ public class TripActivity extends AppCompatActivity {
 
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
+        private int mTripType;
         private List<Trip> mTripList;
-        public MyFragmentPagerAdapter(FragmentManager fm, List<Trip> tripList) {
+        public MyFragmentPagerAdapter(FragmentManager fm, List<Trip> tripList,int tripType) {
             super(fm);
             mTripList = tripList;
+            mTripType = tripType;
         }
 
         public void setTripList(List<Trip> tripList){
@@ -564,7 +596,7 @@ public class TripActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             if(mTripList.size() > 0) {
                 Trip trip = mTripList.get(position);
-                return OverlapFragment.newInstance(DemoImages.covers[position % 6], trip.getName(), trip.getDescription(), trip.getId());
+                return OverlapFragment.newInstance(DemoImages.covers[position % 6], trip.getName(), trip.getDescription(), trip.getId(),mTripType);
             }else{
                 return new OverlapFragment();
             }
@@ -620,6 +652,31 @@ public class TripActivity extends AppCompatActivity {
             fragmentToShow.onResumeFragment(TripActivity.this);
 
             FragmentLifecycle fragmentToHide = (FragmentLifecycle)pagerFriendsAdapter.getItem(currentPosition);
+            fragmentToHide.onPauseFragment();
+
+            currentPosition = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
+
+    private ViewPager.OnPageChangeListener favPageChangeListener = new ViewPager.OnPageChangeListener() {
+        int currentPosition = 0;
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            FragmentLifecycle fragmentToShow = (FragmentLifecycle)pagerFavAdapter.getItem(position);
+            fragmentToShow.onResumeFragment(TripActivity.this);
+
+            FragmentLifecycle fragmentToHide = (FragmentLifecycle)pagerFavAdapter.getItem(currentPosition);
             fragmentToHide.onPauseFragment();
 
             currentPosition = position;

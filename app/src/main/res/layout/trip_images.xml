@@ -43,5 +43,6 @@
                 android:layout_below="@+id/image_cover"
                 android:layout_gravity="bottom|center"
                 />
+
         </FrameLayout>
 </android.support.v7.widget.CardView>

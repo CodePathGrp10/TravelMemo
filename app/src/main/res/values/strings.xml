@@ -18,4 +18,10 @@
     <string name="add_user">Add User</string>
 
     <string name="edittrip">Edit Trip</string>
+    <string name="no_frnds_trip">No trip with Friends? Friends are fun</string>
+    <string name="friends_trips">Friends Trips</string>
+    <string name="no_my_trips">No trips!!! Go outside</string>
+    <string name="my_trips">My Trips</string>
+    <string name="no_fav_trips">No Favorites yet ? Go add some...</string>
+    <string name="favorites">Favorites</string>
 </resources>

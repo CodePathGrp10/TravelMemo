@@ -66,15 +66,17 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     String tripId;
     String tripName;
     String tripDesc;
+    int mTripType;
     static final String ARG_RES_ID = "ARG_RES_ID";
 
-    public static OverlapFragment newInstance(int resourceId, String name, String description, String tripId) {
+    public static OverlapFragment newInstance(int resourceId, String name, String description, String tripId, int tripType) {
         OverlapFragment overlapFragment = new OverlapFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_RES_ID, resourceId);
         bundle.putString(Constants.TRIP_ID, tripId);
         bundle.putString(Constants.TRIP_NAME, name);
         bundle.putString(Constants.DESCRIPTION, description);
+        bundle.putInt(Constants.TRIP_TYPE,tripType);
 
         overlapFragment.setArguments(bundle);
         return overlapFragment;
@@ -86,6 +88,8 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         tripId = getArguments().getString(Constants.TRIP_ID);
         tripName = getArguments().getString(Constants.TRIP_NAME);
         tripDesc = getArguments().getString(Constants.DESCRIPTION);
+        mTripType = getArguments().getInt(Constants.TRIP_TYPE);
+
         mFirebaseRef = FirebaseDatabase.getInstance().getReference();
     }
 
@@ -132,32 +136,37 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
 
 
         //For delete
+
         cardView.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View view) {
-                Toast.makeText(view.getContext(), "Delete", Toast.LENGTH_SHORT).show();
+                if(mTripType == Constants.MY_TRIP) {
+                    Toast.makeText(view.getContext(), "Delete", Toast.LENGTH_SHORT).show();
 
-                mFirebaseRef.child("trips").child(tripId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Log.d(Constants.TAG, "Delete a trip from trips entity successful");
-                        mFirebaseRef.child("user-trips").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                                    String uId = postSnapshot.getKey();
-                                    mFirebaseRef.child("user-trips").child(uId).child("trips").child(tripId).removeValue();
+                    mFirebaseRef.child("trips").child(tripId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.d(Constants.TAG, "Delete a trip from trips entity successful");
+                            mFirebaseRef.child("user-trips").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                        String uId = postSnapshot.getKey();
+                                        mFirebaseRef.child("user-trips").child(uId).child("trips").child(tripId).removeValue();
+                                    }
+                                    refreshTripList();
                                 }
-                                refreshTripList();
-                            }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                            }
-                        });
-                    }
-                });
+                                }
+                            });
+                        }
+                    });
+                }else{
+                    Toast.makeText(view.getContext(),"You cannot delete these trips.",Toast.LENGTH_LONG).show();
+                }
                 return true;
             }
         });
