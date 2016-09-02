@@ -47,12 +47,18 @@ public class TripPhotoFragment extends Fragment {
 
     }
 
-    public static TripPhotoFragment newInstance(Context context, String tripId) {
+    public static TripPhotoFragment newInstance( String tripId) {
         TripPhotoFragment tripPhotoFragment = new TripPhotoFragment();
         Bundle bundle = new Bundle();
         bundle.putString(ARG_TRIP_ID, tripId);
         tripPhotoFragment.setArguments(bundle);
         return tripPhotoFragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 
     @Override
@@ -62,12 +68,6 @@ public class TripPhotoFragment extends Fragment {
         tripId = getArguments().getString(ARG_TRIP_ID);
 //        tripId = "-KPinKfmgOsZFl-55mNN";
         mFbDBReference = mFbDBReference.child("trips").child(tripId).child("Memos");
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        this.mContext = context;
     }
 
     @Nullable
@@ -86,43 +86,41 @@ public class TripPhotoFragment extends Fragment {
 //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
         adapter = new FirebaseRecyclerAdapter<Memo, PhotoViewHolder>(Memo.class, R.layout.item_trip_photo, PhotoViewHolder.class, mFbDBReference) {
 
-           @Override
-           public void onViewRecycled(PhotoViewHolder holder) {
-               super.onViewRecycled(holder);
-               // Required to clear image when the view is recycled
-               // See  : https://github.com/bumptech/glide/issues/710
-               Glide.clear(holder.tripPhoto);
-           }
+            @Override
+            public void onViewRecycled(PhotoViewHolder holder) {
+                super.onViewRecycled(holder);
+                // Required to clear image when the view is recycled
+                // See  : https://github.com/bumptech/glide/issues/710
+                Glide.clear(holder.tripPhoto);
+            }
 
-           @Override
-           protected void populateViewHolder(PhotoViewHolder viewHolder, Memo model, int position) {
-               //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
-               if(model.getType().equals("photo")){
-                   String pictureString = model.getMediaUrl();
-                   if(mContext != null) {
-                       Glide.with(mContext).load(pictureString).asBitmap().atMost().dontTransform().diskCacheStrategy(DiskCacheStrategy.ALL)
-                               .centerCrop().override(400,400).into(viewHolder.tripPhoto);
-                       viewHolder.tripText.setText(model.getText());
-                       Log.d(Constants.TAG, "Media URL == " + pictureString);
+            @Override
+            protected void populateViewHolder(PhotoViewHolder viewHolder, Memo model, int position) {
+                //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
+                if(model.getType().equals("photo")){
+                    String pictureString = model.getMediaUrl();
+                    Glide.with(mContext).load(pictureString).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .centerCrop().into(viewHolder.tripPhoto);
+                    viewHolder.tripText.setText(model.getText());
+                    Log.d(Constants.TAG , "Media URL == " + pictureString);
 
-                       viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
-                           @Override
-                           public void onClick(View view) {
-                               Intent i = new Intent(mContext, ViewPhotoActivity.class);
-                               i.putParcelableArrayListExtra("Photos", memoList);
-                               mContext.startActivity(i);
-                           }
-                       });
-                   }
-               }
-           }
-       };
+                    viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent i = new Intent(mContext, ViewPhotoActivity.class);
+                            i.putParcelableArrayListExtra("Photos",memoList);
+                            mContext.startActivity(i);
+                        }
+                    });
+                }
+            }
+        };
 
         // Scroll to bottom on new messages
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
-                layoutManager.smoothScrollToPosition(rvTripPhotos, null, adapter.getItemCount()-1);
+                layoutManager.smoothScrollToPosition(rvTripPhotos, null, adapter.getItemCount());
             }
         });
 
@@ -133,19 +131,15 @@ public class TripPhotoFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+
         rvTripPhotos.setAdapter(adapter);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-    }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        adapter.cleanup();
-        mContext = null;
     }
 
     public void setMemoList(ArrayList<Memo> listMemos) {

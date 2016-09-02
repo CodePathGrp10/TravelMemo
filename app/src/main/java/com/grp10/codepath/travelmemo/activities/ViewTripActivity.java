@@ -498,7 +498,7 @@ public class ViewTripActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if(hm.get(position) == null) {
+//            if(hm.get(position) == null) {
                 if (position == 0) {
                     if (hm.get(0) == null) {
                         fragment = ViewTripInfoFragment.newInstance(tripId);
@@ -510,9 +510,9 @@ public class ViewTripActivity extends AppCompatActivity {
                 } else {
                     return null;
                 }
-            }else{
-                fragment = hm.get(position);
-            }
+//            }else{
+//                fragment = hm.get(position);
+//            }
             return fragment;
         }
 

@@ -117,7 +117,7 @@ public class ViewTripPhotoFragment extends Fragment implements
 
         //Add Photo fragments
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        TripPhotoFragment tripPhotoFragment = TripPhotoFragment.newInstance(mContext,tripId);
+        TripPhotoFragment tripPhotoFragment = TripPhotoFragment.newInstance(tripId);
         ft.replace(R.id.flContainer, tripPhotoFragment,"TripPhotos");
         ft.commit();
         return v;
@@ -186,7 +186,6 @@ public class ViewTripPhotoFragment extends Fragment implements
         mMap = googleMap;
         if (mMap != null) {
             // Map is ready
-            Toast.makeText(mContext, "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
             //MapDemoActivityPermissionsDispatcher.getMyLocationWithCheck(this);
             mMap.setOnMapLongClickListener(this);
         } else {
@@ -354,7 +353,7 @@ public class ViewTripPhotoFragment extends Fragment implements
 
     @Override
     public void onMapLongClick(final LatLng point){
-        Toast.makeText(mContext, "Long Press" + point.toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(mContext, "Long Press" + point.toString(), Toast.LENGTH_LONG).show();
         //showAlertDialogForPoint(point);
 
     }
