@@ -97,6 +97,7 @@ public class TripActivity extends AppCompatActivity {
     private String mUsername;
     private String mUserId;
     private List<Trip> tripList;
+    private List<Trip> friendsTripList;
     private ValueEventListener valueEventListener;
 
     @Override
@@ -127,6 +128,7 @@ public class TripActivity extends AppCompatActivity {
         });
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 //        Constants.colorizeToolbar(toolbar,R.color.colorPrimary,this);
+//        FirebaseUtil.moveTrips();
     }
 
     private void addInvitedTripListener() {
@@ -200,25 +202,39 @@ public class TripActivity extends AppCompatActivity {
 
 //                        if(tripList == null)
                 tripList = new ArrayList<>();
+                friendsTripList = new ArrayList<>();
 
                 if (dataSnapshot.getValue() != null) {
                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                         HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) dataSnapshot1.getValue();
 
-                        for (String key : map.keySet()) {
-                            Log.d(TAG, "maps  == " + map.get(key));
-                            HashMap<String, Object> map2 = map.get(key);
-                            Trip trip = parseTripDetails(map2);
-                            if (trip != null)
-                                tripList.add(trip);
+                        String dsKey = dataSnapshot1.getKey();
+                        if ("trips".equals(dsKey)) {
+                            for (String key : map.keySet()) {
+                                Log.d(TAG, "maps  == " + map.get(key));
+                                HashMap<String, Object> map2 = map.get(key);
+                                Trip trip = parseTripDetails(map2);
+                                if (trip != null)
+                                    tripList.add(trip);
+                            }
+                        } else if ("shared-trips".equals(dsKey)) {
+                            for (String key : map.keySet()) {
+                                Log.d(TAG, "maps  == " + map.get(key));
+                                HashMap<String, Object> map2 = map.get(key);
+                                Trip trip = parseTripDetails(map2);
+                                if (trip != null)
+                                    friendsTripList.add(trip);
+                            }
                         }
                     }
 
                 } else {          // for fixing a crash when you delete the last trip and create a new one.
                     tripList.clear();
+                    friendsTripList.clear();
                 }
                 Log.d(TAG, "Total Trips == " + tripList.size());
                 Collections.sort(tripList);
+                Collections.sort(friendsTripList);
                 refreshCarousalView();
             }
 
@@ -279,7 +295,7 @@ public class TripActivity extends AppCompatActivity {
             updateCarousalView();
         }
         if(pagerFriendsAdapter != null) {
-            pagerFriendsAdapter.setTripList(tripList);
+            pagerFriendsAdapter.setTripList(friendsTripList);
             pagerFriendsAdapter.notifyDataSetChanged();
             Log.d(TAG,"+++ PagerAdapter count == " + pagerFriendsAdapter.getCount());
 
@@ -314,7 +330,7 @@ public class TripActivity extends AppCompatActivity {
     private void updateFriendsCarousalView() {
 
         if(pagerFriendsAdapter == null) {
-            pagerFriendsAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), tripList);
+            pagerFriendsAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), friendsTripList);
         }
 
         Log.d(TAG,"+++ pagerFriendsAdapter count == " + pagerAdapter.getCount());

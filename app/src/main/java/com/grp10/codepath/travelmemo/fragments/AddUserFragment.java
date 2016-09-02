@@ -148,7 +148,7 @@ public class AddUserFragment extends Fragment {
                 for (User u : mSelectedUsers) {
                     String uid = u.getUid();
                     FirebaseUtil.getTripsRef().child(tripId).child("Travellers").child(uid).setValue(u);
-                    FirebaseUtil.getBaseRef().child("user-trips").child(uid).child("trips").child(tripId).setValue(trip[0]);
+                    FirebaseUtil.getBaseRef().child("user-trips").child(uid).child("shared-trips").child(tripId).setValue(trip[0]);
                 }
             }
 
