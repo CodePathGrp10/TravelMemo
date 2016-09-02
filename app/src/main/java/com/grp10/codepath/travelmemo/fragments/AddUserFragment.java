@@ -79,7 +79,8 @@ public class AddUserFragment extends Fragment {
             public void onClick(View view) {
                 mSelectedUsers.addAll(mUsersArrayAdapter.getSelectedUsers());
                 addSelectedUsersToTrip(mTripId);
-                mListener.onListFragmentInteraction();
+//                mListener.onListFragmentInteraction();
+                getActivity().onBackPressed();
             }
         });
 //        mFirebaseAdapter = new FirebaseRecyclerAdapter<User,
