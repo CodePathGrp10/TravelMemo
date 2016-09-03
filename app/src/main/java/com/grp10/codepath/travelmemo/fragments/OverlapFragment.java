@@ -106,7 +106,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         View rootView = inflater.inflate(R.layout.trip_images, container, false);
         ButterKnife.bind(this,rootView);
 
-        tfRegular = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Regular.ttf");
+        tfRegular = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Bold.ttf");
         txtTripName.setTypeface(tfRegular);
 //        updateUI(mContext);
         Glide.with(getActivity()).

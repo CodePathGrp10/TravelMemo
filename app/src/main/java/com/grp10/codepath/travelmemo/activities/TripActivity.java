@@ -150,9 +150,9 @@ public class TripActivity extends AppCompatActivity {
         txtNoMyTrip.setTypeface(tfRegular);
         txtNoFavTrip.setTypeface(tfRegular);
 
-        txtFav.setTypeface(tfThin);
-        txtMytrip.setTypeface(tfThin);
-        txtFrndTrip.setTypeface(tfThin);
+        txtFav.setTypeface(tfRegular);
+        txtMytrip.setTypeface(tfRegular);
+        txtFrndTrip.setTypeface(tfRegular);
 
         // Initialize Current User
         mUsername = FirebaseUtil.getCurrentUserName();
