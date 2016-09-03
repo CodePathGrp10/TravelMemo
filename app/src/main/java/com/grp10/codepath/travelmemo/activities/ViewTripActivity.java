@@ -94,6 +94,7 @@ public class ViewTripActivity extends AppCompatActivity {
     Trip tripDetails = null;
     boolean isFavorite = false;
     private Typeface tfRegular;
+    private String mTripType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,8 +224,8 @@ public class ViewTripActivity extends AppCompatActivity {
 
     private void setLikeIcon() {
         //User specific trip data like favorite trip (for shared trip, each user must have different value)
-        String tripType = userId.equals(tripDetails.getOwner().getUid()) ? "trips" : "shared-trips";
-        mFirebaseDatabaseReference.child("user-trips").child(userId).child(tripType).child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
+        mTripType = userId.equals(tripDetails.getOwner().getUid()) ? "trips" : "shared-trips";
+        mFirebaseDatabaseReference.child("user-trips").child(userId).child(mTripType).child(tripId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -489,12 +490,12 @@ public class ViewTripActivity extends AppCompatActivity {
         mFavButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-                mFirebaseDatabaseReference.child("user-trips").child(userId).child("trips").child(tripId).child("isFavorite").setValue(true);
+                mFirebaseDatabaseReference.child("user-trips").child(userId).child(mTripType).child(tripId).child("isFavorite").setValue(true);
             }
 
             @Override
             public void unLiked(LikeButton likeButton) {
-                mFirebaseDatabaseReference.child("user-trips").child(userId).child("trips").child(tripId).child("isFavorite").setValue(false);
+                mFirebaseDatabaseReference.child("user-trips").child(userId).child(mTripType).child(tripId).child("isFavorite").setValue(false);
             }
         });
     }
