@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TravelMemo</string>
+    <string name="app_name">Travel Memo</string>
     <string name="HOME">Home</string>
     <string name="SETTINGS">Settings</string>
     <string name="LOGOUT">Logout</string>
@@ -25,4 +25,6 @@
     <string name="my_trips">My Trips</string>
     <string name="no_fav_trips">No Favorites yet ? Go add some...</string>
     <string name="favorites">Favorites</string>
+    <string name="action_advance">Advance Search</string>
+    <string name="video_coming_soon">Coming soon in the next release!!!</string>
 </resources>

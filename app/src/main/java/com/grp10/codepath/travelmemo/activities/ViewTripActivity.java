@@ -451,6 +451,9 @@ public class ViewTripActivity extends AppCompatActivity {
                         fragment.editTrip();
                         fabSDPhoto.hide();
                         break;
+                    case R.id.action_add_video:
+                        ToastText(getString(R.string.video_coming_soon));
+                        break;
                 }
                 //TODO: Start some activity
                 return false;
