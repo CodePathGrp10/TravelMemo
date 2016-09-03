@@ -131,18 +131,18 @@ public class ViewTripActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(tripName);
             collapsingToolbar.setTitle(tripName);
         }
-        Log.d(Constants.TAG,"user == " + FirebaseUtil.getCurrentUserId() + ", " + FirebaseUtil.getCurrentUserName());
-
+        collapsingToolbar.setCollapsedTitleTypeface(tfRegular);
+        collapsingToolbar.setExpandedTitleTypeface(tfRegular);
+        tabStrip.setTypeface(tfRegular,Typeface.NORMAL);
         viewTripPagerAdapter = new ViewTripPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(viewTripPagerAdapter);
         vpPager.setCurrentItem(1);
         tabStrip.setViewPager(vpPager);
 
-        userId = FirebaseUtil.getCurrentUserId();       /// TODO : update this to real user name
+        userId = FirebaseUtil.getCurrentUserId();
 
         updateFirebaseStorage(tripId);
         setListener();
-        setToolbarFont();
 
     }
 
@@ -182,18 +182,6 @@ public class ViewTripActivity extends AppCompatActivity {
                             owner.setName(mapOwners.get("name"));
                             owner.setUid(mapOwners.get("uid"));
                             trip.setOwner(owner);
-
-//                        List<User> travellers = new ArrayList<User>();
-//                        List<HashMap<String, String>> listTravellers = (List<HashMap<String, String>>) map.get("Travellers");
-//                        if (listTravellers != null) {
-//                            for (HashMap<String, String> members : listTravellers) {
-//                                User member = new User();
-//                                member.setName(members.get("name"));
-//                                member.setUid(members.get("uid"));
-//                                travellers.add(member);
-//                            }
-//                        }
-//                        trip.setTravellers(travellers);
 
                             List<Memo> memoList = new ArrayList<Memo>();
                             for (DataSnapshot memoSnapshot : dataSnapshot.child("Memos").getChildren()) {
@@ -548,19 +536,6 @@ public class ViewTripActivity extends AppCompatActivity {
 
     }
 
-    private void setToolbarFont() {
-        for(int i = 0; i < toolbar.getChildCount(); i++) {
-            View view = toolbar.getChildAt(i);
-
-            if (view instanceof TextView) {
-                TextView textView = (TextView) view;
-
-//                Typeface myCustomFont=Typeface.createFromAsset(getAssets(),"font/Balker.ttf");
-                textView.setTypeface(tfRegular);
-            }
-
-        }
-    }
     public void ToastText(String text){
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }

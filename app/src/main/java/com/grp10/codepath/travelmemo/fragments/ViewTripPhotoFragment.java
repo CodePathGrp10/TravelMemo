@@ -104,13 +104,6 @@ public class ViewTripPhotoFragment extends Fragment implements
                 //Add Firebase call to get memo data
                 mFbDBReference.addValueEventListener(getPhotoEventListener());
 
-                // For dropping a marker at a point on the Map
-//                MemoLoc.put(123456789, new LatLng(37.422, -122.084));
-//                MemoLoc.put(123456788, new LatLng(37.419635, -122.083583));
-//                MemoLoc.put(123456787, new LatLng(37.420334, -122.082092));
-//                MemoLoc.put(123456786, new LatLng(37.421160, -122.082328));
-//                MemoLoc.put(123456785, new LatLng(37.420581, -122.084549));
-
                 loadMap(mMap);
             }
         });
