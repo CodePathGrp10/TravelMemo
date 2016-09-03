@@ -16,11 +16,13 @@
 package com.grp10.codepath.travelmemo.activities;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -61,9 +63,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
     private DatabaseReference mFirebaseDatabaseReference;
     private String username;
+    private Typeface tfRegular;
 
     @BindView(R.id.bg_img) BlurredView bgImage;
     @BindView(R.id.sign_in_button) SignInButton mSignInButton;
+    @BindView(R.id.signin_title) TextView mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
         //Blur background image
         bgImage.setBlurredLevel(80);
+        tfRegular = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Bold.ttf");
+        mTitle.setTypeface(tfRegular);
+
     }
 
     private void handleFirebaseAuthResult(AuthResult authResult) {
