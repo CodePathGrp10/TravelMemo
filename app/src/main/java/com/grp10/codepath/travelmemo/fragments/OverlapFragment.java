@@ -4,6 +4,7 @@ package com.grp10.codepath.travelmemo.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -57,6 +58,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     Integer color;
     private DatabaseReference mFirebaseRef;
     private Context mContext;
+    private Typeface tfRegular;
 
     public OverlapFragment() {
         // Required empty public constructor
@@ -104,6 +106,8 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
         View rootView = inflater.inflate(R.layout.trip_images, container, false);
         ButterKnife.bind(this,rootView);
 
+        tfRegular = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Regular.ttf");
+        txtTripName.setTypeface(tfRegular);
 //        updateUI(mContext);
         Glide.with(getActivity()).
                 load(resourceId)
@@ -206,7 +210,7 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
     public void onResumeFragment(AppCompatActivity activity) {
         int color =  activity.getSharedPreferences("Colors", Context.MODE_PRIVATE).getInt(resourceId+"",-1);
         Log.d(Constants.TAG,"+++Resume fragment= " + color);
-        ((TripActivity)activity).setToolbar(color);
+//        ((TripActivity)activity).setToolbar(color);
 //        updateUI(activity);
     }
 

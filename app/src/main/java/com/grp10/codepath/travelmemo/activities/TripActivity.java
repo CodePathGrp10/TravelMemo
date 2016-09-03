@@ -2,6 +2,7 @@ package com.grp10.codepath.travelmemo.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
@@ -11,10 +12,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,15 +91,21 @@ public class TripActivity extends AppCompatActivity {
     ViewPager viewPagerFriends;
     ViewPager viewPagerFav;
 
-//    @BindView(R.id.layout_1)
-//    View row1;
+    @BindView(R.id.txtFav)
+    TextView txtFav;
+
+    @BindView(R.id.txtMyTrip)
+    TextView txtMytrip;
+
+    @BindView(R.id.txtFrndTrip)
+    TextView txtFrndTrip;
 //
 //    @BindView(R.id.layout_2)
 //    View row2;
 
 
     @BindView(R.id.toolbar)
-    CustomToolbar toolbar;
+    Toolbar toolbar;
 
     @BindView(R.id.fab)
     FloatingActionButton fab;
@@ -115,6 +124,9 @@ public class TripActivity extends AppCompatActivity {
     private List<Trip> favTripList;
     private ValueEventListener valueEventListener;
 
+    private Typeface tfRegular;
+    private Typeface tfBold;
+    private Typeface tfThin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +137,19 @@ public class TripActivity extends AppCompatActivity {
 
 //        pagerContainer = (PagerContainer) row1.findViewById(R.id.pager_container);
 //        pagerContainerFriend = (PagerContainer) row2.findViewById(R.id.pager_container);
+
+        tfRegular = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Regular.ttf");
+        tfBold = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Bold.ttf");
+        tfThin = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Thin.ttf");
+
+        txtNoFrndTrip.setTypeface(tfRegular);
+        txtNoMyTrip.setTypeface(tfRegular);
+        txtNoFavTrip.setTypeface(tfRegular);
+
+        txtFav.setTypeface(tfThin);
+        txtMytrip.setTypeface(tfThin);
+        txtFrndTrip.setTypeface(tfThin);
+
         // Initialize Current User
         mUsername = FirebaseUtil.getCurrentUserName();
         mUserId = FirebaseUtil.getCurrentUserId();
@@ -136,6 +161,7 @@ public class TripActivity extends AppCompatActivity {
         setupFriendsCarousal();
         setupFavCarousal();
 
+        setToolbarFont();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,6 +171,20 @@ public class TripActivity extends AppCompatActivity {
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 //        Constants.colorizeToolbar(toolbar,R.color.colorPrimary,this);
 //        FirebaseUtil.moveTrips();
+    }
+
+    private void setToolbarFont() {
+        for(int i = 0; i < toolbar.getChildCount(); i++) {
+            View view = toolbar.getChildAt(i);
+
+            if (view instanceof TextView) {
+                TextView textView = (TextView) view;
+
+//                Typeface myCustomFont=Typeface.createFromAsset(getAssets(),"font/Balker.ttf");
+                textView.setTypeface(tfRegular);
+            }
+
+        }
     }
 
 
@@ -381,10 +421,10 @@ public class TripActivity extends AppCompatActivity {
                 .withToolbar(toolbar)
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.HOME).withIcon(GoogleMaterial.Icon.gmd_home),
+                        new PrimaryDrawerItem().withTypeface(tfRegular).withName(R.string.HOME).withIcon(GoogleMaterial.Icon.gmd_home),
                         new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.print).withIcon(GoogleMaterial.Icon.gmd_print),
-                        new SecondaryDrawerItem().withName(R.string.friends).withIcon(GoogleMaterial.Icon.gmd_nature_people),
+                        new SecondaryDrawerItem().withTypeface(tfRegular).withName(R.string.print).withIcon(GoogleMaterial.Icon.gmd_print),
+                        new SecondaryDrawerItem().withTypeface(tfRegular).withName(R.string.friends).withIcon(GoogleMaterial.Icon.gmd_nature_people),
                         new DividerDrawerItem(),
                         new SecondaryDrawerItem().withName(R.string.profile).withIcon(GoogleMaterial.Icon.gmd_verified_user),
                         new SecondaryDrawerItem().withName(R.string.SETTINGS).withIcon(GoogleMaterial.Icon.gmd_settings),
@@ -508,13 +548,16 @@ public class TripActivity extends AppCompatActivity {
                 btnPostive.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String tripName = ((TextInputLayout) alertDialog.findViewById(R.id.tripName)).getEditText().
-                                getText().toString();
-                        String description = ((TextInputLayout) alertDialog.findViewById(R.id.description)).getEditText().
-                                getText().toString();
+                        EditText txtTripName = ((TextInputLayout) alertDialog.findViewById(R.id.tripName)).getEditText();
+                        txtTripName.setTypeface(tfRegular);
+                        String tripName = txtTripName .getText().toString();
+                        EditText txtDesc = ((TextInputLayout) alertDialog.findViewById(R.id.description)).getEditText();
+                        txtDesc.setTypeface(tfThin);
+                        String description = txtDesc.getText().toString();
                         if("".equals(tripName)){
                             TextView txtErr = (TextView) alertDialog.findViewById(R.id.errorMsg);
                             txtErr.setText("Enter a trip name...");
+                            txtErr.setTypeface(tfRegular);
                             return;
                         }else {
                             createNewTrip(tripName,description);
@@ -574,9 +617,9 @@ public class TripActivity extends AppCompatActivity {
         });
     }
 
-    public void setToolbar(Integer color) {
-        toolbar.setItemColor(color);
-    }
+//    public void setToolbar(Integer color) {
+//        toolbar.setItemColor(color);
+//    }
 
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
