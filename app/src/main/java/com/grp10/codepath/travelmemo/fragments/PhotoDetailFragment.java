@@ -1,6 +1,7 @@
 package com.grp10.codepath.travelmemo.fragments;
 
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ public class PhotoDetailFragment extends Fragment {
     @BindView(R.id.closeView)
     ImageView closeImg;
 
+    private Typeface tfRegular;
 
     public PhotoDetailFragment() {
     }
@@ -46,6 +48,8 @@ public class PhotoDetailFragment extends Fragment {
         String url = getArguments().getString("url");
         String tripName = getArguments().getString("name");
 
+        tfRegular = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Regular.ttf");
+        txtTripName.setTypeface(tfRegular);
         Glide.with(getActivity())
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)

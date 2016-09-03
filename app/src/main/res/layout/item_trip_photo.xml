@@ -12,12 +12,4 @@
         tools:src="@mipmap/ic_launcher"
         android:id="@+id/ivTripPhoto" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/tvTripText"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone"/>
-
 </LinearLayout>

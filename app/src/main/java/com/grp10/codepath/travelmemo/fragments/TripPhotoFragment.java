@@ -101,7 +101,6 @@ public class TripPhotoFragment extends Fragment {
                     String pictureString = model.getMediaUrl();
                     Glide.with(mContext).load(pictureString).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL)
                             .centerCrop().into(viewHolder.tripPhoto);
-                    viewHolder.tripText.setText(model.getText());
                     Log.d(Constants.TAG , "Media URL == " + pictureString);
 
                     viewHolder.tripPhoto.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +156,6 @@ public class TripPhotoFragment extends Fragment {
 
     public static class PhotoViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.ivTripPhoto) ImageView tripPhoto;
-        @BindView(R.id.tvTripText) TextView tripText;
         public PhotoViewHolder(View v){
             super(v);
             ButterKnife.bind(this, v);

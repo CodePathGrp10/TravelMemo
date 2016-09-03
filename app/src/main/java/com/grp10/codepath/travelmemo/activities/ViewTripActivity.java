@@ -2,6 +2,7 @@ package com.grp10.codepath.travelmemo.activities;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -91,6 +93,7 @@ public class ViewTripActivity extends AppCompatActivity {
     private SimpleLocation mLocation;
     Trip tripDetails = null;
     boolean isFavorite = false;
+    private Typeface tfRegular;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +104,7 @@ public class ViewTripActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mLocation = new SimpleLocation(this);
+        tfRegular = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Regular.ttf");
 
         //Need to ask permission at runtime if targetSDK is 23 or higher. that's why I did not use SimpleLocation.openSettings(this) to check a permission.
         if (ContextCompat.checkSelfPermission(ViewTripActivity.this,
@@ -137,6 +141,8 @@ public class ViewTripActivity extends AppCompatActivity {
 
         updateFirebaseStorage(tripId);
         setListener();
+        setToolbarFont();
+
     }
 
     @Override
@@ -541,6 +547,19 @@ public class ViewTripActivity extends AppCompatActivity {
 
     }
 
+    private void setToolbarFont() {
+        for(int i = 0; i < toolbar.getChildCount(); i++) {
+            View view = toolbar.getChildAt(i);
+
+            if (view instanceof TextView) {
+                TextView textView = (TextView) view;
+
+//                Typeface myCustomFont=Typeface.createFromAsset(getAssets(),"font/Balker.ttf");
+                textView.setTypeface(tfRegular);
+            }
+
+        }
+    }
     public void ToastText(String text){
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
