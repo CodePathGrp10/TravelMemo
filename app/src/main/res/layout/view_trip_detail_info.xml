@@ -3,6 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nsvTripInfo"
+    android:background="#EEEEEE"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -11,40 +13,77 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/view_trip_layout"
-        android:orientation="vertical"
-
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Trip Name"
-            android:textColor="@color/colorPrimaryText"
-            android:layout_margin="10dp"
-            android:id="@+id/tvTripName" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Start Date - End Date"
-            android:layout_margin="10dp"
-            android:textColor="@color/colorPrimaryText"
-            android:id="@+id/tvTripDate"
-            android:visibility="gone"/>
-        <android.support.v7.widget.RecyclerView
-            android:orientation="horizontal"
-            android:id="@+id/rvUserIconList"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Description"
-            android:textColor="@color/colorPrimaryText"
-            android:layout_margin="10dp"
-            android:id="@+id/tvTripDesc" />
+            android:id="@+id/view_trip_layout"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trip Title"
+                android:textSize="12sp"
+                android:textColor="@color/colorSecondaryTex"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/tvTripNameText" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Trip Name"
+                android:textSize="32sp"
+                android:textColor="@color/colorPrimaryText"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/tvTripName" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Participants"
+                android:textColor="@color/colorSecondaryTex"
+                android:layout_margin="10dp"
+                android:id="@+id/tvTravelersText" />
+            <android.support.v7.widget.RecyclerView
+                android:orientation="horizontal"
+                android:id="@+id/rvUserIconList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Date - End Date"
+                android:textSize="12sp"
+                android:textColor="@color/colorSecondaryTex"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/tvTripDateText" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Start Date - End Date"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/colorPrimaryText"
+                android:id="@+id/tvTripDate"
+                android:visibility="visible"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="12sp"
+                android:textColor="@color/colorSecondaryTex"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/tvTripDescText" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Description"
+                android:textSize="24sp"
+                android:textColor="@color/colorPrimaryText"
+                android:layout_margin="10dp"
+                android:id="@+id/tvTripDesc" />
 
         </LinearLayout>
 
@@ -81,18 +120,18 @@
                 android:orientation="horizontal"
                 android:layout_gravity="end"
                 >
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ok"
-                android:id="@+id/btnSave"
-                android:textColor="@color/colorPrimaryText"/>
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnCancel"
-                android:text="Cancel"
-                android:textColor="@color/colorPrimaryText"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ok"
+                    android:id="@+id/btnSave"
+                    android:textColor="@color/colorPrimaryText"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnCancel"
+                    android:text="Cancel"
+                    android:textColor="@color/colorPrimaryText"/>
 
             </LinearLayout>
         </LinearLayout>
