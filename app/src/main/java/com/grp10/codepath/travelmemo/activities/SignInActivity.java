@@ -93,7 +93,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
         //Blur background image
         bgImage.setBlurredLevel(80);
-        tfRegular = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Bold.ttf");
+        tfRegular = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Regular.ttf");
         mTitle.setTypeface(tfRegular);
 
     }
