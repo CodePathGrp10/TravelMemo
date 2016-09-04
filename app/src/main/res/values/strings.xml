@@ -27,4 +27,6 @@
     <string name="favorites">Favorites</string>
     <string name="action_advance">Advance Search</string>
     <string name="video_coming_soon">Coming soon in the next release!!!</string>
+
+    <string name="google_map_key">AIzaSyAW1wk_b5BfTwrK8HYO1v2VHDqAWLq84OY</string>
 </resources>
