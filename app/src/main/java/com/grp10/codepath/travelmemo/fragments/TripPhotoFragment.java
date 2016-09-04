@@ -95,7 +95,7 @@ public class TripPhotoFragment extends Fragment {
             }
 
             @Override
-            protected void populateViewHolder(final PhotoViewHolder viewHolder, Memo model, int position) {
+            protected void populateViewHolder(final PhotoViewHolder viewHolder, Memo model, final int position) {
                 //model - Memo{owner=akshat, type='photo', media_url='https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1'}
                 if(model.getType().equals("photo")){
                     String pictureString = model.getMediaUrl();
@@ -108,6 +108,7 @@ public class TripPhotoFragment extends Fragment {
                         public void onClick(View view) {
                             Intent i = new Intent(mContext, ViewPhotoActivity.class);
                             i.putParcelableArrayListExtra("Photos",memoList);
+                            i.putExtra("Position",position);
 //                            ActivityOptionsCompat options = ActivityOptionsCompat.
 //                                    makeSceneTransitionAnimation((Activity)mContext, (View)viewHolder.tripPhoto, "profile");
                             mContext.startActivity(i/*,options.toBundle()*/);

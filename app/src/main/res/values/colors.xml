@@ -103,4 +103,8 @@
     <color name="holo_purple_dark">#9933cc</color>
     <color name="holo_red_dark">#cc0000</color>
     <!--Progressbar colors end-->
+
+
+    <color name="primaryPhoto">#000000</color>
+
 </resources>

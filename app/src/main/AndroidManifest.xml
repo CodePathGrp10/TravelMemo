@@ -67,7 +67,10 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".activities.ViewPhotoActivity" />
+        <activity android:name=".activities.ViewPhotoActivity"
+            android:theme="@style/PhotoView.AppTheme"
+            />
+
         <activity android:name=".activities.AddCaptureActivity" />
         <activity android:name=".activities.AddUserActivity" />
     </application>

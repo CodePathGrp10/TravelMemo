@@ -430,9 +430,9 @@ public class TripActivity extends AppCompatActivity {
                         new SecondaryDrawerItem().withTypeface(tfRegular).withName(R.string.print).withIcon(GoogleMaterial.Icon.gmd_print),
                         new SecondaryDrawerItem().withTypeface(tfRegular).withName(R.string.friends).withIcon(GoogleMaterial.Icon.gmd_nature_people),
                         new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.profile).withIcon(GoogleMaterial.Icon.gmd_verified_user),
-                        new SecondaryDrawerItem().withName(R.string.SETTINGS).withIcon(GoogleMaterial.Icon.gmd_settings),
-                        new SecondaryDrawerItem().withName(R.string.LOGOUT).withIcon(GoogleMaterial.Icon.gmd_exit_to_app)
+                        new SecondaryDrawerItem().withTypeface(tfRegular).withName(R.string.profile).withIcon(GoogleMaterial.Icon.gmd_verified_user),
+                        new SecondaryDrawerItem().withTypeface(tfRegular).withName(R.string.SETTINGS).withIcon(GoogleMaterial.Icon.gmd_settings),
+                        new SecondaryDrawerItem().withTypeface(tfBold).withName(R.string.LOGOUT).withIcon(GoogleMaterial.Icon.gmd_exit_to_app)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override

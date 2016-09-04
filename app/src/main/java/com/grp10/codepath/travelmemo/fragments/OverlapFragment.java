@@ -2,6 +2,7 @@ package com.grp10.codepath.travelmemo.fragments;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -145,29 +147,39 @@ public class OverlapFragment extends Fragment implements DominantColor,FragmentL
             @Override
             public boolean onLongClick(View view) {
                 if(mTripType == Constants.MY_TRIP) {
-                    Toast.makeText(view.getContext(), "Delete", Toast.LENGTH_SHORT).show();
-
-                    mFirebaseRef.child("trips").child(tripId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                    dialog.setTitle("Delete Trip").setMessage("Are you sure you want to delete this trip?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Log.d(Constants.TAG, "Delete a trip from trips entity successful");
-                            mFirebaseRef.child("user-trips").addListenerForSingleValueEvent(new ValueEventListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFirebaseRef.child("trips").child(tripId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                        String uId = postSnapshot.getKey();
-                                        mFirebaseRef.child("user-trips").child(uId).child("trips").child(tripId).removeValue();
-                                    }
-                                    refreshTripList();
-                                }
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Log.d(Constants.TAG, "Delete a trip from trips entity successful");
+                                    mFirebaseRef.child("user-trips").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                                String uId = postSnapshot.getKey();
+                                                mFirebaseRef.child("user-trips").child(uId).child("trips").child(tripId).removeValue();
+                                            }
+                                            refreshTripList();
+                                        }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
 
+                                        }
+                                    });
                                 }
                             });
                         }
-                    });
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+
                 }else{
                     Toast.makeText(view.getContext(),"You cannot delete these trips.",Toast.LENGTH_LONG).show();
                 }
