@@ -13,7 +13,7 @@
         android:textStyle="bold"
         android:id="@+id/txtFav"
         android:textSize="20sp"
-        android:textColor="@android:color/primary_text_light"
+        android:textColor="@color/colorPrimaryText"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="@dimen/margin_top"/>
 
@@ -30,7 +30,7 @@
             android:textSize="28sp"
             android:fontFamily=""
             android:padding="@dimen/activity_vertical_margin"
-            android:textColor="@android:color/primary_text_light"
+            android:textColor="@color/colorPrimaryText"
             android:layout_gravity="center"
             android:visibility="gone"
             />
@@ -69,13 +69,13 @@
         android:id="@+id/txtMyTrip"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:textColor="@android:color/primary_text_light"
+        android:textColor="@color/colorPrimaryText"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="@dimen/margin_top"/>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/page_height">
+        android:layout_height="wrap_content">
 
     <TextView
         android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
         android:id="@+id/txtNoTripName_mytrip"
         android:textSize="28sp"
         android:padding="@dimen/activity_vertical_margin"
-        android:textColor="@android:color/primary_text_light"
+        android:textColor="@color/colorPrimaryText"
         android:layout_gravity="center"
         android:visibility="gone"
         />
@@ -122,7 +122,7 @@
         android:id="@+id/txtFrndTrip"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:textColor="@android:color/primary_text_light"
+        android:textColor="@color/colorPrimaryText"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="@dimen/margin_top"/>
 
@@ -138,7 +138,7 @@
             android:id="@+id/txtNoTripName_friends"
             android:textSize="28sp"
             android:padding="@dimen/activity_vertical_margin"
-            android:textColor="@android:color/primary_text_light"
+            android:textColor="@color/colorPrimaryText"
             android:layout_gravity="center"
             android:visibility="gone"
             />

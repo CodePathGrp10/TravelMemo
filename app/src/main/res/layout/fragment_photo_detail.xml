@@ -27,7 +27,7 @@
             android:id="@+id/tvTripText"
             android:paddingBottom="20dp"
             android:paddingLeft="10dp"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorText"
             android:layout_gravity="bottom|start" />
 
     </FrameLayout>
