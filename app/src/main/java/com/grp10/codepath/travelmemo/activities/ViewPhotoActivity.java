@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.grp10.codepath.travelmemo.R;
 import com.grp10.codepath.travelmemo.adapters.ImageAdapter;
@@ -23,9 +25,15 @@ public class ViewPhotoActivity extends AppCompatActivity {
     @BindView(R.id.pager_container)
     PagerContainer pagerContainer;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+
     ImageAdapter pagerAdapter;
     boolean isImmersive = false;
     private ArrayList<Memo> memoList;
+    int position;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +41,12 @@ public class ViewPhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_photo2);
         ButterKnife.bind(this);
         memoList = getIntent().getParcelableArrayListExtra("Photos");
+        position = getIntent().getIntExtra("Position",0);
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        getSupportActionBar().setTitle(null);
         setupCarousal();
         updateCarousalView();
 
@@ -65,7 +78,7 @@ public class ViewPhotoActivity extends AppCompatActivity {
 //                .build();
 
         // Enable this for a linear page view
-        viewPager.setPageMargin(30);
+//        viewPager.setPageMargin(30);
 
         viewPager.setClipChildren(false);
 
@@ -91,8 +104,20 @@ public class ViewPhotoActivity extends AppCompatActivity {
             });
         }
 
+        viewPager.setCurrentItem(position);
+
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     /*
 
     @Override

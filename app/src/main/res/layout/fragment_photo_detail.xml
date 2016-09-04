@@ -2,7 +2,7 @@
                   xmlns:tools="http://schemas.android.com/tools"
                   android:orientation="vertical"
                   android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
+                  android:layout_height="match_parent"
                   >
 
         <ImageView
@@ -10,12 +10,13 @@
             android:layout_height="50dp"
             tools:src="@drawable/close"
             android:id="@+id/closeView"
-            android:layout_gravity="top|right"/>
+            android:layout_gravity="top|right"
+            android:visibility="gone"/>
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerInside"
+            android:scaleType="fitCenter"
             android:adjustViewBounds="true"
             android:layout_gravity="center"
             android:id="@+id/imgPhoto" />
@@ -25,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="New Text"
             android:id="@+id/tvTripText"
-            android:paddingBottom="20dp"
+            android:paddingBottom="40dp"
             android:paddingLeft="10dp"
             android:textColor="@color/colorText"
             android:layout_gravity="bottom|start" />

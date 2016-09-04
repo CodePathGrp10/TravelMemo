@@ -93,4 +93,11 @@
     <style name="ToolbarColoredBackArrow" parent="AppTheme">
         <item name="android:textColorSecondary">@android:color/white</item>
     </style>
+
+    <!-- Base application theme. -->
+    <style name="PhotoView.AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/primaryPhoto</item>
+        <item name="colorPrimaryDark">@color/primaryPhoto</item>
+    </style>
 </resources>
