@@ -37,7 +37,7 @@
                 android:id="@+id/txtTripName"
                 android:layout_marginTop="@dimen/margin_top"
                 android:textSize="28dp"
-                android:textColor="@android:color/primary_text_dark"
+                android:textColor="@color/colorText"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@+id/image_cover"
                 android:layout_gravity="center"
