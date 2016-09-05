@@ -169,6 +169,7 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
                 if (trip != null) {
                     tvTripName.setText(trip.getName());
                     //tvTripDate.setText(String.format("%s - %s", trip.getStart_date().toString(), trip.getEnd_at().toString()));
+                    tvTripDate.setText("July 6, 2016 - July 9, 2016");
                     tvTripDesc.setText(trip.getDescription());
                     //DataSnapshot { key = -KPinKfmgOsZFl-55mNN, value = {name=a, description=b, owner={name=easy qian, uid=PtVXN1xZPxNGDufWtluplYl3ecZ2}, id=-KPinKfmgOsZFl-55mNN, Travellers={0={name=easy qian, uid=PtVXN1xZPxNGDufWtluplYl3ecZ2}}, Memos={0={text=Dummy Text, mediaUrl=https://firebasestorage.googleapis.com/v0/b/travelmemo-1de8a.appspot.com/o/fufu%2Fcom.google.android.gms.internal.zzafu%40fc82d7e%2F20082016170329.jpg?alt=media&token=a0b80a34-222d-4b05-b1e6-a40904a50dc1, type=photo, owner={name=akshat, uid=hIe5vkxzI4h43MOo91MbNdAesBk2}, createAt=1471737811787}}, isFavorite=false} }
                     Log.d(Constants.TAG + getClass().getName(), "Key=" + dataSnapshot.getKey() + " value= " + trip.getName());
