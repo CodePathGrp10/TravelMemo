@@ -1,8 +1,10 @@
 package com.grp10.codepath.travelmemo.fragments;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,6 +45,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ViewTripInfoFragment extends Fragment implements View.OnClickListener {
     @BindView(R.id.rvUserIconList)
     RecyclerView rvUserIconList;
+    @BindView(R.id.tvTripNameText)
+    TextView tvTripNameText;
+    @BindView(R.id.tvTripDateText)
+    TextView tvTripDateText;
+    @BindView(R.id.tvTravelersText)
+    TextView tvTravelersText;
+    @BindView(R.id.tvTripDescText)
+    TextView tvTripDescText;
+    @BindView(R.id.nsvTripInfo)
+    NestedScrollView nsvTripInfo;
     private DatabaseReference mFbDBReference;
     private String tripId;
     @BindView(R.id.tvTripName)
@@ -89,11 +101,22 @@ public class ViewTripInfoFragment extends Fragment implements View.OnClickListen
         View v = inflater.inflate(R.layout.view_trip_detail_info, container, false);
         ButterKnife.bind(this, v);
 
+//        setupTextFont();
+
         btnSave.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
         getTripInfo();
         setupTravelerList(v);
         return v;
+    }
+
+    private void setupTextFont() {
+        Typeface tfRegular = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Regular.ttf");
+        Typeface tfBold = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Bold.ttf");
+        tvTripNameText.setTypeface(tfRegular);
+        tvTripDateText.setTypeface(tfRegular);
+        tvTravelersText.setTypeface(tfRegular);
+        tvTripDescText.setTypeface(tfRegular);
     }
 
     public static class UserIconViewHolder extends RecyclerView.ViewHolder {
